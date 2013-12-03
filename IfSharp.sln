@@ -1,0 +1,74 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel", "src\IfSharp.Kernel\IfSharp.Kernel.fsproj", "{2FE619B3-4756-4285-B31F-232607F62D78}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{333CAF5A-8808-4E94-9B0C-3EFE86B727AF}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IfSharpConsole", "src\IfSharpConsole\IfSharpConsole.csproj", "{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9D4EDE1C-AB08-4800-9A57-4689DA45B701}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{D2376EF6-662E-45C9-A440-0530EFD799BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88BC26ED-4DC4-4035-AA6D-44CD2A160996}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{A8428CDC-273B-434D-AAA2-0D0164E3D329}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\index.fsx = docs\content\index.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{E7CBA335-71DC-45BC-BB08-8837F866EDB9}"
+	ProjectSection(SolutionItems) = preProject
+		docs\tools\generate.fsx = docs\tools\generate.fsx
+		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{3C993D34-1BD4-4002-B149-7DB2ECAD61CF}"
+	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
+		build.fsx = build.fsx
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel.Tests", "tests\IfSharp.Kernel.Tests\IfSharp.Kernel.Tests.fsproj", "{52627028-50B5-427F-BDDB-9DEADB72E7D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-profile", "{F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}"
+	ProjectSection(SolutionItems) = preProject
+		ipyton-profile\static\custom\custom.css = ipyton-profile\static\custom\custom.css
+		ipyton-profile\static\custom\custom.js = ipyton-profile\static\custom\custom.js
+		ipyton-profile\ipython_config.py = ipyton-profile\ipython_config.py
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A8428CDC-273B-434D-AAA2-0D0164E3D329} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
+		{E7CBA335-71DC-45BC-BB08-8837F866EDB9} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6} = {88BC26ED-4DC4-4035-AA6D-44CD2A160996}
+	EndGlobalSection
+EndGlobal
