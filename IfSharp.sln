@@ -39,9 +39,9 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel.Tests", "tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-profile", "{F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}"
 	ProjectSection(SolutionItems) = preProject
-		ipyton-profile\static\custom\custom.css = ipyton-profile\static\custom\custom.css
-		ipyton-profile\static\custom\custom.js = ipyton-profile\static\custom\custom.js
-		ipyton-profile\ipython_config.py = ipyton-profile\ipython_config.py
+		ipython-profile\static\custom\custom.css = ipython-profile\static\custom\custom.css
+		ipython-profile\static\custom\custom.js = ipython-profile\static\custom\custom.js
+		ipython-profile\ipython_config.py = ipython-profile\ipython_config.py
 	EndProjectSection
 EndProject
 Global
