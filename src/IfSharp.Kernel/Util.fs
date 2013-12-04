@@ -13,7 +13,7 @@ open FSharp.Charting
 type BinaryOutput =
     { 
         ContentType: string;
-        Data: seq<byte>
+        Data: obj
     }
 
 type TableOutput = 

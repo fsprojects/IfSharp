@@ -1,234 +1,225 @@
-CodeMirror.defineMode("fsharp", function(_config, modeConfig) {
-
-  function switchState(source, setState, f) {
-    setState(f);
-    return f(source, setState);
-  }
-
-  var smallRE = /[a-z_]/;
-  var largeRE = /[A-Z]/;
-  var digitRE = /[0-9]/;
-  var hexitRE = /[0-9A-Fa-f]/;
-  var octitRE = /[0-7]/;
-  var idRE = /[a-z_A-Z0-9']/;
-  var symbolRE = /[-!#$%&*+.\/<=>?@\\^|~:]/;
-  var specialRE = /[(),;[\]`{}]/;
-  var whiteCharRE = /[ \t\v\f]/; // newlines are handled in tokenizer
-
-  function normal(source, setState) {
-    if (source.eatWhile(whiteCharRE)) {
-      return null;
-    }
-
-    var ch = source.next();
-    if (specialRE.test(ch)) {
-      if (ch == '{' && source.eat('-')) {
-        var t = "comment";
-        if (source.eat('#')) {
-          t = "meta";
-        }
-        return switchState(source, setState, ncomment(t, 1));
-      }
-      return null;
-    }
-
-    if (ch == '\'') {
-      if (source.eat('\\')) {
-        source.next();  // should handle other escapes here
-      }
-      else {
-        source.next();
-      }
-      if (source.eat('\'')) {
-        return "string";
-      }
-      return "error";
-    }
-
-    if (ch == '"') {
-      return switchState(source, setState, stringLiteral);
-    }
-
-    if (largeRE.test(ch)) {
-      source.eatWhile(idRE);
-      if (source.eat('.')) {
-        return "qualifier";
-      }
-      return "variable-2";
-    }
-
-    if (smallRE.test(ch)) {
-      source.eatWhile(idRE);
-      return "variable";
-    }
-
-    if (digitRE.test(ch)) {
-      if (ch == '0') {
-        if (source.eat(/[xX]/)) {
-          source.eatWhile(hexitRE); // should require at least 1
-          return "integer";
-        }
-        if (source.eat(/[oO]/)) {
-          source.eatWhile(octitRE); // should require at least 1
-          return "number";
-        }
-      }
-      source.eatWhile(digitRE);
-      var t = "number";
-      if (source.eat('.')) {
-        t = "number";
-        source.eatWhile(digitRE); // should require at least 1
-      }
-      if (source.eat(/[eE]/)) {
-        t = "number";
-        source.eat(/[-+]/);
-        source.eatWhile(digitRE); // should require at least 1
-      }
-      return t;
-    }
-
-    if (symbolRE.test(ch)) {
-      if (ch == '-' && source.eat(/-/)) {
-        source.eatWhile(/-/);
-        if (!source.eat(symbolRE)) {
-          source.skipToEnd();
-          return "comment";
-        }
-      }
-      var t = "variable";
-      if (ch == ':') {
-        t = "variable-2";
-      }
-      source.eatWhile(symbolRE);
-      return t;
-    }
-
-    return "error";
-  }
-
-  function ncomment(type, nest) {
-    if (nest == 0) {
-      return normal;
-    }
-    return function(source, setState) {
-      var currNest = nest;
-      while (!source.eol()) {
-        var ch = source.next();
-        if (ch == '{' && source.eat('-')) {
-          ++currNest;
-        }
-        else if (ch == '-' && source.eat('}')) {
-          --currNest;
-          if (currNest == 0) {
-            setState(normal);
-            return type;
-          }
-        }
-      }
-      setState(ncomment(type, currNest));
-      return type;
+CodeMirror.defineMode('fsharp', function ()
+{
+    var words = {
+        'abstract': 'keyword',
+        'and': 'keyword',
+        'as': 'keyword',
+        'assert': 'keyword',
+        'base': 'keyword',
+        'begin': 'keyword',
+        'class': 'keyword',
+        'default': 'keyword',
+        'delegate': 'keyword',
+        'do': 'keyword',
+        'done': 'keyword',
+        'downcast': 'keyword',
+        'downto': 'keyword',
+        'elif': 'keyword',
+        'else': 'keyword',
+        'end': 'keyword',
+        'exception': 'keyword',
+        'extern': 'keyword',
+        'false': 'keyword',
+        'finally': 'keyword',
+        'for': 'keyword',
+        'fun': 'keyword',
+        'function': 'keyword',
+        'global': 'keyword',
+        'if': 'keyword',
+        'in': 'keyword',
+        'inherit': 'keyword',
+        'inline': 'keyword',
+        'interface': 'keyword',
+        'internal': 'keyword',
+        'lazy': 'keyword',
+        'let': 'keyword',
+        'let!': 'keyword',
+        'match': 'keyword',
+        'member': 'keyword',
+        'module': 'keyword',
+        'mutable': 'keyword',
+        'namespace': 'keyword',
+        'new': 'keyword',
+        'not': 'keyword',
+        'null': 'keyword',
+        'of': 'keyword',
+        'open': 'keyword',
+        'or': 'keyword',
+        'override': 'keyword',
+        'private': 'keyword',
+        'public': 'keyword',
+        'rec': 'keyword',
+        'return': 'keyword',
+        'return!': 'keyword',
+        'select': 'keyword',
+        'static': 'keyword',
+        'struct': 'keyword',
+        'then': 'keyword',
+        'to': 'keyword',
+        'true': 'keyword',
+        'try': 'keyword',
+        'type': 'keyword',
+        'upcast': 'keyword',
+        'use': 'keyword',
+        'use!': 'keyword',
+        'val': 'keyword',
+        'void': 'keyword',
+        'when': 'keyword',
+        'while': 'keyword',
+        'with': 'keyword',
+        'yield': 'keyword',
+        'yield!': 'keyword',
+        '__SOURCE_DIRECTORY__': 'keyword',
+        'asr': 'keyword',
+        'land': 'keyword',
+        'lor': 'keyword',
+        'lsl': 'keyword',
+        'lsr': 'keyword',
+        'lxor': 'keyword',
+        'mod': 'keyword',
+        'sig': 'keyword',
+        'atomic': 'keyword',
+        'break': 'keyword',
+        'checked': 'keyword',
+        'component': 'keyword',
+        'const': 'keyword',
+        'constraint': 'keyword',
+        'constructor': 'keyword',
+        'continue': 'keyword',
+        'eager': 'keyword',
+        'event': 'keyword',
+        'external': 'keyword',
+        'fixed': 'keyword',
+        'functor': 'keyword',
+        'include': 'keyword',
+        'method': 'keyword',
+        'mixin': 'keyword',
+        'object': 'keyword',
+        'parallel': 'keyword',
+        'process': 'keyword',
+        'protected': 'keyword',
+        'pure': 'keyword',
+        'sealed': 'keyword',
+        'tailcall': 'keyword',
+        'trait': 'keyword',
+        'virtual': 'keyword',
+        'volatile': 'keyword'
     };
-  }
 
-  function stringLiteral(source, setState) {
-    while (!source.eol()) {
-      var ch = source.next();
-      if (ch == '"') {
-        setState(normal);
-        return "string";
-      }
-      if (ch == '\\') {
-        if (source.eol() || source.eat(whiteCharRE)) {
-          setState(stringGap);
-          return "string";
+    function tokenBase(stream, state)
+    {
+        var ch = stream.next();
+
+        if (ch === '"')
+        {
+            state.tokenize = tokenString;
+            return state.tokenize(stream, state);
         }
-        if (source.eat('&')) {
+        if (ch === '(')
+        {
+            if (stream.eat('*'))
+            {
+                state.commentLevel++;
+                state.tokenize = tokenComment;
+                return state.tokenize(stream, state);
+            }
         }
-        else {
-          source.next(); // should handle other escapes here
+        if (ch === '~')
+        {
+            stream.eatWhile(/\w/);
+            return 'variable-2';
         }
-      }
-    }
-    setState(normal);
-    return "error";
-  }
-
-  function stringGap(source, setState) {
-    if (source.eat('\\')) {
-      return switchState(source, setState, stringLiteral);
-    }
-    source.next();
-    setState(normal);
-    return "error";
-  }
-
-
-  var wellKnownWords = (function() {
-    var wkw = {};
-    function setType(t) {
-      return function () {
-        for (var i = 0; i < arguments.length; i++)
-          wkw[arguments[i]] = t;
-      };
+        if (ch === '`')
+        {
+            stream.eatWhile(/\w/);
+            return 'quote';
+        }
+        if (/\d/.test(ch))
+        {
+            stream.eatWhile(/[\d]/);
+            if (stream.eat('.'))
+            {
+                stream.eatWhile(/[\d]/);
+            }
+            return 'number';
+        }
+        if (/[+\-*&%=<>!?|]/.test(ch))
+        {
+            return 'operator';
+        }
+        stream.eatWhile(/\w/);
+        var cur = stream.current();
+        return words[cur] || 'variable';
     }
 
-    setType("keyword")(
-        "abstract", "and", "as", "assert", "base", "begin", "class", "default", "delegate", "do", "done", "downcast", "downto", "elif", "else", "end", "exception", "extern", "false"
-        , "finally", "for", "fun", "function", "global", "if", "in", "inherit", "inline", "interface", "internal", "lazy", "let", "let!", "match", "member", "module", "mutable", "namespace"
-        , "new", "not", "null", "of", "open", "or", "override", "private", "public", "rec", "return", "return!", "select", "static", "struct", "then", "to", "true", "try", "type", "upcast"
-        , "use", "use!", "val", "void", "when", "while", "with", "yield", "yield!", "__SOURCE_DIRECTORY__"
-        , "asr", "land", "lor", "lsl", "lsr", "lxor", "mod", "sig"
-        , "atomic", "break", "checked", "component", "const", "constraint", "constructor", "continue", "eager", "event", "external", "fixed", "functor", "include"
-        , "method", "mixin", "object", "parallel", "process", "protected", "pure", "sealed", "tailcall", "trait", "virtual", "volatile");
+    function tokenString(stream, state)
+    {
+        var next, end = false, escaped = false;
+        while ((next = stream.next()) != null)
+        {
+            if (next === '"' && !escaped)
+            {
+                end = true;
+                break;
+            }
+            escaped = !escaped && next === '\\';
+        }
+        if (end && !escaped)
+        {
+            state.tokenize = tokenBase;
+        }
+        return 'string';
+    };
 
-    setType("builtin")(
-      "!!", "$!", "$", "&&", "+", "++", "-", ".", "/", "/=", "<", "<=", "=<<",
-      "==", ">", ">=", ">>", ">>=", "^", "^^", "||", "*", "**");
+    function tokenComment(stream, state)
+    {
+        var prev, next;
+        while (state.commentLevel > 0 && (next = stream.next()) != null)
+        {
+            if (prev === '(' && next === '*') state.commentLevel++;
+            if (prev === '*' && next === ')') state.commentLevel--;
+            prev = next;
+        }
+        if (state.commentLevel <= 0)
+        {
+            state.tokenize = tokenBase;
+        }
+        return 'comment';
+    }
 
-    setType("builtin")("bool", "string");
+    return {
+        startState: function () { return { tokenize: tokenBase, commentLevel: 0 }; },
+        token: function (stream, state)
+        {
+            if (stream.eatSpace()) return null;
+            return state.tokenize(stream, state);
+        },
 
-    var override = modeConfig.overrideKeywords;
-    if (override) for (var word in override) if (override.hasOwnProperty(word))
-      wkw[word] = override[word];
-
-    return wkw;
-  })();
-
-
-
-  return {
-    startState: function ()  { return { f: normal }; },
-    copyState:  function (s) { return { f: s.f }; },
-
-    token: function(stream, state) {
-      var t = state.f(stream, function(s) { state.f = s; });
-      var w = stream.current();
-      return wellKnownWords.hasOwnProperty(w) ? wellKnownWords[w] : t;
-    },
-
-    blockCommentStart: "(*",
-    blockCommentEnd: "*)",
-    lineComment: "//"
-  };
-
+        blockCommentStart: "(*",
+        blockCommentEnd: "*)"
+    };
 });
 
 CodeMirror.defineMIME("text/x-fsharp", "fsharp");
 
-$([IPython.events]).on('app_initialized.NotebookApp', function()
+$([IPython.events]).on('app_initialized.NotebookApp', function ()
 {
-  CodeMirror.requireMode('fsharp', function()
-  {
-      cells = IPython.notebook.get_cells();
-      for(var i in cells)
-      {
-          c = cells[i];
-          if (c.cell_type === 'code')
-          {
-              c.auto_highlight()
-          }
-      }
-  })
+    CodeMirror.requireMode('fsharp', function ()
+    {
+        cells = IPython.notebook.get_cells();
+        for (var i in cells)
+        {
+            c = cells[i];
+            if (c.cell_type === 'code')
+            {
+                c.auto_highlight()
+            }
+        }
+    })
 
-  IPython.CodeCell.options_default['cm_config']['mode'] = 'fsharp';
+    IPython.CodeCell.options_default['cm_config']['mode'] = 'fsharp';
+
+    // replace the image
+    var img = $('.container img')[0]
+    img.src = "/static/custom/ifsharp_logo.png"
 });

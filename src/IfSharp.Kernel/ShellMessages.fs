@@ -290,7 +290,7 @@ type KernelReply =
         // # The last component is an extra field, which may be 'dev' or
         // # 'rc1' in development version.  It is an empty string for
         // # released version.
-        ipython_version: array<obj>;
+        ipython_version: Option<array<obj>>;
 
         // # Language version number (mandatory).
         // # It is Python version number (e.g., [2, 7, 3]) for the kernel
@@ -330,6 +330,16 @@ type DisplayData =
 
         // # Any metadata that describes the data
         metadata: dict;
+    }
+
+type Pyin = 
+    {
+        code: string;  // # Source code to be executed, one or more lines
+
+        // # The counter for this execution is also provided so that clients can
+        // # display it, since IPython automatically creates variables called _iN
+        // # (for input prompt In[N]).
+        execution_count: int;
     }
 
 type Pyout = 

@@ -17,76 +17,63 @@ open fszmq.Socket
 
 module App = 
 
-    // logs a message to the log
+    (** Splits the message up into lines and writes the lines to the specified file name *)
     let internal logMessage fileName (msg:string) =
         let messages = 
             msg.Split('\r', '\n')
-            |> Seq.map (fun x -> String.Format("{0:yyyy-MM-dd HH:mm:ss} - {1}", DateTime.Now, x))
             |> Seq.filter (fun x -> x <> "")
+            |> Seq.map (fun x -> String.Format("{0:yyyy-MM-dd HH:mm:ss} - {1}", DateTime.Now, x))
             |> Seq.toArray
         
         File.AppendAllLines(fileName, messages)
 
-    // logs the exception and returns -1
+    (** Logs the exception to the specified file name *)
     let internal handleException (fileName) (ex:exn) = 
         let message = ex.CompleteStackTrace()
         logMessage fileName message
 
-    // decodes bytes into a string
+    (** Decodes byte array into a string using UTF8 *)
     let internal decode (bytes) =
         Encoding.UTF8.GetString(bytes)
 
-    // encodes a string into bytes
+    (** Encodes a string into a byte array using UTF8 *)
     let internal encode (str:string) =
         Encoding.UTF8.GetBytes(str)
 
-    // receives a string from a socket
-    let internal recvString (socket:Socket) = 
-        let bytes = Socket.recv socket
-        decode bytes
-
-    // sends a string to a socket
-    let internal sendString (socket:Socket) (str) = 
-        let bytes = encode str
-        Socket.send socket bytes
-
-    // deserializes a dictionary from a string
+    (** Deserializes a dictionary from a JSON string *)
     let internal deserializeDict (str) =
         JsonConvert.DeserializeObject<Dictionary<string, string>>(str)
 
-    // serializes an object to a string
+    (** Serializes any object into JSON *)
     let internal serialize (obj) =
         let ser = JsonSerializer()
         let sw = new StringWriter()
         ser.Serialize(sw, obj)
         sw.ToString()
 
-    // sends a message
-    let internal sendMessage (socket) (obj) =
-        let json = serialize obj
-        sendString (socket) (json)
-        json
-
-    // receives until a delimiter
-    let internal recvUntil (socket) (delimiter) =
-        let results = List<string>()
-        let mutable msg = recvString socket
-        
-        while msg <> delimiter do
-            results.Add(msg)
-            msg <- recvString socket
-
-        results |> Seq.toList
-
-    // receives an envelope
+    (** Constructs an 'envelope' from the specified socket *)
     let internal recvEnvelope (socket) = 
+        
+        // receive all parts of the message
+        let message =
+            recvAll (socket)
+            |> Seq.map decode
+            |> Seq.toArray
 
-        let uuids            = recvUntil socket "<IDS|MSG>"
-        let hmac             = recvString socket
-        let headerJson       = recvString socket
-        let parentHeaderJson = recvString socket
-        let metadata         = recvString socket
-        let contentJson      = recvString socket
+        // find the delimiter between IDS and MSG
+        let idx = Array.IndexOf(message, "<IDS|MSG>")
+        let idents = message.[0..idx - 1]
+        let messageList = message.[idx + 1..message.Length - 1]
+
+        // detect a malformed message
+        if messageList.Length < 4 then failwith ("Malformed message")
+
+        // assemble the 'envelope'
+        let hmac             = messageList.[0]
+        let headerJson       = messageList.[1]
+        let parentHeaderJson = messageList.[2]
+        let metadata         = messageList.[3]
+        let contentJson      = messageList.[4]
         
         let header           = JsonConvert.DeserializeObject<Header>(headerJson)
         let parentHeader     = JsonConvert.DeserializeObject<Header>(parentHeaderJson)
@@ -94,7 +81,7 @@ module App =
         let content          = ShellMessages.Deserialize (header.msg_type) (contentJson)
         let envelope         = 
             {
-                Identifiers = uuids;
+                Identifiers = idents |> Seq.toList;
                 HmacSignature = hmac;
                 Header = header;
                 ParentHeader = parentHeader;
@@ -104,33 +91,7 @@ module App =
 
         envelope
 
-    // sends an envelope
-    let internal sendEnvelope (socket) (e: MessageEnvelope) =
-        
-        // send identifiers
-        for id in e.Identifiers do
-            socket <~| (encode id) |> ignore
-
-        // send everything else
-        socket
-            <~| (encode "<IDS|MSG>")
-            <~| (encode e.HmacSignature)
-            <~| (encode (serialize e.Header))
-            <~| (encode (serialize e.ParentHeader))
-            <~| (encode e.Metadata)
-            <<| (encode (serialize e.Content))
-
-    // heartbeat is just echo
-    let internal doHeartbeat (hbSocket) =
-
-        try
-            while true do
-                let bytes = Socket.recv hbSocket
-                let str = decode bytes
-                Socket.send hbSocket bytes
-        with
-        | exn -> handleException "heartbeat.log" exn
-
+    (** Convenience method for creating a header *)
     let internal createHeader (messageType) (sourceEnvelope) =
         {
             msg_type = messageType;
@@ -139,27 +100,100 @@ module App =
             username = sourceEnvelope.Header.username;
         }
 
-    let internal sendState (socket) (envelope) (state) =
+    (** Convenience method for sending a message *)
+    let internal sendMessage (socket) (envelope) (messageType) (content) =
 
-        let ident = ""
-        let delim = "<IDS|MSG>"
-        let signature = ""
-        let header = createHeader "status" envelope
-        let metadata = "{}"
-        let content = { execution_state = state } 
+        let header = createHeader messageType envelope
+
+        for ident in envelope.Identifiers do
+            socket <~| (encode ident) |> ignore
 
         socket
-            <~| (encode ident)
-            <~| (encode delim)
-            <~| (encode signature)
+            <~| (encode "<IDS|MSG>")
+            <~| (encode "")
             <~| (encode (serialize header))
             <~| (encode (serialize envelope.Header))
-            <~| (encode metadata)
+            <~| (encode "{}")
             <<| (encode (serialize content))
         
-    let mutable internal executionCount = 0
+    (** Convenience method for sending the state of the kernel *)
+    let internal sendState (socket) (envelope) (state) =
+        sendMessage socket envelope "status" { execution_state = state } 
+        
+    (** The display data to send to the user *)
+    let internal data = new List<BinaryOutput>()
+
+    (** Convenience method for encoding a string within HTML *)
+    let internal htmlEncode(str) =
+        System.Web.HttpUtility.HtmlEncode(str)
+
+    (** Displays a generic HTML string *)
+    let internal displayHtml (x:HtmlOutput) =
+        data.Add( { ContentType = "text/html"; Data = x.Html })
+
+    (** Constructs an HTML table from the specified TableOutput *)
+    let internal displayTable(x:TableOutput) =
+        let sb = StringBuilder()
+        sb.Append("<table>") |> ignore
+
+        // output header
+        sb.Append("<thead>") |> ignore
+        sb.Append("<tr>") |> ignore
+        for col in x.Columns do
+            sb.Append("<th>") |> ignore
+            sb.Append(htmlEncode col) |> ignore
+            sb.Append("</th>") |> ignore
+        sb.Append("</tr>") |> ignore
+        sb.Append("</thead>") |> ignore
+
+        // output body
+        sb.Append("<tbody>") |> ignore
+        for row in x.Rows do
+            sb.Append("<tr>") |> ignore
+            for cell in row do
+                sb.Append("<td>") |> ignore
+                sb.Append(htmlEncode cell) |> ignore
+                sb.Append("</td>") |> ignore
+                    
+            sb.Append("</tr>") |> ignore
+        sb.Append("<tbody>") |> ignore
+        sb.Append("</tbody>") |> ignore
+        sb.Append("</table>") |> ignore
+
+        displayHtml { Html = sb.ToString() }
+
+    (** Displays a string *)
+    let internal displayString (x:string) =
+        data.Add( { ContentType = "text/plain"; Data = x })
+
+    (** Displays a generic object using sprintf "%A" *)
+    let internal displayGeneric (x:obj) =
+        displayString (sprintf "%A" x)
+
+    (** Displays a generic chart by converting it to a png *)
+    let internal displayGenericChart (x:ChartTypes.GenericChart) =
+        data.Add( { ContentType = "image/png"; Data = x.ToPng() } )
+
+    (** Displays a generic chart with size by converting it to a png with the size *)
+    let internal displayChartWithSize (x:GenericChartWithSize) =
+        data.Add( { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) } )
+
+    (** Global display function *)
+    let Display (value : obj) =
+        match value with
+        | :? BinaryOutput            as bo    -> data.Add(bo)
+        | :? ChartTypes.GenericChart as chart -> displayGenericChart chart
+        | :? GenericChartWithSize    as chart -> displayChartWithSize chart
+        | :? TableOutput             as table -> displayTable table
+        | :? HtmlOutput              as html  -> displayHtml html
+        | _                                   -> displayGeneric value
+
+        value
 
     // performs shell operations
+    let mutable internal executionCount = 0
+
+    (** Loops forever receiving messages from the client and processing them *)
     let internal doShell (shellSocket) (iopubSocket) =
 
         // start up FSI in-process
@@ -169,67 +203,7 @@ module App =
         let outStream = new StringWriter(sbOut)
         let errStream = new StringWriter(sbErr)
         let fsiEval = FsiEvaluationSession([|"--noninteractive"|], inStream, outStream, errStream)
-        let data = dict()
         
-        // add our custom printers
-        fsi.AddPrinter(fun (ch:ChartTypes.GenericChart) ->
-            data.["image/png"] <- ch.ToPng()
-            "(GenericChart)"
-        ) 
-
-        fsi.AddPrinter(fun (ch:GenericChartWithSize) ->
-            data.["image/png"] <- ch.Chart.ToPng(ch.Size)
-            "(GenericChartWithSize)"
-        ) 
-
-        fsi.AddPrinter(fun (x:BinaryOutput) ->
-            data.[x.ContentType] <- x.Data
-            "(BinaryOutput)"
-        )
-
-        fsi.AddPrinter(fun (x:LatexOutput) ->
-            data.["text/latex"] <- x.Latex
-            "(LatexOutput)"
-        )
-        
-        fsi.AddPrinter(fun (x:HtmlOutput) ->
-            data.["text/html"] <- x.Html
-            "(LatexOutput)"
-        )
-
-        fsi.AddPrinter(fun (x:TableOutput) ->
-
-            let sb = StringBuilder()
-            sb.Append("<table>") |> ignore
-
-            // output header
-            sb.Append("<thead>") |> ignore
-            sb.Append("<tr>") |> ignore
-            for col in x.Columns do
-                sb.Append("<th>") |> ignore
-                sb.Append(col) |> ignore
-                sb.Append("</th>") |> ignore
-            sb.Append("</tr>") |> ignore
-            sb.Append("</thead>") |> ignore
-
-            // output body
-            sb.Append("<tbody>") |> ignore
-            for row in x.Rows do
-                sb.Append("<tr>") |> ignore
-                for cell in row do
-                    sb.Append("<td>") |> ignore
-                    sb.Append(cell) |> ignore
-                    sb.Append("</td>") |> ignore
-                    
-                sb.Append("</tr>") |> ignore
-            sb.Append("<tbody>") |> ignore
-            sb.Append("</tbody>") |> ignore
-            sb.Append("</table>") |> ignore
-
-            data.["text/html"] <- sb.ToString()
-            "(Table)"
-        )
-
         try
 
             let file = FileInfo(Assembly.GetEntryAssembly().Location)
@@ -252,22 +226,15 @@ module App =
 
                 if envelope.Header.msg_type = "kernel_info_request" then
                     
-                    let ident = ""
-                    let delim = "<IDS|MSG>"
-                    let signature = ""
-                    let header = createHeader "kernel_info_reply" envelope
-                    let metadata = "{}"
-                    let content = { protocol_version = [| 4; 0 |];  ipython_version = [| 1; 1; 0; ""|]; language_version = [| 1; 0; 0 |]; language = "fsharp"; } 
+                    let content = 
+                        {
+                            protocol_version = [| 4; 0 |]; 
+                            ipython_version = None;
+                            language_version = [| 1; 0; 0 |];
+                            language = "fsharp";
+                        }
 
-                    // send messages
-                    shellSocket
-                        <~| (encode ident)
-                        <~| (encode delim)
-                        <~| (encode signature)
-                        <~| (encode (serialize header))
-                        <~| (encode (serialize envelope.Header))
-                        <~| (encode metadata)
-                        <<| (encode (serialize content))
+                    sendMessage shellSocket envelope "kernel_info_reply" content
 
                 else if envelope.Header.msg_type = "execute_request" then
                     
@@ -276,55 +243,66 @@ module App =
                         | ExecuteRequest x -> x
                         | _ -> failwith ("system error")
 
-                    // clear stdout / stderr
+                    // clear some state
                     sbOut.Clear() |> ignore
                     sbErr.Clear() |> ignore
+                    data.Clear()
+                    
+                    if content.silent = false then executionCount <- executionCount + 1
+                    sendState iopubSocket envelope "busy"
+                    sendMessage iopubSocket envelope "pyin" { code = content.code; execution_count = executionCount  }
 
                     // evaluate
-                    sendState iopubSocket envelope "busy"
                     let mutable exMessage = ""
-                    data.Clear()
-
                     try
                         fsiEval.EvalInteraction(content.code)
                     with 
                     | exn -> exMessage <- exn.CompleteStackTrace()
 
-                    // send reply
-                    if content.silent = false then executionCount <- executionCount + 1
 
-                    // build data
-                    data.Add("text/plain", (sbOut.ToString() + sbErr.ToString()).Trim())
+                    if sbErr.Length > 0 then
+                        let executeReply =
+                            {
+                                status = "error";
+                                execution_count = executionCount;
+                                ename = "generic";
+                                evalue = sbErr.ToString();
+                                traceback = [||]
+                            }
 
-                    // build message
-                    let ident = ""
-                    let delim = "<IDS|MSG>"
-                    let signature = ""
-                    let headerPub = { msg_type = "pyout"; msg_id = Guid.NewGuid().ToString(); session = envelope.Header.session; username = envelope.Header.username; }
-                    let headerShell =  { headerPub with msg_type = "execute_reply"; }
-                    let metadata = "{}"
-                    let pyOutContent = { execution_count = executionCount; data = data; metadata = dict() }
-                    let shellContent = { status = "ok"; execution_count = executionCount; payload = []; user_variables = dict(); user_expressions = dict() }
+                        sendMessage shellSocket envelope "execute_reply" executeReply
+                        sendMessage iopubSocket envelope "pyerr" executeReply
+                        
+                        let d = dict()
+                        d.Add("text/plain", sbErr.ToString())
+                        let pyoutReply = { execution_count = executionCount; data = d; metadata = dict() }
+                        sendMessage iopubSocket envelope "pyout" pyoutReply
+                    else
+                        let executeReply =
+                            {
+                                status = "ok";
+                                execution_count = executionCount;
+                                payload = [];
+                                user_variables = dict();
+                                user_expressions = dict()
+                            }
 
-                    // send messages
-                    shellSocket
-                        <~| (encode ident)
-                        <~| (encode delim)
-                        <~| (encode signature)
-                        <~| (encode (serialize headerShell))
-                        <~| (encode (serialize envelope.Header))
-                        <~| (encode metadata)
-                        <<| (encode (serialize shellContent))
-                         
-                    iopubSocket
-                        <~| (encode ident)
-                        <~| (encode delim)
-                        <~| (encode signature)
-                        <~| (encode (serialize headerPub))
-                        <~| (encode (serialize envelope.Header))
-                        <~| (encode metadata)
-                        <<| (encode (serialize pyOutContent))
+                        sendMessage shellSocket envelope "execute_reply" executeReply
 
+                        // send all the data
+                        if content.silent = false then
+
+                            if data.Count = 0 then data.Add({ ContentType = "text/plain"; Data = sbOut.ToString(); })
+
+                            for datum in data do
+                        
+                                let d = dict()
+                                d.Add(datum.ContentType, datum.Data)
+
+                                let pyoutReply = { execution_count = executionCount; data = d; metadata = dict() }
+                                sendMessage iopubSocket envelope "pyout" pyoutReply
+
+                    // we are now idle
                     sendState iopubSocket envelope "idle"
 
                 else
@@ -334,8 +312,19 @@ module App =
                 ()
         with 
         | exn -> handleException "shell.log" exn
-    
-    // first argument must be an ipython connection file, blocks forever
+   
+    (** Loops repeating message from the client *)
+    let internal doHeartbeat (hbSocket) =
+
+        try
+            while true do
+                let bytes = Socket.recv hbSocket
+                let str = decode bytes
+                Socket.send hbSocket bytes
+        with
+        | exn -> handleException "heartbeat.log" exn
+ 
+    (** First argument must be an ipython connection file, blocks forever *)
     let Start(args:array<string>) = 
 
         // validate

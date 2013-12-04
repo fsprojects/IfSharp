@@ -9,3 +9,9 @@ open System.Data
 open Microsoft.FSharp.Data.TypeProviders
 open IfSharp.Kernel
 open FSharp.Charting
+
+let Display = IfSharp.Kernel.App.Display
+
+let x = [| 1; 2; 3; |]
+let start = 1
+x.[start + 1..x.Length - 1]
