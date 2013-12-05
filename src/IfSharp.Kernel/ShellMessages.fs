@@ -39,6 +39,14 @@ type ExecuteRequest =
         allow_stdin: bool;
     }
 
+type Payload = 
+    {
+        html: string;
+        source: string;
+        start_line_number: int;
+        text: string;
+    }
+
 type ExecuteReplyOk =
     {
         status: string;
@@ -49,7 +57,7 @@ type ExecuteReplyOk =
         // # produced by the code being executed.  It is retrieved by the kernel at
         // # the end of the execution and sent back to the front end, which can take
         // # action on it as needed.  See main text for further details.
-        payload: list<dict>;
+        payload: list<Payload>;
 
         // # Results for the user_variables and user_expressions.
         user_variables: dict;
@@ -214,12 +222,12 @@ type CompleteReply =
         // # this is typically the common prefix of the matches,
         // # and the text that is already in the block that would be replaced by the full completion.
         // # This would be 'a.is' in the above example.
-        text: string;
+        matched_text: string;
 
         // # status should be 'ok' unless an exception was raised during the request,
         // # in which case it should be 'error', along with the usual error message content
         // # in other messages.
-        status: CompleteReplyStatus;
+        status: string;
     }
 
 type HistoryRequest =
@@ -356,6 +364,28 @@ type Pyout =
         metadata: dict;
     }
 
+type Stream = 
+    {
+        // # The name of the stream is one of 'stdout', 'stderr'
+        name: string;
+        //  # The data is an arbitrary string to be written to that stream
+        data: string;
+    }
+
+type ClearOutput = 
+    {
+        // # Wait to clear the output until new output is available.  Clears the
+        // # existing output immediately before the new output is displayed.
+        // # Useful for creating simple animations with minimal flickering.
+        wait: bool;
+
+        // this is undocumented!?
+        // TODO: figure out if this is right
+        stdout: bool;
+        stderr: bool;
+        other: bool;
+    } 
+
 type ShellMessage = 
     // execute
     | ExecuteRequest of ExecuteRequest
@@ -395,7 +425,7 @@ type Header =
         msg_type: string;
     }
 
-type MessageEnvelope = 
+type Message = 
     {
         Identifiers: list<string>;
         HmacSignature: string;

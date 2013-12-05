@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\IfSharp.Kernel.XML</DocumentationFile>
+    <StartArguments />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -62,9 +63,11 @@
     <Compile Include="Util.fs" />
     <Compile Include="MainTypes.fs" />
     <Compile Include="ShellMessages.fs" />
+    <Compile Include="Evaluation.fs" />
+    <Compile Include="Kernel.fs" />
+    <Compile Include="App.fs" />
     <None Include="FSharp.Core.sigdata" />
     <None Include="FSharp.Core.optdata" />
-    <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Charting">

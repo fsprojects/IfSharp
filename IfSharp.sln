@@ -13,6 +13,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9D4EDE1C-AB08-4800-9A57-4689DA45B701}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{D2376EF6-662E-45C9-A440-0530EFD799BF}"
+	ProjectSection(SolutionItems) = preProject
+		Feature Notebook.ipynb = Feature Notebook.ipynb
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88BC26ED-4DC4-4035-AA6D-44CD2A160996}"
 EndProject

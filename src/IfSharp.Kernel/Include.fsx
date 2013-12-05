@@ -11,7 +11,5 @@ open IfSharp.Kernel
 open FSharp.Charting
 
 let Display = IfSharp.Kernel.App.Display
-
-let x = [| 1; 2; 3; |]
-let start = 1
-x.[start + 1..x.Length - 1]
+let Help = IfSharp.Kernel.App.Help
+let Clear = IfSharp.Kernel.App.Clear

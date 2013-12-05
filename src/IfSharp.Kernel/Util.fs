@@ -24,7 +24,7 @@ type TableOutput =
 
 type LatexOutput =
     {
-        Latex: obj;
+        Latex: string;
     }
 
 type HtmlOutput =
@@ -43,10 +43,7 @@ module ExtensionMethods =
 
     type Exception with
         
-        (**
-            Convenience method for getting the full stack trace by going down the 
-            inner exceptions
-        *)
+        (** Convenience method for getting the full stack trace by going down the inner exceptions *)
         member self.CompleteStackTrace() = 
             
             let mutable ex = self
@@ -62,19 +59,14 @@ module ExtensionMethods =
 
     type ChartTypes.GenericChart with 
 
-        (** 
-            Wraps a GenericChartWithSize around the GenericChart
-        *)
+        (** Wraps a GenericChartWithSize around the GenericChart *)
         member self.WithSize(x:int, y:int) =
             {
                 Chart = self;
                 Size = (x, y);
             }
 
-        (** 
-            Converts the GenericChart to a PNG, in order to do this, we must show a
-            form with ChartControl on it, save the bmp, then write the png to memory
-        *)
+        (** Converts the GenericChart to a PNG, in order to do this, we must show a form with ChartControl on it, save the bmp, then write the png to memory *)
         member self.ToPng(?size) =
 
             // get the size
@@ -93,9 +85,7 @@ module ExtensionMethods =
 
     type FSharp.Charting.Chart with
     
-        (** 
-            Wraps a GenericChartWithSize around the GenericChart
-        *)
+        (** Wraps a GenericChartWithSize around the GenericChart *)
         static member WithSize(x:int, y:int) = 
 
             fun (ch : #ChartTypes.GenericChart) ->
@@ -103,31 +93,26 @@ module ExtensionMethods =
 
 type Util = 
 
-    (**
-        Wraps a LatexOutput around a string in order to send to the UI.
-    *)
-    static member Latex(str) =
+    (** Wraps a LatexOutput around a string in order to send to the UI. *)
+    static member Latex (str) =
         { Latex = str}
 
-    (**
-        Wraps a HtmlOutput around a string in order to send to the UI.
-    *)
-    static member Html(str) =
+    (** Wraps a LatexOutput around a string in order to send to the UI. *)
+    static member Math (str) =
+        { Latex = "$$" + str + "$$" }
+
+    (** Wraps a HtmlOutput around a string in order to send to the UI. *)
+    static member Html (str) =
         { Html = str }
 
-    (** 
-        Creates an array of strings with the specified properties and the
-        item to get the values out of.
-    *)
+    (**  Creates an array of strings with the specified properties and the item to get the values out of. *)
     static member Row (columns:seq<Reflection.PropertyInfo>) (item:'A) =
         columns
         |> Seq.map (fun p -> p.GetValue(item))
         |> Seq.map (fun x -> Convert.ToString(x))
         |> Seq.toArray
 
-    (**
-        Creates a TableOutput out of a sequence of items and a list of property names.
-    *)
+    (** Creates a TableOutput out of a sequence of items and a list of property names. *)
     static member Table (items:seq<'A>, ?propertyNames:seq<string>) =
 
         // get the properties
@@ -144,9 +129,7 @@ type Util =
             Rows = items |> Seq.map (Util.Row properties) |> Seq.toArray;
         }
 
-    (** 
-        Downloads the specified url and wraps a BinaryOutput around the results.
-    *)
+    (** Downloads the specified url and wraps a BinaryOutput around the results. *)
     static member Url (url:string) =
         let req = WebRequest.Create(url)
         let res = req.GetResponse()
@@ -156,18 +139,14 @@ type Util =
         { ContentType = res.ContentType; Data =  mstream.ToArray() }
 
 
-    (**
-        Wraps a BinaryOutput around image bytes with the specified content-type
-    *)
+    (** Wraps a BinaryOutput around image bytes with the specified content-type *)
     static member Image (bytes:seq<byte>, ?contentType:string) =
         {
             ContentType = if contentType.IsSome then contentType.Value else "image/jpeg";
             Data = bytes;
         }
 
-    (**
-        Loads a local image from disk and wraps a BinaryOutput around the image data.
-    *)
+    (** Loads a local image from disk and wraps a BinaryOutput around the image data. *)
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
 
