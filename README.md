@@ -1,4 +1,2 @@
-IfSharp
-========
-
-F# implementation of iPython. This is very alpha.
+# IfSharp
+F# implementation for [iPython](http://ipython.org). View the [Feature Notebook](http://nbviewer.ipython.org/github/BayardRock/IfSharp/blob/master/Feature%20Notebook.ipynb) for some of the features that are included.

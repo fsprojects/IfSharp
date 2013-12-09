@@ -269,6 +269,18 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         sendMessage shellSocket msg "shutdown_reply" reply
 
+    (** Handles a 'history_request' message *)
+    let historyRequest (msg : Message) =
+
+        let content = match msg.Content with HistoryRequest x -> x | _ -> failwith ("system error")
+        // TODO: actually handle this
+        sendMessage shellSocket msg "history_reply" { history = [] }
+
+    (** Handles a 'object_info_request' message *)
+    let objectInfoRequest (msg : Message) =
+        // TODO: actually handle this
+        ()
+
     (** Loops forever receiving messages from the client and processing them *)
     let doShell() =
 
@@ -295,6 +307,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
                 | "complete_request"    -> completeRequest (msg) 
                 | "connect_request"     -> connectRequest (msg)
                 | "shutdown_request"    -> shutdownRequest (msg)
+                | "history_request"     -> historyRequest (msg)
+                | "object_info_request" -> objectInfoRequest (msg)
                 | _                     -> logMessage (String.Format("msg_type not implemented {0}", msg.Header.msg_type))
             with 
             | ex -> handleException ex
