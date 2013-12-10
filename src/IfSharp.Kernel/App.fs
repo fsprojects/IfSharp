@@ -3,6 +3,7 @@
 open System
 open System.Collections.Generic
 open System.IO
+open System.Reflection
 open System.Text
 open System.Threading
 
@@ -10,6 +11,8 @@ open FSharp.Charting
 open Newtonsoft.Json
 open fszmq
 open fszmq.Socket
+
+open Microsoft.FSharp.Reflection
 
 module App = 
 
@@ -128,9 +131,68 @@ module App =
 
     (** Global help function *)
     let Help (value : obj) = 
+
         let text = StringBuilder()
-        let props = value.GetType().GetProperties() |> Seq.map (fun x -> x.Name) |> Seq.distinct |> Seq.toArray
-        let meths = value.GetType().GetMethods() |> Seq.map (fun x -> x.Name) |> Seq.distinct |> Seq.toArray
+
+        let rec getTypeText (t : Type) =
+            let text = StringBuilder(Blue)
+    
+            if FSharpType.IsTuple(t) then
+                let args = FSharpType.GetTupleElements(t)
+                let str:array<string> = [| for a in args do yield getTypeText(a) |]
+                text.Append(String.Join(" * ", str)) |> ignore
+
+            else if t.IsGenericType then
+                let args = t.GetGenericArguments()
+                let str:array<string> = [| for a in args do yield getTypeText(a) |]
+                text.Append(t.Name) 
+                    .Append("<")
+                    .Append(String.Join(" ", str))
+                    .Append(">")
+                    |> ignore
+            else
+                text.Append(t.Name) |> ignore
+
+            text.Append(Reset).ToString()
+
+        let getPropertyText (p : PropertyInfo) =
+            let text = StringBuilder()
+            text.Append(p.Name)
+                .Append(" -> ")
+                .Append(getTypeText(p.PropertyType))
+                |> ignore
+
+            text.ToString()
+
+        let getParameterInfoText (p : ParameterInfo) =
+            let sb = StringBuilder()
+            if p.IsOptional then sb.Append("? ") |> ignore
+            if p.IsOut then sb.Append("out ") |> ignore
+            sb.Append(p.Name).Append(": ").Append(getTypeText(p.ParameterType)).Append(" ") |> ignore
+            if p.HasDefaultValue then sb.Append("= ").Append(p.DefaultValue).Append(" ") |> ignore
+            sb.ToString().Trim()
+
+        let getMethodText (m : MethodInfo) =
+            let sb = StringBuilder()
+            sb.Append(m.Name).Append("(") |> ignore
+
+            let pametersString = String.Join(", ", m.GetParameters() |> Seq.map(fun x -> getParameterInfoText(x)))
+            sb.Append(pametersString) |> ignore
+
+            sb.Append(") -> ").Append(getTypeText(m.ReturnType)) |> ignore
+            sb.ToString()
+
+        let props = 
+            value.GetType().GetProperties()
+            |> Seq.sortBy (fun x -> x.Name)
+            |> Seq.toArray
+        
+        let meths =
+            value.GetType().GetMethods()
+            |> Seq.filter (fun x -> x.Name.StartsWith("get_") = false)
+            |> Seq.filter (fun x -> x.Name.StartsWith("set_") = false)
+            |> Seq.sortBy (fun x -> x.Name)
+            |> Seq.toArray
 
         // type information
         text.Append(Blue)
@@ -140,13 +202,19 @@ module App =
 
         // output properties
         text.AppendLine() |> ignore
-        text.Append(Red).AppendLine("Properties").Append(Reset) |> ignore
-        props |> Seq.iter (fun x -> text.AppendLine(x) |> ignore)
+        text.Append(Red)
+            .AppendLine("Properties")
+            .Append(Reset) |> ignore
+
+        props |> Seq.iter (fun x -> text.AppendLine(getPropertyText(x)) |> ignore)
 
         // output methods
         text.AppendLine() |> ignore
-        text.Append(Red).AppendLine("Methods").Append(Reset) |> ignore
-        meths |> Seq.iter (fun x -> text.AppendLine(x) |> ignore)
+        text.Append(Red)
+            .AppendLine("Methods")
+            .Append(Reset) |> ignore
+
+        meths |> Seq.iter (fun x -> text.AppendLine(getMethodText(x)) |> ignore)
 
         // add to the payload
         kernel.Value.AddPayload(text.ToString())

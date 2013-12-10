@@ -75,22 +75,24 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Compiler">
-      <HintPath>C:\Users\prosconi.BAYARDROCK\Source\Repos\Project Shaef v2\ModelAnalysisPlatfrom\lib\FSharp.Compiler.dll</HintPath>
+      <HintPath>..\..\lib\FSharp.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.Interactive.Settings">
-      <HintPath>C:\Users\prosconi.BAYARDROCK\Source\Repos\Project Shaef v2\ModelAnalysisPlatfrom\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+      <HintPath>..\..\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.Server.Shared">
-      <HintPath>C:\Users\prosconi.BAYARDROCK\Source\Repos\Project Shaef v2\ModelAnalysisPlatfrom\lib\FSharp.Compiler.Server.Shared.dll</HintPath>
+      <HintPath>..\..\lib\FSharp.Compiler.Server.Shared.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
-      <HintPath>C:\Users\prosconi.BAYARDROCK\Source\Repos\Project Shaef v2\ModelAnalysisPlatfrom\lib\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\lib\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Data.TypeProviders">
-      <HintPath>C:\Users\prosconi.BAYARDROCK\Source\Repos\Project Shaef v2\ModelAnalysisPlatfrom\lib\FSharp.Data.TypeProviders.dll</HintPath>
+      <HintPath>..\..\lib\FSharp.Data.TypeProviders.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="fsiAnyCpu">
-      <HintPath>C:\Users\prosconi.BAYARDROCK\Source\Repos\Project Shaef v2\ModelAnalysisPlatfrom\lib\fsiAnyCpu.exe</HintPath>
+      <HintPath>..\..\lib\fsiAnyCpu.exe</HintPath>
     </Reference>
     <Reference Include="fszmq">
       <HintPath>..\..\packages\fszmq.3.2.7\lib\net45\fszmq.dll</HintPath>
