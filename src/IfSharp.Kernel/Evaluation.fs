@@ -13,7 +13,8 @@ module Evaluation =
     let internal inStream = new StringReader("")
     let internal outStream = new StringWriter(sbOut)
     let internal errStream = new StringWriter(sbErr)
-    let internal fsiEval = new FsiEvaluationSession([|"--noninteractive"|], inStream, outStream, errStream)
+    let internal fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
+    let internal fsiEval = new FsiEvaluationSession(fsiConfig, [|"--noninteractive"|], inStream, outStream, errStream)
     
     let GetLastExpression() =
 

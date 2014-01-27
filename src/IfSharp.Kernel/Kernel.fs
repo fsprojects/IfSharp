@@ -19,6 +19,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
     let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
+    let args = [||]
+    let compiler = IntellisenseHelper(args)
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
 
@@ -233,8 +235,14 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         let realLineNumber = position.line + lineOffset
         let codeString = String.Join("\n", codes)
-        let decls = IntellisenseHelper.GetDeclarations(codeString) (realLineNumber, position.ch)
-        let matches = decls |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = IntellisenseHelper.formatTip x.DescriptionText None})
+        let (names, decls) = compiler.GetDeclarations(codeString) (realLineNumber, position.ch)
+        
+        // add global helper methods
+        let matches = 
+            decls
+            |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.ToolTip })
+            |> Seq.toList
+
         let newContent = 
             {
                 matched_text = "";

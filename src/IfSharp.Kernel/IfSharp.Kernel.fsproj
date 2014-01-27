@@ -68,12 +68,6 @@
     <Compile Include="ShellMessages.fs" />
     <Compile Include="Evaluation.fs" />
     <Compile Include="Kernel.fs" />
-    <None Include="FSharp.Core.sigdata">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="FSharp.Core.optdata">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <EmbeddedResource Include="IfSharpResources.resx" />
     <Compile Include="App.fs" />
   </ItemGroup>
@@ -82,25 +76,9 @@
       <HintPath>..\..\packages\FSharp.Charting.0.90.5\lib\net40\FSharp.Charting.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FSharp.Compiler">
-      <HintPath>..\..\lib\FSharp.Compiler.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Compiler.Interactive.Settings">
-      <HintPath>..\..\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Compiler.Server.Shared">
-      <HintPath>..\..\lib\FSharp.Compiler.Server.Shared.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Core">
-      <HintPath>..\..\lib\FSharp.Core.dll</HintPath>
+    <Reference Include="FSharp.Compiler.Service">
+      <HintPath>..\..\packages\FSharp.Compiler.Service.0.0.11-alpha\lib\net40\FSharp.Compiler.Service.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.Data.TypeProviders">
-      <HintPath>..\..\lib\FSharp.Data.TypeProviders.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fsiAnyCpu">
-      <HintPath>..\..\lib\fsiAnyCpu.exe</HintPath>
     </Reference>
     <Reference Include="fszmq">
       <HintPath>..\..\packages\fszmq.3.2.7\lib\net45\fszmq.dll</HintPath>
@@ -112,7 +90,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
