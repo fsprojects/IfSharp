@@ -20,7 +20,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
     let mutable executionCount = 0
-    let mutable lastMessage : Option<Message> = None
+    let mutable lastMessage : Option<KernelMessage> = None
 
     (** Splits the message up into lines and writes the lines to the specified file name *)
     let logMessage (msg : string) =
@@ -128,7 +128,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendMessage ioSocket envelope "status" { execution_state = state } 
 
     (** Handles a 'kernel_info_request' message *)
-    let kernelInfoRequest(msg : Message) = 
+    let kernelInfoRequest(msg : KernelMessage) = 
         let content = 
             {
                 protocol_version = [| 4; 0 |]; 
@@ -152,7 +152,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             sendMessage ioSocket lastMessage.Value messageType reply
 
     (** Handles an 'execute_request' message *)
-    let executeRequest(msg : Message) = 
+    let executeRequest(msg : KernelMessage) = 
         
         // extract the contents
         let content = match msg.Content with ExecuteRequest x -> x | _ -> failwith ("system error") 
@@ -214,7 +214,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendState msg "idle"
 
     (** Handles a 'complete_request' message *)
-    let completeRequest (msg : Message) = 
+    let completeRequest (msg : KernelMessage) = 
 
         // extract the contents
         let content = match msg.Content with CompleteRequest x -> x | _ -> failwith ("system error")
@@ -245,7 +245,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
 
     (** Handles a 'connect_request' message *)
-    let connectRequest (msg : Message) = 
+    let connectRequest (msg : KernelMessage) = 
 
         let content = match msg.Content with ConnectRequest x -> x | _ -> failwith ("system error")
         let reply =
@@ -259,7 +259,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendMessage shellSocket msg "connect_reply" reply
 
     (** Handles a 'shutdown_request' message *)
-    let shutdownRequest (msg : Message) =
+    let shutdownRequest (msg : KernelMessage) =
 
         // TODO: actually shutdown        
         let content = match msg.Content with ShutdownRequest x -> x | _ -> failwith ("system error")
@@ -268,14 +268,14 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendMessage shellSocket msg "shutdown_reply" reply
 
     (** Handles a 'history_request' message *)
-    let historyRequest (msg : Message) =
+    let historyRequest (msg : KernelMessage) =
 
         let content = match msg.Content with HistoryRequest x -> x | _ -> failwith ("system error")
         // TODO: actually handle this
         sendMessage shellSocket msg "history_reply" { history = [] }
 
     (** Handles a 'object_info_request' message *)
-    let objectInfoRequest (msg : Message) =
+    let objectInfoRequest (msg : KernelMessage) =
         // TODO: actually handle this
         ()
 

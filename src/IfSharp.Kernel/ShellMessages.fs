@@ -433,7 +433,7 @@ type Header =
         msg_type: string;
     }
 
-type Message = 
+type KernelMessage = 
     {
         Identifiers: list<string>;
         HmacSignature: string;
