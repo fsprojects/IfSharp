@@ -24,7 +24,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\IfSharp.Kernel.XML</DocumentationFile>
-    <StartArguments />
+    <StartArguments>
+    </StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,6 +54,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
+    <Compile Include="IfSharpResources.fs" />
     <None Include="Include.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -60,13 +62,19 @@
     <None Include="libzmq.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="IntellisenseHelper.fs" />
     <Compile Include="Util.fs" />
     <Compile Include="MainTypes.fs" />
     <Compile Include="ShellMessages.fs" />
     <Compile Include="Evaluation.fs" />
     <Compile Include="Kernel.fs" />
-    <None Include="FSharp.Core.sigdata" />
-    <None Include="FSharp.Core.optdata" />
+    <None Include="FSharp.Core.sigdata">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="FSharp.Core.optdata">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="IfSharpResources.resx" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>

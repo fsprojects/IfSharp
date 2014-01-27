@@ -16,4 +16,11 @@ type ConnectionInformation =
         iopub_port: int;
     }
 
+type IntellisenseItem = 
+    {
+        glyph: int;
+        name: string;
+        documentation: string;
+    }
+
 type dict = Dictionary<string, obj>

@@ -2,6 +2,7 @@
 
 open System
 open System.Collections.Generic
+open System.Diagnostics
 open System.IO
 open System.Reflection
 open System.Text
@@ -219,46 +220,115 @@ module App =
         // add to the payload
         kernel.Value.AddPayload(text.ToString())
 
+    (** Installs the ifsharp files if they do not exist, then starts ipython with the ifsharp profile *)
+    let InstallAndStart(forceInstall) = 
+
+        let thisExecutable = Assembly.GetEntryAssembly().Location
+        let appData = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+        let ipythonDir = Path.Combine(appData, ".ipython")
+        let profileDir = Path.Combine(ipythonDir, "profile_ifsharp")
+        let staticDir = Path.Combine(profileDir, "static")
+        let customDir = Path.Combine(staticDir, "custom")
+            
+        let createDir(str) =
+            if Directory.Exists(ipythonDir) = false then
+                Directory.CreateDirectory(ipythonDir) |> ignore
+
+        createDir appData
+        createDir staticDir
+        createDir customDir
+
+        let configFile = Path.Combine(profileDir, "ipython_config.py")
+        if forceInstall || (File.Exists(configFile) = false) then
+            
+            printfn "Config file does not exist, performing install..."
+
+            // write the startup script
+            let codeTemplate = IfSharpResources.ipython_config()
+            let code = codeTemplate.Replace("%s", thisExecutable)
+            printfn "Saving custom config file [%s]" configFile
+            File.WriteAllText(configFile, code)
+
+            // write custom logo file
+            let logoFile = Path.Combine(customDir, "ifsharp_logo.png")
+            printfn "Saving custom logo [%s]" logoFile
+            IfSharpResources.ifsharp_logo().Save(logoFile)
+
+            // write custom css file
+            let cssFile = Path.Combine(customDir, "custom.css")
+            printfn "Saving custom css [%s]" cssFile
+            File.WriteAllText(cssFile, IfSharpResources.custom_css())
+
+            // write custom js file
+            let jsFile = Path.Combine(customDir, "custom.js")
+            printfn "Saving custom js [%s]" jsFile
+            File.WriteAllText(jsFile, IfSharpResources.custom_js())
+
+            // write fsharp js file
+            let jsFile = Path.Combine(customDir, "fsharp.js")
+            printfn "Saving fsharp js [%s]" jsFile
+            File.WriteAllText(jsFile, IfSharpResources.fsharp_js())
+
+            // write fsharp js file
+            let jsFile = Path.Combine(customDir, "codemirror-intellisense.js")
+            printfn "Saving codemirror-intellisense js [%s]" jsFile
+            File.WriteAllText(jsFile, IfSharpResources.codemirror_intellisense_js())
+
+        printfn "Starting ipython..."
+        let p = new Process()
+        p.StartInfo.FileName <- "ipython"
+        p.StartInfo.Arguments <- "notebook --profile ifsharp"
+        p.StartInfo.WorkingDirectory <- appData
+
+        // tell the user something bad happened
+        if p.Start() = false then printfn "Unable to start ipython, please install ipython first"
+
     (** First argument must be an ipython connection file, blocks forever *)
     let Start (args : array<string>) = 
 
-        // adds the default display printers
-        addDefaultDisplayPrinters()
+        let install = args.Length = 0
+        let forceInstall = if args.Length = 0 then false else args.[0] = "--install"
 
-        // validate
-        if args.Length < 1 then failwith "First argument must be a connection file for ipython"
-
-        // get connection information
-        let fileName = args.[0]
-        let json = File.ReadAllText(fileName)
-        let connectionInformation = JsonConvert.DeserializeObject<ConnectionInformation>(json)
-
-        // startup 0mq stuff
-        use context = new Context()
-
-        // heartbeat
-        use hbSocket = Context.rep context
-        Socket.bind (hbSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
+        if install || forceInstall then
         
-        // shell
-        use shellSocket = Context.route context
-        Socket.bind (shellSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
+            InstallAndStart(forceInstall)
+
+        else
+
+            // adds the default display printers
+            addDefaultDisplayPrinters()
+
+            // get connection information
+            let fileName = args.[0]
+            let json = File.ReadAllText(fileName)
+            let connectionInformation = JsonConvert.DeserializeObject<ConnectionInformation>(json)
+
+            // startup 0mq stuff
+            use context = new Context()
+
+            // heartbeat
+            use hbSocket = Context.rep context
+            Socket.bind (hbSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
         
-        // control
-        use controlSocket = Context.route context
-        Socket.bind (controlSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
+            // shell
+            use shellSocket = Context.route context
+            Socket.bind (shellSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
+        
+            // control
+            use controlSocket = Context.route context
+            Socket.bind (controlSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
 
-        // stdin
-        use stdinSocket = Context.route context
-        Socket.bind (stdinSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
+            // stdin
+            use stdinSocket = Context.route context
+            Socket.bind (stdinSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
 
-        // iopub
-        use iopubSocket = Context.pub context
-        Socket.bind (iopubSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
+            // iopub
+            use iopubSocket = Context.pub context
+            Socket.bind (iopubSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
 
-        // start the kernel
-        kernel <- Some (IfSharpKernel(connectionInformation, iopubSocket, shellSocket, hbSocket, controlSocket, stdinSocket))
-        kernel.Value.StartAsync()
+            // start the kernel
+            kernel <- Some (IfSharpKernel(connectionInformation, iopubSocket, shellSocket, hbSocket, controlSocket, stdinSocket))
+            kernel.Value.StartAsync()
 
-        // block forever
-        Thread.Sleep(Timeout.Infinite)
+            // block forever
+            Thread.Sleep(Timeout.Infinite)

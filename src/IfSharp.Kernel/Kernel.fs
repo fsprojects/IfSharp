@@ -219,32 +219,30 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         // extract the contents
         let content = match msg.Content with CompleteRequest x -> x | _ -> failwith ("system error")
 
-        // TODO: use real intellisense
-        let idx = content.line.IndexOfAny([|' '; '\t'|], content.cursor_pos)
-        let startIdx = if idx = -1 then 0 else idx
-        let code = content.line.Substring(startIdx, content.cursor_pos).TrimEnd('.')
+        // in our custom UI we put all cells in content.text and more information in content.block
+        // the position is contains the selected index and the relative character and line number
+        let codes = JsonConvert.DeserializeObject<array<string>>(content.text)
+        let position = JsonConvert.DeserializeObject<BlockType>(content.block)
 
-        let retVal = fsiEval.EvalExpression(code)
-        if retVal.IsSome then
-                    
-            let props = 
-                retVal.Value.ReflectionType.GetProperties()
-                |> Seq.map (fun x -> x.Name)
-                |> Seq.toArray
+        // calculate absolute line number
+        let lineOffset = 
+            codes
+            |> Seq.take (position.selectedIndex)
+            |> Seq.map (fun x -> x.Split('\n').Length)
+            |> Seq.sum
 
-            let meths = 
-                retVal.Value.ReflectionType.GetMethods()
-                |> Seq.map (fun x -> x.Name)
-                |> Seq.toArray
-
-            let content = 
-                {
-                    matched_text = content.line;
-                    matches = (Array.concat [ props; meths ]);
-                    status = "ok";
-                }
-
-            sendMessage (shellSocket) (msg) ("complete_reply") (content)
+        let realLineNumber = position.line + lineOffset
+        let codeString = String.Join("\n", codes)
+        let decls = IntellisenseHelper.GetDeclarations(codeString) (realLineNumber, position.ch)
+        let matches = decls |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = IntellisenseHelper.formatTip x.DescriptionText None})
+        let newContent = 
+            {
+                matched_text = "";
+                matches = matches;
+                status = "ok";
+            }
+        
+        sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
 
     (** Handles a 'connect_request' message *)
     let connectRequest (msg : Message) = 

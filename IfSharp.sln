@@ -15,6 +15,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{D2376EF6-662E-45C9-A440-0530EFD799BF}"
 	ProjectSection(SolutionItems) = preProject
 		Feature Notebook.ipynb = Feature Notebook.ipynb
+		ifsharpsetup.iss = ifsharpsetup.iss
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
@@ -43,13 +44,29 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel.Tests", "tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-profile", "{F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}"
 	ProjectSection(SolutionItems) = preProject
-		ipython-profile\static\custom\custom.css = ipython-profile\static\custom\custom.css
-		ipython-profile\static\custom\custom.js = ipython-profile\static\custom\custom.js
 		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
 		ipython-profile\ipython_config.py = ipython-profile\ipython_config.py
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IfSharpConsole", "src\IfSharpConsole\IfSharpConsole.csproj", "{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{45519D10-5973-41C3-A8D0-BCBF0008044D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE}"
+	ProjectSection(SolutionItems) = preProject
+		ipython-profile\static\custom\codemirror-intellisense.js = ipython-profile\static\custom\codemirror-intellisense.js
+		ipython-profile\static\custom\custom.css = ipython-profile\static\custom\custom.css
+		ipython-profile\static\custom\custom.js = ipython-profile\static\custom\custom.js
+		ipython-profile\static\custom\fsharp.js = ipython-profile\static\custom\fsharp.js
+		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1D-4D08-919F-5F9D6D148BFA}"
+	ProjectSection(SolutionItems) = preProject
+		docs\files\img\logo.png = docs\files\img\logo.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +93,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A8428CDC-273B-434D-AAA2-0D0164E3D329} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
 		{E7CBA335-71DC-45BC-BB08-8837F866EDB9} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
+		{F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
 		{52627028-50B5-427F-BDDB-9DEADB72E7D6} = {88BC26ED-4DC4-4035-AA6D-44CD2A160996}
+		{45519D10-5973-41C3-A8D0-BCBF0008044D} = {F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}
+		{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE} = {45519D10-5973-41C3-A8D0-BCBF0008044D}
+		{7B100429-EB1D-4D08-919F-5F9D6D148BFA} = {F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19}
 	EndGlobalSection
 EndGlobal

@@ -208,6 +208,13 @@ type CompleteRequest =
         cursor_pos: int;
     }
 
+type BlockType =
+    {
+        selectedIndex: int;
+        ch: int;
+        line: int;
+    }
+
 type CompleteReplyStatus = 
     | Ok
     | Error
@@ -216,7 +223,8 @@ type CompleteReply =
     {
         // # The list of all matches to the completion request, such as
         // # ['a.isalnum', 'a.isalpha'] for the above example.
-        matches: array<string>;
+//        matches: array<string>;
+        matches: obj; // changed for custom UI
 
         // # the substring of the matched text
         // # this is typically the common prefix of the matches,
