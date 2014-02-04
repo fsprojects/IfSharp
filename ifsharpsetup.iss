@@ -20,7 +20,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf}\{#MyAppName}
+DefaultDirName={pf}\BayardRock\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile={#BaseDirectory}\LICENSE.txt
@@ -38,14 +38,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "{#BaseDirectory}\bin\ifsharp.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Charting.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Compiler.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Compiler.Interactive.Settings.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Compiler.Server.Shared.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Core.optdata"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Core.sigdata"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Data.TypeProviders.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\fsiAnyCpu.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\FSharp.Compiler.Service.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\fszmq.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\IfSharp.Kernel.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\Include.fsx"; DestDir: "{app}"; Flags: ignoreversion

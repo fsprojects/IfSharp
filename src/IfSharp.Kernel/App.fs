@@ -231,10 +231,12 @@ module App =
         let customDir = Path.Combine(staticDir, "custom")
             
         let createDir(str) =
-            if Directory.Exists(ipythonDir) = false then
-                Directory.CreateDirectory(ipythonDir) |> ignore
+            if Directory.Exists(str) = false then
+                Directory.CreateDirectory(str) |> ignore
 
         createDir appData
+        createDir ipythonDir
+        createDir profileDir
         createDir staticDir
         createDir customDir
 
