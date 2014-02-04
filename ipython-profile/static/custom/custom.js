@@ -1,3 +1,18 @@
+$([IPython.events]).on('notebook_loaded.Notebook', function ()
+{
+    var md = IPython.notebook.metadata;
+    if (md.language)
+    {
+        console.log('language already defined and is :', md.language);
+    }
+    else
+    {
+        md.language = 'fsharp';
+        console.log('add metadata hint that language is fsharp...');
+    }
+});
+
+
 $([IPython.events]).on('app_initialized.NotebookApp', function ()
 {
     require(['custom/fsharp']);
