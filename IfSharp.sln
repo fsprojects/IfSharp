@@ -65,6 +65,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{F420A7BF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1D-4D08-919F-5F9D6D148BFA}"
 	ProjectSection(SolutionItems) = preProject
+		docs\files\img\icon.ico = docs\files\img\icon.ico
+		docs\files\img\icon.png = docs\files\img\icon.png
 		docs\files\img\intellisense-1.png = docs\files\img\intellisense-1.png
 		docs\files\img\intellisense-2.png = docs\files\img\intellisense-2.png
 		docs\files\img\logo.png = docs\files\img\logo.png
