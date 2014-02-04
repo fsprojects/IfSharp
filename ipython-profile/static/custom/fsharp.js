@@ -115,6 +115,14 @@ CodeMirror.defineMode('fsharp', function ()
             state.tokenize = tokenString;
             return state.tokenize(stream, state);
         }
+        if (ch === '/')
+        {
+            if (stream.eat('/'))
+            {
+                stream.skipToEnd();
+                return 'comment';
+            }
+        }
         if (ch === '(')
         {
             if (stream.eat('*'))
@@ -122,6 +130,10 @@ CodeMirror.defineMode('fsharp', function ()
                 state.commentLevel++;
                 state.tokenize = tokenComment;
                 return state.tokenize(stream, state);
+            }
+            else
+            {
+                stream.start++;
             }
         }
         if (ch === '~')
@@ -196,13 +208,12 @@ CodeMirror.defineMode('fsharp', function ()
         },
 
         blockCommentStart: "(*",
-        blockCommentEnd: "*)"
+        blockCommentEnd: "*)",
+        lineComment: '//'
     };
 });
 
 CodeMirror.defineMIME("text/x-fsharp", "fsharp");
-
-IPython.CodeCell.options_default.cm_config.mode = 'fsharp';
 
 CodeMirror.requireMode('fsharp', function ()
 {
@@ -211,7 +222,8 @@ CodeMirror.requireMode('fsharp', function ()
         {
             if (c.cell_type === 'code')
             {
-                c.auto_highlight()
+                c.force_highlight('fsharp');
+                c.code_mirror.setOption('theme', 'neat');
             }
         });
 });

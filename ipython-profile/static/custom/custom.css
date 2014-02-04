@@ -41,3 +41,21 @@ th {
 .icon-glyph-30 {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACO0lEQVR4Xo2SS0hUURiAv3PunWFMMinNiijG3BQ9wIykh6skU2xji2gTSFEY1EJyYWHLqEURBaY9wGVBBC3KMsIEGUmLGi1RRs0YnPH9Gu80cx+nWVhckgG/xVkc+D5+zvmFUgoAIQShx8cPOY7VqWwLlu8RIKREaB6E1CiobhUAfz0dF0vxeOWWwr3kHLiEYxlgG0jPOqxEjJFn9bzujl7GxYqALpwKX+52knPfiY/eB+klc0cdU59eYSTMwStNvS38h8SFx6v2+HL8WIs/ENpavOuPYhtzLIR6KGvoOQUspJ0g9Kik0LchC9BRZhjpycSTtYuJwBuCo7Hb0dlEH0DagPHbrMrO86OSU+AkEPoaJgPNLA5Nsm+br26w8WCdkBpC0xFSAgh3AF04lRl5m3DsaaSeAcDGI7XklSgUFkItoZCMtTYxHom15wMA/74x1Fys8k9fwIr9AnMRx7FIHSAEUtNQShENfCUaWXpXXNtdk/KG3BMgpCDS9hzHtlFWkq0nGzDnO5DKxDQMJnuC9Idmmk/cCN4Chle8QcH5riKAu+f8xVWl/gdCgqZJzJhFpCNAR99cffW9gRZgLN0efAYoK8y+6cvNRTCFHU8y9rGdzv756yn5ITCbZg9cRZ3SjM27MWd/Ev7wlqtPhsrP3hlodMnpA8NP95+RQqTkMOG2F1xrGal4GZh+D8yQBh0XSUvVeDUYD3ZN7Lz4rRzoBUyAVQW8OodtRy2k5GPLsotVBPKrvxQB9mplgD9z7vSpojdyCgAAAABJRU5ErkJggg==)
 }
+
+.cm-s-neat span.cm-comment { color: #008000; }
+.cm-s-neat span.cm-keyword { line-height: 1em; font-weight: bold; color: blue; }
+.cm-s-neat span.cm-string { color: #B21543; }
+.cm-s-neat span.cm-builtin { line-height: 1em; font-weight: bold; color: #077; }
+.cm-s-neat span.cm-special { line-height: 1em; font-weight: bold; color: #0aa; }
+.cm-s-neat span.cm-variable { color: black; }
+.cm-s-neat span.cm-number, .cm-s-neat span.cm-atom { color: #3a3; }
+.cm-s-neat span.cm-meta {color: #555;}
+.cm-s-neat span.cm-link { color: #3a3; }
+
+.cm-s-neat .CodeMirror-activeline-background {background: #e8f2ff !important;}
+.cm-s-neat .CodeMirror-matchingbracket {outline:1px solid grey; color:black !important;}
+
+.cm-s-neat.CodeMirror {
+    font-family: Consolas, Monaco, Menlo, "Andale Mono", "lucida console", "Courier New", monospace !important;
+    box-shadow: inset 0 0 2px black;
+}

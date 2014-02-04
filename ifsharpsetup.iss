@@ -39,11 +39,14 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#BaseDirectory}\bin\ifsharp.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Charting.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Compiler.Service.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\FSharp.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\FSharp.Core.optdata"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\FSharp.Core.sigdata"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\fszmq.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\IfSharp.Kernel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\Include.fsx"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\libzmq.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\Include.fsx"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

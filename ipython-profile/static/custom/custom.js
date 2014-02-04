@@ -16,6 +16,9 @@ $([IPython.events]).on('notebook_loaded.Notebook', function ()
 $([IPython.events]).on('app_initialized.NotebookApp', function ()
 {
     require(['custom/fsharp']);
+
+    IPython.CodeCell.options_default.cm_config.mode = 'fsharp';
+
     require(['custom/codemirror-intellisense'], function ()
     {
         // applies intellisense hooks onto a cell
