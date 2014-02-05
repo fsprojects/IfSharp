@@ -15,6 +15,7 @@
 AppId={{4614F8B0-E5CA-4E5D-9F35-AB4D0ACEB3C0}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+ArchitecturesInstallIn64BitMode=x64 
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
@@ -37,6 +38,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{#BaseDirectory}\bin\ifsharp.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\ifsharp.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Charting.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Compiler.Service.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Core.dll"; DestDir: "{app}"; Flags: ignoreversion

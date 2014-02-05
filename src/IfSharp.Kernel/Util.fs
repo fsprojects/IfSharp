@@ -149,5 +149,3 @@ type Util =
     (** Loads a local image from disk and wraps a BinaryOutput around the image data. *)
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
-
-    

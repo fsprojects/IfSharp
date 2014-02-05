@@ -24,6 +24,14 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
 
+    (** Gets the header code to prepend to all items *)
+    let headerCode = 
+        let file = FileInfo(Assembly.GetEntryAssembly().Location)
+        let dir = file.Directory.FullName
+        let includeFile = Path.Combine(dir, "Include.fsx")
+        let code = File.ReadAllText(includeFile)
+        String.Format(code, dir.Replace("\\", "\\\\"))
+
     (** Splits the message up into lines and writes the lines to the specified file name *)
     let logMessage (msg : string) =
         let fileName = "shell.log"
@@ -223,13 +231,13 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         // in our custom UI we put all cells in content.text and more information in content.block
         // the position is contains the selected index and the relative character and line number
-        let codes = JsonConvert.DeserializeObject<array<string>>(content.text)
+        let codes = JsonConvert.DeserializeObject<array<string>>(content.text) |> Seq.append [headerCode]
         let position = JsonConvert.DeserializeObject<BlockType>(content.block)
 
         // calculate absolute line number
         let lineOffset = 
             codes
-            |> Seq.take (position.selectedIndex)
+            |> Seq.take (position.selectedIndex + 1)
             |> Seq.map (fun x -> x.Split('\n').Length)
             |> Seq.sum
 
@@ -291,11 +299,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     let doShell() =
 
         try
-            let file = FileInfo(Assembly.GetEntryAssembly().Location)
-            let dir = file.Directory.FullName
-            let includeFile = Path.Combine(dir, "Include.fsx")
-            let code = File.ReadAllText(includeFile)
-            fsiEval.EvalInteraction(code)
+            fsiEval.EvalInteraction(headerCode)
         with
         | exn -> handleException exn
 

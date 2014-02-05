@@ -70,6 +70,7 @@
     <Compile Include="Kernel.fs" />
     <EmbeddedResource Include="IfSharpResources.resx" />
     <Compile Include="App.fs" />
+    <Compile Include="Globals.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Charting">

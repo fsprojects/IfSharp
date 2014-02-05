@@ -80,15 +80,13 @@ var Intellisense = function (editor, userCallback)
 
     function lastIndexOfAny(str, arr, start)
     {
+        var max = -1;
         for (var i = 0; i < arr.length; i++)
         {
             var val = str.lastIndexOf(arr[i], start);
-            if (val > -1)
-            {
-                return val;
-            }
+            max = Math.max(max, val);
         }
-        return -1;
+        return max;
     }
 
     var cssText =
@@ -280,7 +278,7 @@ var Intellisense = function (editor, userCallback)
         {
             var cursor = editor.doc.getCursor();
             var line = editor.doc.getLine(cursor.line);
-            var find = lastIndexOfAny(line, ['.', ' ', '\t']) + 1;
+            var find = lastIndexOfAny(line, [' ', '\t', '.'], cursor.ch) + 1;
             self.autoCompleteStart = { line: cursor.line, ch: find };
             userCallback(self.callback, self.autoCompleteStart);
         }
@@ -387,48 +385,48 @@ var Intellisense = function (editor, userCallback)
                 self.showAutoComplete(false);
                 evt.cancelBubble = true;
             }
-            // right
+                // right
             else if (evt.keyCode === 39)
             {
                 self.showAutoComplete(false);
                 evt.cancelBubble = true;
             }
-            // up
+                // up
             else if (evt.keyCode === 38)
             {
                 self.moveAutoComplete(-1);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-            // down
+                // down
             else if (evt.keyCode === 40)
             {
                 self.moveAutoComplete(1);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-            // page down
+                // page down
             else if (evt.keyCode === 34)
             {
                 self.moveAutoComplete(5);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-            // page up
+                // page up
             else if (evt.keyCode === 33)
             {
                 self.moveAutoComplete(-5);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-            // tab
+                // tab
             else if (evt.keyCode === 9)
             {
                 self.insertAutoComplete();
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-            // enter
+                // enter
             else if (evt.keyCode === 13)
             {
                 self.insertAutoComplete();

@@ -27,10 +27,10 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
             var editor = cell.code_mirror;
             if (editor.intellisense == null)
             {
+                cell.force_highlight('fsharp');
+                cell.code_mirror.setOption('theme', 'neat');
                 editor.intellisense = new Intellisense(editor, function (callback, position)
                 {
-                    console.log('It is happening', position);
-
                     var selectedIndex = 0;
                     var selectedCell = null;
                     var codes = [];

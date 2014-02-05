@@ -1,15 +1,14 @@
-#r "IfSharp.Kernel.dll";
-#r "System.Data.dll";
-#r "System.Windows.Forms.DataVisualization.dll";
-#r "FSharp.Data.TypeProviders.dll";
+// include directory, this will be replaced by the kernel
+#I "{0}"
+
+// load base dlls
+#r "IfSharp.Kernel.dll"
+#r "System.Data.dll"
+#r "System.Windows.Forms.DataVisualization.dll"
+#r "FSharp.Data.TypeProviders.dll"
 #r "FSharp.Charting.dll"
+#r "fszmq.dll"
 
-open System
-open System.Data
-open Microsoft.FSharp.Data.TypeProviders
-open IfSharp.Kernel
+// open the global functions and methods
 open FSharp.Charting
-
-let Display = IfSharp.Kernel.App.Display
-let Help = IfSharp.Kernel.App.Help
-let Clear = IfSharp.Kernel.App.Clear
+open IfSharp.Kernel.Globals
