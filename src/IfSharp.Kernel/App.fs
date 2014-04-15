@@ -117,6 +117,11 @@ module App =
             { ContentType = "text/latex"; Data = x.Latex }
         )
 
+        // add binaryoutput printer
+        addDisplayPrinter(fun (x:BinaryOutput) ->
+            x
+        )
+
     (** Global clear display function *)
     let Clear () = 
         kernel.Value.ClearDisplay()

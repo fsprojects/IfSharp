@@ -25,8 +25,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88BC26ED
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{A8428CDC-273B-434D-AAA2-0D0164E3D329}"
 	ProjectSection(SolutionItems) = preProject
+		docs\content\globals.fsx = docs\content\globals.fsx
 		docs\content\index.fsx = docs\content\index.fsx
-		site.css = site.css
+		docs\content\installation.fsx = docs\content\installation.fsx
+		docs\content\utils.fsx = docs\content\utils.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{E7CBA335-71DC-45BC-BB08-8837F866EDB9}"
@@ -67,12 +69,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1D-4D08-919F-5F9D6D148BFA}"
 	ProjectSection(SolutionItems) = preProject
 		docs\files\img\chart-1.png = docs\files\img\chart-1.png
+		docs\files\img\chart-2.png = docs\files\img\chart-2.png
+		docs\files\img\chart-3.png = docs\files\img\chart-3.png
 		docs\files\img\icon.ico = docs\files\img\icon.ico
 		docs\files\img\icon.png = docs\files\img\icon.png
 		docs\files\img\intellisense-1.png = docs\files\img\intellisense-1.png
 		docs\files\img\intellisense-2.png = docs\files\img\intellisense-2.png
 		docs\files\img\intellisense-3.png = docs\files\img\intellisense-3.png
 		docs\files\img\logo.png = docs\files\img\logo.png
+		docs\files\img\math-1.png = docs\files\img\math-1.png
+		docs\files\img\toaster.png = docs\files\img\toaster.png
 	EndProjectSection
 EndProject
 Global

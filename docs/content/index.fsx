@@ -16,50 +16,20 @@ open IfSharp.Kernel.Globals
 (**
 IfSharp
 =======
+IfSharp is an F# implementation for [iPython](http://ipython.org).
+It works with iPython Notebook 1.x and 2.x.
 
-Sin chart wave example
-----------------------
-This example shows you how to perform charting using FSharp.Charting
-*)
+![Intellisense Example #3 With Chart](img/intellisense-3.png "Intellisense Example #3 With Chart")
 
-open System
+Download
+--------
+[View releases](https://github.com/BayardRock/IfSharp/releases).
+For more information about manual installation visit the [installation](installation.html) page.
 
-// start and -PI and and finish PI
-let startX = -Math.PI
-let endX = Math.PI
-
-// the data
-let data = 
-    [| startX..0.1..endX |]
-    |> Array.map (fun x -> (x, sin(x)))
-
-// display a line graph
-Chart.Line(data)
-|> Chart.WithXAxis(true, "", 3.2, -3.2)
-|> Chart.WithYAxis(true, "", 1.0, -1.0)
-|> Display
-
-// display the latex
-Util.Math("f(x) = sin(x)") |> Display
-
-(**
-Sin chart wave example results
-------------------------------
-<img src="img/chart-1.png" alt="sin function" />
-*)
-
-(**
-The Display function
---------------------
-The `Display` function is a 'global' function that can be accessed anywhere throughout
-the notebook. It will take any object and attempt to display it to the user. Built-in
-supported types are:
-
-* FSharp.Charting.ChartTypes.GenericChart
-* IfSharp.Kernel.GenericChartWithSize
-* IfSharp.Kernel.TableOutput
-* IfSharp.Kernel.HtmlOutput
-* IfSharp.Kernel.LatexOutput
+API Documentation
+-----------------
+* [Globals](globals.html) (functions that can be accessed throughout the notebook)
+* [Utils](utils.html) (common utility methods used mostly for displaying)
 
 Automatic references
 --------------------
@@ -80,4 +50,31 @@ IfSharp automatically opens the following namespaces:
 * IfSharp.Kernel
 * IfSharp.Kernel.Global
 
+Sin chart wave example
+----------------------
+This example shows you how to perform charting using FSharp.Charting
+*)
+
+open System
+
+// start at -PI and finish at PI
+let startX = -Math.PI
+let endX = Math.PI
+
+// the data
+let data = 
+    [| startX..0.1..endX |]
+    |> Array.map (fun x -> (x, sin(x)))
+
+// display a line graph
+Chart.Line(data)
+|> Chart.WithXAxis(true, "", 3.2, -3.2)
+|> Chart.WithYAxis(true, "", 1.0, -1.0)
+|> Display
+
+// display the latex
+Util.Math("f(x) = sin(x)") |> Display
+
+(**
+<img src="img/chart-1.png" alt="sin function" />
 *)
