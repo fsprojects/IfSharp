@@ -26,6 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{A8428CDC-273B-434D-AAA2-0D0164E3D329}"
 	ProjectSection(SolutionItems) = preProject
 		docs\content\index.fsx = docs\content\index.fsx
+		site.css = site.css
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{E7CBA335-71DC-45BC-BB08-8837F866EDB9}"
@@ -65,6 +66,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{F420A7BF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1D-4D08-919F-5F9D6D148BFA}"
 	ProjectSection(SolutionItems) = preProject
+		docs\files\img\chart-1.png = docs\files\img\chart-1.png
 		docs\files\img\icon.ico = docs\files\img\icon.ico
 		docs\files\img\icon.png = docs\files\img\icon.png
 		docs\files\img\intellisense-1.png = docs\files\img\intellisense-1.png

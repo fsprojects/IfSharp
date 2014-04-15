@@ -334,3 +334,5 @@ module App =
 
             // block forever
             Thread.Sleep(Timeout.Infinite)
+
+    do addDefaultDisplayPrinters()
