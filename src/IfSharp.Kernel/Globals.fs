@@ -6,6 +6,8 @@ module Globals =
     
     type Chart = FSharp.Charting.Chart
 
+    type Util = IfSharp.Kernel.Util
+
     let Display = IfSharp.Kernel.App.Display
 
     let Help = IfSharp.Kernel.App.Help
