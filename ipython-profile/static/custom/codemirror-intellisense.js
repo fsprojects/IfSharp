@@ -366,67 +366,64 @@ var Intellisense = function (editor, userCallback)
         }
     });
 
-    editor.on('keyup', function (cm, evt)
-    {
-        // escape
-        if (evt.keyCode === 27)
-        {
-            self.showAutoComplete(false);
-        }
-    });
-
     editor.on('keydown', function (cm, evt)
     {
         if (self.isAutoCompleteOpen)
         {
-            // left
-            if (evt.keyCode === 37)
+            // escape
+            if (evt.keyCode === 27)
             {
                 self.showAutoComplete(false);
                 evt.cancelBubble = true;
             }
-                // right
+            // left
+            else if (evt.keyCode === 37)
+            {
+                self.showAutoComplete(false);
+                evt.cancelBubble = true;
+            }
+            // right
             else if (evt.keyCode === 39)
             {
                 self.showAutoComplete(false);
                 evt.cancelBubble = true;
             }
-                // up
+            // up
             else if (evt.keyCode === 38)
             {
                 self.moveAutoComplete(-1);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-                // down
+            // down
             else if (evt.keyCode === 40)
             {
                 self.moveAutoComplete(1);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-                // page down
+            // page down
             else if (evt.keyCode === 34)
             {
                 self.moveAutoComplete(5);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-                // page up
+            // page up
             else if (evt.keyCode === 33)
             {
                 self.moveAutoComplete(-5);
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-                // tab
+            // tab
             else if (evt.keyCode === 9)
             {
                 self.insertAutoComplete();
                 evt.cancelBubble = true;
                 evt.preventDefault();
             }
-                // enter
+            // enter
             else if (evt.keyCode === 13)
             {
                 self.insertAutoComplete();

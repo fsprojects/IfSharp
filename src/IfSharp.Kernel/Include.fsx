@@ -11,4 +11,5 @@
 
 // open the global functions and methods
 open FSharp.Charting
+open IfSharp.Kernel
 open IfSharp.Kernel.Globals

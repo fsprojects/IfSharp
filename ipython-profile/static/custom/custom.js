@@ -46,7 +46,15 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                         });
 
                     var cursor = selectedCell.code_mirror.doc.getCursor();
-                    var callbacks = {};
+                    var callbacks = { shell: {} };
+
+                    // v2
+                    callbacks.shell.reply = function (data)
+                    {
+                        callback(data.content.matches);
+                    };
+
+                    // v1
                     callbacks.complete_reply = function (data)
                     {
                         callback(data.matches);
