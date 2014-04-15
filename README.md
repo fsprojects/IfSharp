@@ -1,5 +1,6 @@
 # IfSharp
 F# implementation for [iPython](http://ipython.org). View the [Feature Notebook](http://nbviewer.ipython.org/github/BayardRock/IfSharp/blob/master/Feature%20Notebook.ipynb) for some of the features that are included.
+For more information view the [documenation](http://bayardrock.github.io/IfSharp/).
 
 # Compatibility
 IfSharp works with iPython Notebook 1.x and 2.x 
