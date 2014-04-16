@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Automatic Installation
+    <title>NuGet integration
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="F# implementation of iPython">
@@ -33,33 +33,28 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>Automatic Installation</h1>
+<h1>NuGet integration</h1>
 
-<ol>
-<li>Install <a href="http://continuum.io/downloads">Anaconda</a></li>
-<li><p>Install <a href="http://ipython.org/install.html">IPython</a></p></li>
-<li><p>Download the latest version of IfSharp from the <a href="https://github.com/BayardRock/IfSharp/releases">release repository</a>.
-Run the setup wizard and execute the icon that is placed on the desktop.</p></li>
-</ol>
+<p>IfSharp offers built-in NuGet integration by using preprocessor-like directives. Use the <code>#N</code>
+directive to automatically download packages and reference them. Example: <code>#N "Newtonsoft.Json"</code>. 
+This will get the latest version of the <a href="http://www.nuget.org/packages/Newtonsoft.Json">Newtonsoft.Json</a> 
+package.</p>
 
-<p>Running the executable after it is installed will automatically generate the files necessary
-for starting up (if the file structure does not exist) and then execute the <code>ipython notebook --profile ifsharp</code> command.</p>
+<p><img src="img/NuGet-1.png" alt="NuGet Example" title="NuGet example" /></p>
 
-<p>If the file structure does exist, only the command <code>ipython notebook --profile ifsharp</code> is executed.</p>
+<h2>Specifying version and pre-release</h2>
 
-<p>To overwrite the file structure again, invoke ifsharp.exe with the install parameter: <code>ifsharp.exe --install</code>.</p>
+<p>The version can be specified by adding additional information to the string of the preprocessor directive.</p>
 
-<h1>Manual Installation</h1>
+<p>The full format is as follows: <code>#N "&lt;packageName&gt;[/&lt;version&gt;[/pre]]"</code>.</p>
 
-<ol>
-<li>Install <a href="http://continuum.io/downloads">Anaconda</a></li>
-<li>Install <a href="http://ipython.org/install.html">IPython</a></li>
-<li>Run: "ipython profile create ifsharp" in your user directory</li>
-<li>Open the iF# solution file, restore nuget packages, and compile it</li>
-<li>Copy the files from IfSharp\ipython-profile to the iFSharp profile directory</li>
-<li>Open up the copied "ipython_config.py" file and replace "%s" with the path of your compiled ifsharp executable. E.g. "C:\git\ifsharp\bin\Release\ifsharp.exe"</li>
-<li>Run: "ipython notebook --profile ifsharp" to launch the notebook process with the F# kernel.</li>
-</ol>
+<p>Version example: <code>#N "Newtonsoft.Json/5.0.1"</code>. This will download version 5.0.1 of the Newtonsoft.Json package.</p>
+
+<p>Prerelease example: <code>#N "FSharp.Compiler.Service/0.0.1-beta/pre"</code>.</p>
+
+<h2>Not supported</h2>
+
+<p>Currently, dependencies are not automatically referenced, however they are downloaded.</p>
 
 
         </div>
