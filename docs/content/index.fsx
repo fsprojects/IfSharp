@@ -2,6 +2,7 @@
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
 #I "../../bin"
+#r "Newtonsoft.Json.dll"
 #r "IFSharp.Kernel"
 #r "System.Data.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
@@ -49,6 +50,13 @@ IfSharp automatically opens the following namespaces:
 * FSharp.Charting
 * IfSharp.Kernel
 * IfSharp.Kernel.Global
+
+Integrated NuGet support
+------------------------
+To automatically download NuGet package, use the #N directive: `#N "Newtonsoft.Json"`.
+This will download the package and automatically reference assemblies within the package.
+
+![NuGet Example](img/NuGet-1.png "NuGet example")
 
 Sin chart wave example
 ----------------------

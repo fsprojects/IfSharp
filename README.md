@@ -18,8 +18,15 @@ See our [release repository](https://github.com/BayardRock/IfSharp/releases).
 7. Run: "ipython notebook --profile ifsharp" to launch the notebook process with the F# kernel.
 
 # Screens
+## Intellisense
 ![Intellisense Example #1](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/intellisense-1.png "Intellisense Example #1")
+***
 
 ![Intellisense Example #2](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/intellisense-2.png "Intellisense Example #2")
+***
 
 ![Intellisense Example #3 With Chart](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/intellisense-3.png "Intellisense Example #3 With Chart")
+***
+
+## Integrated NuGet
+![NuGet Example](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/NuGet-1.png "NuGet example")
