@@ -10,7 +10,6 @@ open System.Threading
 
 open FSharp.Charting
 
-open Microsoft.FSharp.Compiler.Interactive.Shell
 open Newtonsoft.Json
 open fszmq
 open fszmq.Socket
@@ -19,8 +18,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
     let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
-    let args = [||]
-    let compiler = IntellisenseHelper(args)
+    let compiler = FsCompiler(".")
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
 
@@ -161,6 +159,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             let reply = { execution_count = executionCount; data = d; metadata = dict() }
             sendMessage ioSocket lastMessage.Value messageType reply
 
+    let pyout (message) = sendDisplayData "text/plain" message "pyout"
+
     (** Handles an 'execute_request' message *)
     let executeRequest(msg : KernelMessage) = 
         
@@ -183,7 +183,26 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         // evaluate
         let ex = 
             try
-                fsiEval.EvalInteraction(content.code)
+                // preprocess
+                let results = compiler.NuGetManager.Preprocess(content.code)
+                let newCode = String.Join("\n", results.FilteredLines)
+
+                // do nuget stuff
+                for package in results.Packages do
+                    if not (String.IsNullOrWhiteSpace(package.Error)) then
+                        pyout ("NuGet error: " + package.Error)
+                    else
+                        pyout ("NuGet package: " + package.Package.Value.Id)
+                        for assembly in package.Assemblies do
+                            let fullAssembly = compiler.NuGetManager.GetFullAssemblyPath(package, assembly)
+                            pyout ("Referenced: " + fullAssembly)
+
+                            let code = String.Format(@"#r @""{0}""", fullAssembly)
+                            fsiEval.EvalInteraction(code)
+        
+                if not(String.IsNullOrEmpty(newCode)) then
+                    fsiEval.EvalInteraction(newCode)
+
                 None
             with
             | exn -> Some exn
@@ -241,14 +260,14 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             |> Seq.map (fun x -> x.Split('\n').Length)
             |> Seq.sum
 
-        let realLineNumber = position.line + lineOffset
+        let realLineNumber = position.line + lineOffset + 1
         let codeString = String.Join("\n", codes)
-        let (names, decls) = compiler.GetDeclarations(codeString) (realLineNumber, position.ch)
+        let (names, decls) = compiler.GetDeclarations(codeString, realLineNumber, position.ch)
         
         // add global helper methods
         let matches = 
             decls
-            |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.ToolTip })
+            |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.Documentation })
             |> Seq.toList
 
         let newContent = 
@@ -311,7 +330,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             let msg = recvMessage (shellSocket)
 
             try
-                match msg.Header.msg_type  with
+                match msg.Header.msg_type with
                 | "kernel_info_request" -> kernelInfoRequest (msg) 
                 | "execute_request"     -> executeRequest (msg) 
                 | "complete_request"    -> completeRequest (msg) 
