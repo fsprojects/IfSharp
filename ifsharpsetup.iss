@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "IFSharp"
-#define MyAppVersion "1.0"
+#define MyAppVersion "2.0"
 #define MyAppPublisher "Bayard Rock"
 #define MyAppURL "http://www.bayardrock.com/"
 #define MyAppExeName "ifsharp.exe"
@@ -48,6 +48,7 @@ Source: "{#BaseDirectory}\bin\fszmq.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\IfSharp.Kernel.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\libzmq.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\NuGet.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\Include.fsx"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
