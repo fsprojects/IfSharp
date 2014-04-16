@@ -53,15 +53,15 @@ type CustomInstallCommand() =
     inherit InstallCommand()
 
     (** Finds the specified package with the specified version *)
-    member this.FindPackage (packageId : string, ?version : string) =
+    member this.FindPackage (packageId : string, version : string) =
         
         let fileSystem = this.CreateFileSystem(this.OutputDirectory)
         let packageManager = this.CreatePackageManager(fileSystem, false)
         
-        if version.IsNone then
+        if String.IsNullOrEmpty(version) then
             packageManager.LocalRepository.FindPackage(packageId)
         else
-            let semanticVersion = SemanticVersion(version.Value)
+            let semanticVersion = SemanticVersion(version)
             packageManager.LocalRepository.FindPackage(packageId, semanticVersion)
 
 module NuGetManagerInternals =
@@ -117,12 +117,13 @@ type NuGetManager (executingDirectory : string) =
     member this.DownloadNugetPackage (nugetPackage : string, version : Option<string>, prerelease : bool) =
         
         let version = defaultArg version ""
+        let key = String.Format("{0}/{1}/{2}", nugetPackage, version, prerelease)
 
         lock (syncObject) (fun() ->
 
-            if packagesCache.ContainsKey(nugetPackage) then
+            if packagesCache.ContainsKey(key) then
             
-                packagesCache.[nugetPackage]
+                packagesCache.[key]
             
             else
 
@@ -152,7 +153,7 @@ type NuGetManager (executingDirectory : string) =
 
                 else
 
-                    let pkg = installer.FindPackage(nugetPackage)
+                    let pkg = installer.FindPackage(nugetPackage, version)
                     let maxFramework = 
                         pkg.AssemblyReferences
                         |> Seq.map (fun x -> x.TargetFramework)
@@ -163,8 +164,8 @@ type NuGetManager (executingDirectory : string) =
                         pkg.AssemblyReferences 
                         |> Seq.filter (fun x -> x.TargetFramework = maxFramework)
 
-                    packagesCache.Add(nugetPackage, { Package = Some pkg; Assemblies = assemblies; Error = ""; })
-                    packagesCache.[nugetPackage]
+                    packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; Error = ""; })
+                    packagesCache.[key]
 
         )
 

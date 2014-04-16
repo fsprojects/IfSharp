@@ -55,6 +55,7 @@ Integrated NuGet support
 ------------------------
 To automatically download NuGet package, use the #N directive: `#N "Newtonsoft.Json"`.
 This will download the package and automatically reference assemblies within the package.
+[More NuGet integration documentation](nuget.html).
 
 ![NuGet Example](img/NuGet-1.png "NuGet example")
 

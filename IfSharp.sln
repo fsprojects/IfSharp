@@ -28,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{A842
 		docs\content\globals.fsx = docs\content\globals.fsx
 		docs\content\index.fsx = docs\content\index.fsx
 		docs\content\installation.fsx = docs\content\installation.fsx
+		docs\content\nuget.fsx = docs\content\nuget.fsx
 		docs\content\utils.fsx = docs\content\utils.fsx
 	EndProjectSection
 EndProject

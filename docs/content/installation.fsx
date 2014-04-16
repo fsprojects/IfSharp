@@ -15,7 +15,18 @@ open IfSharp.Kernel.Globals
 
 (**
 # Automatic Installation
-See our [release repository](https://github.com/BayardRock/IfSharp/releases). 
+1. Install [Anaconda](http://continuum.io/downloads)
+2. Install [IPython](http://ipython.org/install.html)
+
+3. Download the latest version of IfSharp from the [release repository](https://github.com/BayardRock/IfSharp/releases).
+Run the setup wizard and execute the icon that is placed on the desktop.
+
+Running the executable after it is installed will automatically generate the files necessary
+for starting up (if the file structure does not exist) and then execute the `ipython notebook --profile ifsharp` command.
+
+If the file structure does exist, only the command `ipython notebook --profile ifsharp` is executed.
+
+To overwrite the file structure again, invoke ifsharp.exe with the install parameter: `ifsharp.exe --install`.
 
 # Manual Installation
 1. Install [Anaconda](http://continuum.io/downloads)
