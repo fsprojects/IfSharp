@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Custom fsi printers
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="F# implementation of iPython">
+    <meta name="author" content="Bayard Rock (Peter Rosconi)">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/IfSharp/content/style.css" />
+    <script type="text/javascript" src="/IfSharp/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/BayardRock/IfSharp/">github page</a></li>
+        </ul>
+        <h3 class="muted"><a href="/IfSharp/index.html">IfSharp</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>Custom display printers</h1>
+
+<p>Custom display printers can be added during runtime based off of type.
+Example for providing a custom display printer for <code>float</code> to display a pink div:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">App</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">AddDisplayPrinter</span>(<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">x</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">float</span>) <span class="k">-&gt;</span>
+    {
+        <span class="i">ContentType</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">text</span><span class="s">/</span><span class="s">html</span><span class="s">&quot;</span>
+        <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">Data</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">&lt;</span><span class="s">div</span><span class="s"> </span><span class="s">style</span><span class="s">=</span><span class="s">\&quot;</span><span class="s">background</span><span class="s">-</span><span class="s">color</span><span class="s">:</span><span class="s"> </span><span class="s">pink</span><span class="s">\&quot;</span><span class="s">&gt;</span><span class="s">&quot;</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">ToString</span>() <span class="o">+</span> <span class="s">&quot;</span><span class="s">&lt;</span><span class="s">/</span><span class="s">div</span><span class="s">&gt;</span><span class="s">&quot;</span>
+    }
+)</pre>
+</td>
+</tr>
+</table><p>To invoke the printer:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="n">1.0</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">Display</span></pre>
+</td>
+</tr>
+</table><p>Will render <div style="background-color: pink">1</div></p>
+
+<h1>Custom fsi printers</h1>
+
+<p>Similarly, FSI printers can be added which can provide display a string for a type.
+However, a more complex implementation could send display data directly to the client
+as a side-effect, which will skip the need for calling the <code>Display</code> function directly
+from the notebook. Example:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span onmouseout="hideTip(event, 'fs1', 9)" onmouseover="showTip(event, 'fs1', 9)" class="i">App</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">AddFsiPrinter</span>(<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs3', 11)" onmouseover="showTip(event, 'fs3', 11)" class="i">x</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs4', 12)" onmouseover="showTip(event, 'fs4', 12)" class="i">float</span>) <span class="k">-&gt;</span>
+    <span onmouseout="hideTip(event, 'fs1', 13)" onmouseover="showTip(event, 'fs1', 13)" class="i">App</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 14)" onmouseover="showTip(event, 'fs9', 14)" class="i">Kernel</span><span class="o">.</span><span class="i">Value</span><span class="o">.</span><span class="i">SendDisplayData</span>(<span class="s">&quot;</span><span class="s">text</span><span class="s">/</span><span class="s">html</span><span class="s">&quot;</span>, <span class="s">&quot;</span><span class="s">&lt;</span><span class="s">div</span><span class="s"> </span><span class="s">style</span><span class="s">=</span><span class="s">\&quot;</span><span class="s">background</span><span class="s">-</span><span class="s">color</span><span class="s">:</span><span class="s"> </span><span class="s">pink</span><span class="s">\&quot;</span><span class="s">&gt;</span><span class="s">&quot;</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs3', 15)" onmouseover="showTip(event, 'fs3', 15)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 16)" onmouseover="showTip(event, 'fs6', 16)" class="i">ToString</span>() <span class="o">+</span> <span class="s">&quot;</span><span class="s">&lt;</span><span class="s">/</span><span class="s">div</span><span class="s">&gt;</span><span class="s">&quot;</span>)
+    <span onmouseout="hideTip(event, 'fs3', 17)" onmouseover="showTip(event, 'fs3', 17)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="i">ToString</span>()
+)</pre>
+</td>
+</tr>
+</table><p>Now, executing a cell with the following code:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="n">1.0</span></pre>
+</td>
+</tr>
+</table><p>Will render as: <div style="background-color: pink">1</div></p>
+<p>However, executing a cell with the following code:</p>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span class="n">1.0</span>; <span class="n">2.0</span>; <span class="n">3.0</span>;]</pre>
+</td>
+</tr>
+</table><p>Will render as:
+<div style="background-color: pink">1</div>
+<div style="background-color: pink">2</div>
+<div style="background-color: pink">3</div></p>
+
+<div class="tip" id="fs1">module App<br /><br />from IfSharp.Kernel</div>
+<div class="tip" id="fs2">val AddDisplayPrinter : ((&#39;a -&gt; BinaryOutput) -&gt; unit)<br /><br />Full name: IfSharp.Kernel.App.AddDisplayPrinter</div>
+<div class="tip" id="fs3">val x : float</div>
+<div class="tip" id="fs4">Multiple items<br />val float : value:&#39;T -&gt; float (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.float<br /><br />--------------------<br />type float = System.Double<br /><br />Full name: Microsoft.FSharp.Core.float<br /><br />--------------------<br />type float&lt;&#39;Measure&gt; = float<br /><br />Full name: Microsoft.FSharp.Core.float&lt;_&gt;</div>
+<div class="tip" id="fs5">namespace Microsoft.FSharp.Data</div>
+<div class="tip" id="fs6">System.Double.ToString() : string<br />System.Double.ToString(provider: System.IFormatProvider) : string<br />System.Double.ToString(format: string) : string<br />System.Double.ToString(format: string, provider: System.IFormatProvider) : string</div>
+<div class="tip" id="fs7">val Display : (&#39;a -&gt; unit)<br /><br />Full name: IfSharp.Kernel.Globals.Globals.Display</div>
+<div class="tip" id="fs8">val AddFsiPrinter : ((&#39;a -&gt; string) -&gt; unit)<br /><br />Full name: IfSharp.Kernel.App.AddFsiPrinter</div>
+<div class="tip" id="fs9">val mutable Kernel : Option&lt;IfSharpKernel&gt;<br /><br />Full name: IfSharp.Kernel.App.Kernel</div>
+
+        </div>
+        <div class="span3">
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">IfSharp</li>
+            <li><a href="/IfSharp/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://github.com/BayardRock/IfSharp/releases">Releases</a></li>
+            <li><a href="/IfSharp/installation.html">Installation</a></li>
+            <li class="divider"></li>
+            <li><a href="/IfSharp/globals.html">Globals</a></li>
+            <li><a href="/IfSharp/utils.html">Utils</a></li>
+            <li><a href="/IfSharp/customPrinters.html">Custom Printers</a></li>
+            <li><a href="/IfSharp/nuget.html">NuGet Integration</a></li>
+            <li class="divider"></li>
+            <li><a href="http://github.com/BayardRock/IfSharp/">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/BayardRock/IfSharp/blob/master/LICENSE.txt">License</a></li>
+            <li><a href="http://github.com/BayardRock/IfSharp/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/BayardRock/IfSharp/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>
