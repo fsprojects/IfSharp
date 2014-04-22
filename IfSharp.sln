@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88BC26ED
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{A8428CDC-273B-434D-AAA2-0D0164E3D329}"
 	ProjectSection(SolutionItems) = preProject
+		docs\content\customPrinters.fsx = docs\content\customPrinters.fsx
 		docs\content\globals.fsx = docs\content\globals.fsx
 		docs\content\index.fsx = docs\content\index.fsx
 		docs\content\installation.fsx = docs\content\installation.fsx

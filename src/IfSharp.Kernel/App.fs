@@ -35,7 +35,7 @@ module App =
     let internal White        = "\u001B[1;37m"
     let internal Reset        = "\u001B[0m"
 
-    let mutable internal kernel : Option<IfSharpKernel> = None
+    let mutable Kernel : Option<IfSharpKernel> = None
     let mutable internal displayPrinters : list<Type * (obj -> BinaryOutput)> = []
 
     (** Convenience method for encoding a string within HTML *)
@@ -122,9 +122,15 @@ module App =
             x
         )
 
+    (** Public API for addDisplayPrinter *)
+    let AddDisplayPrinter = addDisplayPrinter
+
+    (** Convenience method for adding an fsi printer *)
+    let AddFsiPrinter = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi.AddPrinter
+
     (** Global clear display function *)
     let Clear () = 
-        kernel.Value.ClearDisplay()
+        Kernel.Value.ClearDisplay()
 
     (** Global display function *)
     let Display (value : obj) =
@@ -133,7 +139,7 @@ module App =
             let printer = findDisplayPrinter(value.GetType())
             let (_, callback) = printer
             let callbackValue = callback(value)
-            kernel.Value.SendDisplayData(callbackValue.ContentType, callbackValue.Data)
+            Kernel.Value.SendDisplayData(callbackValue.ContentType, callbackValue.Data)
 
     (** Global help function *)
     let Help (value : obj) = 
@@ -223,7 +229,7 @@ module App =
         meths |> Seq.iter (fun x -> text.AppendLine(getMethodText(x)) |> ignore)
 
         // add to the payload
-        kernel.Value.AddPayload(text.ToString())
+        Kernel.Value.AddPayload(text.ToString())
 
     (** Installs the ifsharp files if they do not exist, then starts ipython with the ifsharp profile *)
     let InstallAndStart(forceInstall) = 
@@ -334,8 +340,8 @@ module App =
             Socket.bind (iopubSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
 
             // start the kernel
-            kernel <- Some (IfSharpKernel(connectionInformation, iopubSocket, shellSocket, hbSocket, controlSocket, stdinSocket))
-            kernel.Value.StartAsync()
+            Kernel <- Some (IfSharpKernel(connectionInformation, iopubSocket, shellSocket, hbSocket, controlSocket, stdinSocket))
+            Kernel.Value.StartAsync()
 
             // block forever
             Thread.Sleep(Timeout.Infinite)

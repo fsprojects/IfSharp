@@ -32,9 +32,10 @@ API Documentation
 * [Globals](globals.html) (functions that can be accessed throughout the notebook)
 * [Utils](utils.html) (common utility methods used mostly for displaying)
 
-Automatic references
---------------------
-IfSharp automatically references the following assemblies:
+Startup script
+--------------
+[Include.fsx](https://github.com/BayardRock/IfSharp/blob/master/src/IfSharp.Kernel/Include.fsx) is a script that
+is executed on startup. The script automatically references the following assemblies:
 
 * IfSharp.Kernel.dll
 * System.Data.dll
@@ -43,9 +44,7 @@ IfSharp automatically references the following assemblies:
 * FSharp.Charting.dll
 * fszmq.dll
 
-Automatic namespaces
---------------------
-IfSharp automatically opens the following namespaces:
+And automatically opens the following namespaces:
 
 * FSharp.Charting
 * IfSharp.Kernel

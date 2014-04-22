@@ -368,6 +368,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
     (** Starts the kernel asynchronously *)
     member self.StartAsync() = 
+        
         Async.Start (async { doHeartbeat() } )
         Async.Start (async { doShell() } )
-
