@@ -46,16 +46,7 @@ type TypeCheckResults =
 (** The Compiler class contains methods and for compiling F# code and other tasks *)
 type FsCompiler (executingDirectory : string) =
 
-    let baseReferences =
-        [|
-            "IfSharp.Kernel.dll"
-            "System.Data.dll"
-            "System.Windows.Forms.DataVisualization.dll"
-            "FSharp.Data.TypeProviders.dll"
-            "FSharp.Charting.dll"
-            "fszmq.dll"
-        |]
-
+    let baseReferences = [||]
     let scs = SimpleSourceCodeServices()
     let checker = InteractiveChecker.Create()
     let nuGetManager = NuGetManager(executingDirectory)
@@ -179,7 +170,7 @@ type FsCompiler (executingDirectory : string) =
             |]
 
         // get the options and parse
-        let options = checker.GetProjectOptionsFromScript(fileName, source, getOptionsTimeFromFile(fileName), arguments) |> Async.RunSynchronously
+        let options = checker.GetProjectOptionsFromScript(fileName, source, getOptionsTimeFromFile(fileName), arguments, true) |> Async.RunSynchronously
         let recent = checker.TryGetRecentTypeCheckResultsForFile(fileName, options, source)
         let (parse, check) = 
             if recent.IsSome then

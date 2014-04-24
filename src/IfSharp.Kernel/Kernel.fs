@@ -18,7 +18,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
     let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
-    let compiler = FsCompiler(".")
+    let compiler = FsCompiler(FileInfo(".").FullName)
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
 
