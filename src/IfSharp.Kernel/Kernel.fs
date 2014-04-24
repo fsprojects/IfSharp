@@ -250,7 +250,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         // in our custom UI we put all cells in content.text and more information in content.block
         // the position is contains the selected index and the relative character and line number
-        let codes = JsonConvert.DeserializeObject<array<string>>(content.text) |> Seq.append [headerCode]
+        let cells = JsonConvert.DeserializeObject<array<string>>(content.text)
+        let codes = cells |> Seq.append [headerCode]
         let position = JsonConvert.DeserializeObject<BlockType>(content.block)
 
         // calculate absolute line number
@@ -262,9 +263,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         let realLineNumber = position.line + lineOffset + 1
         let codeString = String.Join("\n", codes)
-        let (names, decls) = compiler.GetDeclarations(codeString, realLineNumber, position.ch)
+        let (names, decls, tcr) = compiler.GetDeclarations(codeString, realLineNumber, position.ch)
         
-        // add global helper methods
+        // convert to objects that ipython can understand
         let matches = 
             decls
             |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.Documentation })
@@ -272,11 +273,37 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         let newContent = 
             {
-                matched_text = "";
-                matches = matches;
-                status = "ok";
+                matched_text = ""
+                matches = matches
+                status = "ok"
             }
         
+        // send back errors
+        let errors = 
+            [|
+                yield! tcr.Check.Errors |> Seq.map CustomErrorInfo.From
+                yield! tcr.Preprocess.Errors
+            |]
+
+        // create an array of tuples <cellNumber>, <line>
+        let allLines = 
+            [|
+                for index, cell in cells |> Seq.mapi (fun i x -> i, x) do
+                    for cellLineNumber, line in cell.Split('\n') |> Seq.mapi (fun i x -> i, x) do
+                        yield index, cellLineNumber, line
+            |]
+
+        let newErrors = 
+            [|
+                let headerLines = headerCode.Split('\n')
+                for e in errors do
+                    let realLineNumber = e.StartLine - headerLines.Length - 1
+                    let cellNumber, cellLineNumber, _ = allLines.[realLineNumber]
+                    yield { e with CellNumber = cellNumber; StartLine = cellLineNumber; EndLine = cellLineNumber; }
+            |]
+            |> Array.filter (fun x -> x.Subcategory <> "parse")
+            
+        sendDisplayData "errors" newErrors "display_data"
         sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
 
     (** Handles a 'connect_request' message *)

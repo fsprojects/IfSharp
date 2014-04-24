@@ -221,7 +221,7 @@ type FsCompiler (executingDirectory : string) =
             |> Seq.map (fun x -> { Documentation = this.FormatTip(x.DescriptionText, None); Glyph = x.Glyph; Name = x.Name })
             |> Seq.toArray
 
-        (names, items)
+        (names, items, tcr)
 
     (** Gets tooltip information for the specified information *)
     member this.GetToolTipText (source, lineNumber : int, charIndex : int) =

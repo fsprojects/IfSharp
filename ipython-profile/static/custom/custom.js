@@ -12,18 +12,66 @@ $([IPython.events]).on('notebook_loaded.Notebook', function ()
     }
 });
 
-
 $([IPython.events]).on('app_initialized.NotebookApp', function ()
 {
     require(['custom/fsharp']);
 
     IPython.CodeCell.options_default.cm_config.mode = 'fsharp';
 
+    // callback called by the end-user
+    function updateMarkers(data)
+    {
+        // applies intellisense hooks onto all cells
+        var cells = getCodeCells();
+        data.forEach(function (err)
+        {
+            var cell = cells.cells[err.CellNumber]
+            var editor = cell.code_mirror;
+
+            // clear our error marks
+            editor.doc.getAllMarks()
+                .forEach(function (m)
+                {
+                    if (m.className === 'br-errormarker')
+                    {
+                        m.clear();
+                    }
+                });
+
+            var from = { line: err.StartLine, ch: err.StartColumn };
+            var to = { line: err.EndLine, ch: err.EndColumn };
+            editor.doc.markText(from, to, { title: err.Message, className: 'br-errormarker' });
+        });
+    }
+
+    function getCodeCells()
+    {
+        var results = { codes: [], cells: [], selectedCell: null, selectedIndex: 0 };
+        IPython.notebook.get_cells()
+            .forEach(function (c)
+            {
+                if (c.cell_type === 'code')
+                {
+                    if (c.selected === true)
+                    {
+                        results.selectedCell = c;
+                        results.selectedIndex = results.cells.length;
+                    }
+                    results.cells.push(c);
+                    results.codes.push(c.code_mirror.getValue());
+                }
+            });
+
+        return results;
+    }
+
     require(['custom/codemirror-intellisense'], function ()
     {
         // applies intellisense hooks onto a cell
         function applyIntellisense(cell)
         {
+            if (cell.cell_type !== 'code') { return; }
+
             var editor = cell.code_mirror;
             if (editor.intellisense == null)
             {
@@ -31,27 +79,20 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                 cell.code_mirror.setOption('theme', 'neat');
                 editor.intellisense = new Intellisense(editor, function (callback, position)
                 {
-                    var selectedIndex = 0;
-                    var selectedCell = null;
-                    var codes = [];
-                    IPython.notebook.get_cells()
-                        .forEach(function (c, idx)
-                        {
-                            if (c.selected === true)
-                            {
-                                selectedCell = c;
-                                selectedIndex = idx;
-                            }
-                            codes.push(c.code_mirror.getValue());
-                        });
-
-                    var cursor = selectedCell.code_mirror.doc.getCursor();
+                    var cells = getCodeCells();
+                    var codes = cells.codes;
+                    var cursor = cells.selectedCell.code_mirror.doc.getCursor();
                     var callbacks = { shell: {} };
 
                     // v2
                     callbacks.shell.reply = function (data)
                     {
                         callback(data.content.matches);
+                    };
+
+                    callbacks.output = function (msgType, content, metadata)
+                    {
+                        updateMarkers(content.data.errors);
                     };
 
                     // v1
@@ -63,7 +104,7 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                     var content = {
                         text: JSON.stringify(codes),
                         line: '',
-                        block: JSON.stringify({ selectedIndex: selectedIndex, ch: cursor.ch, line: cursor.line }),
+                        block: JSON.stringify({ selectedIndex: cells.selectedIndex, ch: cursor.ch, line: cursor.line }),
                         cursor_pos: cursor.ch
                     };
                     var msg = IPython.notebook.kernel._get_msg("complete_request", content);
@@ -88,6 +129,6 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
     });
 
     // replace the image
-    var img = $('.container img')[0]
-    img.src = "/static/custom/ifsharp_logo.png"
+    var img = $('.container img')[0];
+    img.src = "/static/custom/ifsharp_logo.png";
 });

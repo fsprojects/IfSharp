@@ -17,20 +17,43 @@ type AssemblyInfo = { FileName : string; GuessedVersion : string; }
 type NuGetPackage = { Package : Option<IPackage>; Assemblies : seq<IPackageAssemblyReference>; Error : string }
 
 (** Wrapper for ErrorInfo *)
-type CustomErrorInfo (fileName, startLine, startColumn, endLine, endColumn, message, severity, subCategory) =
-
-    member this.FileName = fileName;
-    member this.StartLine = startLine;
-    member this.StartColumn = startColumn;
-    member this.EndLine = endLine;
-    member this.EndColumn = endColumn;
-    member this.Message = message;
-    member this.Severity = severity;
-    member this.Subcategory = subCategory;
-
+type CustomErrorInfo =
+    {
+        FileName : string
+        StartLine : int
+        StartColumn : int
+        EndLine : int
+        EndColumn : int
+        Message : string
+        Severity : string
+        Subcategory : string
+        CellNumber : int
+    }
+    static member From(fileName, startLine, startColumn, endLine, endColumn, message, severity, subcategory) = 
+        {
+            FileName = fileName
+            StartLine = startLine
+            StartColumn = startColumn
+            EndLine = endLine
+            EndColumn = endColumn
+            Message = message
+            Severity = severity
+            Subcategory = subcategory
+            CellNumber = 0
+        }
     static member From(e : ErrorInfo) =
         let severityString = match e.Severity with Severity.Error -> "Error" | _ -> "Warning"
-        CustomErrorInfo(e.FileName, e.StartLineAlternate, e.StartColumn, e.EndLineAlternate, e.EndColumn, e.Message, severityString, e.Subcategory)
+        {
+            FileName = e.FileName
+            StartLine = e.StartLineAlternate
+            StartColumn = e.StartColumn
+            EndLine = e.EndLineAlternate
+            EndColumn = e.EndColumn
+            Message = e.Message
+            Severity = severityString
+            Subcategory = e.Subcategory
+            CellNumber = 0
+        }
 
 (** The results from preprocessing some code *)
 type PreprocessResults =
@@ -204,7 +227,7 @@ type NuGetManager (executingDirectory : string) =
         let errors =
             nugetPackages
             |> Seq.filter (fun (idx, package) -> String.IsNullOrEmpty(package.Error) = false)
-            |> Seq.map (fun (idx, package) -> CustomErrorInfo("", idx, 0, idx, lines.[idx].Length, package.Error, "Error", ""))
+            |> Seq.map (fun (idx, package) -> CustomErrorInfo.From("", idx, 0, idx, lines.[idx].Length, package.Error, "Error", "preprocess"))
             |> Seq.toArray
 
         {
