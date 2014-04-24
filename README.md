@@ -6,7 +6,7 @@ For more information view the [documenation](http://bayardrock.github.io/IfSharp
 IfSharp works with iPython Notebook 1.x and 2.x 
 
 # Automatic Installation
-See our [release repository](https://github.com/BayardRock/IfSharp/releases). Also, [installation documentation](http://bayardrock.github.io/IfSharp/insallation.html).
+See our [release repository](https://github.com/BayardRock/IfSharp/releases). Also, [installation documentation](http://bayardrock.github.io/IfSharp/installation.html).
 
 # Manual Installation
 1. Install [Anaconda](http://continuum.io/downloads)
