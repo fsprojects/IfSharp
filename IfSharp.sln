@@ -73,6 +73,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1
 		docs\files\img\chart-1.png = docs\files\img\chart-1.png
 		docs\files\img\chart-2.png = docs\files\img\chart-2.png
 		docs\files\img\chart-3.png = docs\files\img\chart-3.png
+		docs\files\img\errors-1.png = docs\files\img\errors-1.png
 		docs\files\img\icon.ico = docs\files\img\icon.ico
 		docs\files\img\icon.png = docs\files\img\icon.png
 		docs\files\img\intellisense-1.png = docs\files\img\intellisense-1.png

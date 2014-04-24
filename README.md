@@ -30,3 +30,6 @@ See our [release repository](https://github.com/BayardRock/IfSharp/releases). Al
 
 ## Integrated NuGet
 ![NuGet Example](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/NuGet-1.png "NuGet example")
+
+## Inline Error Messages
+![Inline Error Message](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/error-1.png "Inline error message")
