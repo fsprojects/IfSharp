@@ -82,7 +82,7 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                     var cells = getCodeCells();
                     var codes = cells.codes;
                     var cursor = cells.selectedCell.code_mirror.doc.getCursor();
-                    var callbacks = { shell: {} };
+                    var callbacks = { shell: {}, iopub: {} };
 
                     // v2
                     callbacks.shell.reply = function (data)
@@ -90,15 +90,20 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                         callback(data.content.matches);
                     };
 
-                    callbacks.output = function (msgType, content, metadata)
+                    callbacks.iopub.output = function (msg)
                     {
-                        updateMarkers(content.data.errors);
+                        updateMarkers(msg.content.data.errors);
                     };
 
                     // v1
                     callbacks.complete_reply = function (data)
                     {
                         callback(data.matches);
+                    };
+
+                    callbacks.output = function (msgType, content, metadata)
+                    {
+                        updateMarkers(content.data.errors);
                     };
 
                     var content = {
