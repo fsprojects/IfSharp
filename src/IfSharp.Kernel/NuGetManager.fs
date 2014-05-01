@@ -177,15 +177,18 @@ type NuGetManager (executingDirectory : string) =
                 else
 
                     let pkg = installer.FindPackage(nugetPackage, version)
-                    let maxFramework = 
-                        pkg.AssemblyReferences
-                        |> Seq.map (fun x -> x.TargetFramework)
-                        |> Seq.filter (fun x -> x.Identifier = ".NETFramework")
-                        |> Seq.maxBy (fun x -> x.Version)
-
-                    let assemblies =
-                        pkg.AssemblyReferences 
-                        |> Seq.filter (fun x -> x.TargetFramework = maxFramework)
+                    let assemblies = 
+                        if pkg.AssemblyReferences.IsEmpty() then
+                            Seq.empty
+                        else
+                            let maxFramework = 
+                                pkg.AssemblyReferences
+                                |> Seq.map (fun x -> x.TargetFramework)
+                                |> Seq.filter (fun x -> x.Identifier = ".NETFramework")
+                                |> Seq.maxBy (fun x -> x.Version)
+    
+                            pkg.AssemblyReferences 
+                            |> Seq.filter (fun x -> x.TargetFramework = maxFramework)
 
                     packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; Error = ""; })
                     packagesCache.[key]
