@@ -43,7 +43,7 @@ type TypeCheckResults =
         Preprocess : PreprocessResults
     }
 
-(** The Compiler class contains methods and for compiling F# code and other tasks *)
+/// The Compiler class contains methods and for compiling F# code and other tasks
 type FsCompiler (executingDirectory : string) =
 
     let baseReferences = [||]
@@ -75,16 +75,16 @@ type FsCompiler (executingDirectory : string) =
     let minIndexOfAny(str) (find) (startIndex) =
         indexOfAll str find startIndex |> Seq.min
 
-    (** The NuGet manager *)
+    /// The NuGet manager
     member this.NuGetManager = nuGetManager
 
-    (** The simple source code services object that is being used *)
+    /// The simple source code services object that is being used
     member this.CodeServices = scs
 
-    (** The interactive checker object being used *)
+    /// The interactive checker object being used
     member this.Checker = checker
 
-    (** Formats a comment into a string *)
+    /// Formats a comment into a string
     member this.BuildFormatComment (xmlCommentRetriever: string * string -> string) cmt (sb: StringBuilder) =
         match cmt with
         | XmlCommentText(s) -> sb.AppendLine(s) |> ignore
@@ -93,7 +93,7 @@ type FsCompiler (executingDirectory : string) =
             if (not (comment.Equals(null))) && comment.Length > 0 then sb.AppendLine(comment) |> ignore
         | XmlCommentNone -> ()
 
-    (** Converts a ToolTipElement into a string *)
+    /// Converts a ToolTipElement into a string
     member this.BuildFormatElement isSingle el (sb: StringBuilder) xmlCommentRetriever =
         
         match el with
@@ -114,7 +114,7 @@ type FsCompiler (executingDirectory : string) =
         | ToolTipElementCompositionError(err) ->
             sb.Append("Composition error: " + err) |> ignore
             
-    (** Formats a DataTipText into a string *)
+    /// Formats a DataTipText into a string
     member this.FormatTip (tip, xmlCommentRetriever) =
         
         let commentRetriever = defaultArg xmlCommentRetriever (fun _ -> "")
@@ -124,7 +124,7 @@ type FsCompiler (executingDirectory : string) =
         | ToolTipText(its) -> for item in its do this.BuildFormatElement false item sb commentRetriever
         sb.ToString().Trim('\n', '\r')
 
-    (** Tries to figure out the names to pass to GetDeclarations or GetMethods. *)
+    /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
     member this.ExtractNames (line : string, charIndex : int) =
         
         let find = maxIndexOfAny line " \t\r\b" (Math.Max(charIndex, 1) - 1)
@@ -133,7 +133,7 @@ type FsCompiler (executingDirectory : string) =
         let splits = line.Substring(start, len).Split('.')
         splits |> Seq.take (splits.Length - 1) |> Seq.toList
 
-    (** Tries to figure out the names to pass to GetToolTip *)
+    /// Tries to figure out the names to pass to GetToolTip
     member this.ExtractTooltipName (line : string) (charIndex : int) =
         
         let startIdx = (maxIndexOfAny line " \t\r()<>|," (Math.Max(charIndex, 1) - 1)) + 1
@@ -151,7 +151,7 @@ type FsCompiler (executingDirectory : string) =
 
         (startIdx, endIdx, names)
 
-    (** Compiles the specified source code and returns the results *)
+    /// Compiles the specified source code and returns the results
     member this.TypeCheck (source : string, fileName : string) =
 
         // preprocess the code
@@ -190,7 +190,7 @@ type FsCompiler (executingDirectory : string) =
 
         { Check = check; Parse = parse; Preprocess = preprocessResults }
 
-    (** Convenience method for getting the methods from a piece of source code *)
+    /// Convenience method for getting the methods from a piece of source code
     member this.GetMethods (source, lineNumber : int, charIndex : int) = 
         
         let fileName = "/home/Test.fsx"
@@ -202,7 +202,7 @@ type FsCompiler (executingDirectory : string) =
         let methods = tcr.Check.GetMethodsAlternate(lineNumber, charIndex, line, Some(names))
         (names, methods)
 
-    (** Convenience method for getting the declarations from a piece of source code *)
+    /// Convenience method for getting the declarations from a piece of source code
     member this.GetDeclarations (source, lineNumber : int, charIndex : int) =
 
         let fileName = "/home/Test.fsx"
@@ -223,7 +223,7 @@ type FsCompiler (executingDirectory : string) =
 
         (names, items, tcr)
 
-    (** Gets tooltip information for the specified information *)
+    /// Gets tooltip information for the specified information
     member this.GetToolTipText (source, lineNumber : int, charIndex : int) =
 
         let fileName = "/home/Test.fsx"

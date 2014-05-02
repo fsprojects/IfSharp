@@ -22,7 +22,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
 
-    (** Gets the header code to prepend to all items *)
+    /// Gets the header code to prepend to all items
     let headerCode = 
         let file = FileInfo(Assembly.GetEntryAssembly().Location)
         let dir = file.Directory.FullName
@@ -30,7 +30,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         let code = File.ReadAllText(includeFile)
         String.Format(code, dir.Replace("\\", "\\\\"))
 
-    (** Splits the message up into lines and writes the lines to the specified file name *)
+    /// Splits the message up into lines and writes the lines to the specified file name
     let logMessage (msg : string) =
         let fileName = "shell.log"
         let messages = 
@@ -41,31 +41,31 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         
         File.AppendAllLines(fileName, messages)
 
-    (** Logs the exception to the specified file name *)
+    /// Logs the exception to the specified file name
     let handleException (ex : exn) = 
         let message = ex.CompleteStackTrace()
         logMessage message
 
-    (** Decodes byte array into a string using UTF8 *)
+    /// Decodes byte array into a string using UTF8
     let decode (bytes) =
         Encoding.UTF8.GetString(bytes)
 
-    (** Encodes a string into a byte array using UTF8 *)
+    /// Encodes a string into a byte array using UTF8
     let encode (str : string) =
         Encoding.UTF8.GetBytes(str)
 
-    (** Deserializes a dictionary from a JSON string *)
+    /// Deserializes a dictionary from a JSON string
     let deserializeDict (str) =
         JsonConvert.DeserializeObject<Dictionary<string, string>>(str)
 
-    (** Serializes any object into JSON *)
+    /// Serializes any object into JSON
     let serialize (obj) =
         let ser = JsonSerializer()
         let sw = new StringWriter()
         ser.Serialize(sw, obj)
         sw.ToString()
 
-    (** Constructs an 'envelope' from the specified socket *)
+    /// Constructs an 'envelope' from the specified socket
     let recvMessage (socket) = 
         
         // receive all parts of the message
@@ -106,7 +106,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         lastMessage.Value
 
-    (** Convenience method for creating a header *)
+    /// Convenience method for creating a header
     let createHeader (messageType) (sourceEnvelope) =
         {
             msg_type = messageType;
@@ -115,7 +115,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             username = sourceEnvelope.Header.username;
         }
 
-    (** Convenience method for sending a message *)
+    /// Convenience method for sending a message
     let sendMessage (socket) (envelope) (messageType) (content) =
 
         let header = createHeader messageType envelope
@@ -131,11 +131,11 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             <~| (encode "{}")
             <<| (encode (serialize content))
         
-    (** Convenience method for sending the state of the kernel *)
+    /// Convenience method for sending the state of the kernel
     let sendState (envelope) (state) =
         sendMessage ioSocket envelope "status" { execution_state = state } 
 
-    (** Handles a 'kernel_info_request' message *)
+    /// Handles a 'kernel_info_request' message
     let kernelInfoRequest(msg : KernelMessage) = 
         let content = 
             {
@@ -147,7 +147,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         sendMessage shellSocket msg "kernel_info_reply" content
 
-    (** Sends display data information immediately *)
+    /// Sends display data information immediately
     let sendDisplayData (contentType) (displayItem) (messageType) =
         data.Add( { ContentType = contentType; Data = displayItem } )
         
@@ -161,7 +161,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
     let pyout (message) = sendDisplayData "text/plain" message "pyout"
 
-    (** Handles an 'execute_request' message *)
+    /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) = 
         
         // extract the contents
@@ -236,13 +236,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             if content.silent = false then
                 if data.Count = 0 then
                     let lastExpression = GetLastExpression()
-                    if lastExpression <> "" then
-                        sendDisplayData "text/plain" lastExpression "pyout"
+                    match lastExpression with
+                    | Some(it) -> 
+                        
+                        let printer = Printers.findDisplayPrinter(it.ReflectionType)
+                        let (_, callback) = printer
+                        let callbackValue = callback(it.ReflectionValue)
+                        sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
+
+                    | None -> ()
 
         // we are now idle
         sendState msg "idle"
 
-    (** Handles a 'complete_request' message *)
+    /// Handles a 'complete_request' message
     let completeRequest (msg : KernelMessage) = 
 
         // extract the contents
@@ -306,7 +313,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendDisplayData "errors" newErrors "display_data"
         sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
 
-    (** Handles a 'connect_request' message *)
+    /// Handles a 'connect_request' message
     let connectRequest (msg : KernelMessage) = 
 
         let content = match msg.Content with ConnectRequest x -> x | _ -> failwith ("system error")
@@ -320,7 +327,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         sendMessage shellSocket msg "connect_reply" reply
 
-    (** Handles a 'shutdown_request' message *)
+    /// Handles a 'shutdown_request' message
     let shutdownRequest (msg : KernelMessage) =
 
         // TODO: actually shutdown        
@@ -329,19 +336,19 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         sendMessage shellSocket msg "shutdown_reply" reply
 
-    (** Handles a 'history_request' message *)
+    /// Handles a 'history_request' message
     let historyRequest (msg : KernelMessage) =
 
         let content = match msg.Content with HistoryRequest x -> x | _ -> failwith ("system error")
         // TODO: actually handle this
         sendMessage shellSocket msg "history_reply" { history = [] }
 
-    (** Handles a 'object_info_request' message *)
+    /// Handles a 'object_info_request' message
     let objectInfoRequest (msg : KernelMessage) =
         // TODO: actually handle this
         ()
 
-    (** Loops forever receiving messages from the client and processing them *)
+    /// Loops forever receiving messages from the client and processing them
     let doShell() =
 
         try
@@ -369,7 +376,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             with 
             | ex -> handleException ex
    
-    (** Loops repeating message from the client *)
+    /// Loops repeating message from the client
     let doHeartbeat() =
 
         try
@@ -380,20 +387,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         with
         | ex -> handleException ex
 
-    (** Clears the display *)
+    /// Clears the display
     member self.ClearDisplay () =
         if lastMessage.IsSome then
             sendMessage (ioSocket) (lastMessage.Value) ("clear_output") { wait = false; stderr = true; stdout = true; other = true; }
 
-    (** Sends auto complete information to the client *)
+    /// Sends auto complete information to the client
     member self.AddPayload (text) =
         payload.Add( { html = ""; source = "page"; start_line_number = 1; text = text })
 
-    (** Adds display data to the list of display data to send to the client *)
+    /// Adds display data to the list of display data to send to the client
     member self.SendDisplayData (contentType, displayItem) =
         sendDisplayData contentType displayItem "display_data"
 
-    (** Starts the kernel asynchronously *)
+    /// Starts the kernel asynchronously
     member self.StartAsync() = 
         
         Async.Start (async { doHeartbeat() } )

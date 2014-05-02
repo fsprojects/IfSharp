@@ -8,7 +8,6 @@ open System.Reflection
 open System.Text
 open System.Threading
 
-open FSharp.Charting
 open Newtonsoft.Json
 open fszmq
 open fszmq.Socket
@@ -36,112 +35,26 @@ module App =
     let internal Reset        = "\u001B[0m"
 
     let mutable Kernel : Option<IfSharpKernel> = None
-    let mutable internal displayPrinters : list<Type * (obj -> BinaryOutput)> = []
 
-    (** Convenience method for encoding a string within HTML *)
-    let internal htmlEncode(str) =
-        System.Web.HttpUtility.HtmlEncode(str)
+    /// Public API for addDisplayPrinter
+    let AddDisplayPrinter = Printers.addDisplayPrinter
 
-    (** Adds a custom display printer for extensibility *)
-    let internal addDisplayPrinter(printer : 'T -> BinaryOutput) =
-        displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
-
-    (** Default display printer *)
-    let internal defaultDisplayPrinter(x) =
-        { ContentType = "text/plain"; Data = sprintf "%A" x }
-
-    (** Finds a display printer based off of the type *)
-    let internal findDisplayPrinter(findType) = 
-        let printers = 
-            displayPrinters
-            |> Seq.filter (fun (t, _) -> t.IsAssignableFrom(findType))
-            |> Seq.toList
-
-        if printers.Length > 0 then
-            printers.Head
-        else
-            (typeof<obj>, defaultDisplayPrinter)
-
-    (** Adds default display printers *)
-    let internal addDefaultDisplayPrinters() = 
-        
-        // add generic chart printer
-        addDisplayPrinter(fun (x:ChartTypes.GenericChart) ->
-            { ContentType = "image/png"; Data = x.ToPng() }
-        )
-
-        // add chart printer
-        addDisplayPrinter(fun (x:GenericChartWithSize) ->
-            { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) }
-        )
-        
-        // add table printer
-        addDisplayPrinter(fun (x:TableOutput) -> 
-            let sb = StringBuilder()
-            sb.Append("<table>") |> ignore
-
-            // output header
-            sb.Append("<thead>") |> ignore
-            sb.Append("<tr>") |> ignore
-            for col in x.Columns do
-                sb.Append("<th>") |> ignore
-                sb.Append(htmlEncode col) |> ignore
-                sb.Append("</th>") |> ignore
-            sb.Append("</tr>") |> ignore
-            sb.Append("</thead>") |> ignore
-
-            // output body
-            sb.Append("<tbody>") |> ignore
-            for row in x.Rows do
-                sb.Append("<tr>") |> ignore
-                for cell in row do
-                    sb.Append("<td>") |> ignore
-                    sb.Append(htmlEncode cell) |> ignore
-                    sb.Append("</td>") |> ignore
-                    
-                sb.Append("</tr>") |> ignore
-            sb.Append("<tbody>") |> ignore
-            sb.Append("</tbody>") |> ignore
-            sb.Append("</table>") |> ignore
-
-            { ContentType = "text/html"; Data = sb.ToString() } 
-        )
-
-        // add html printer
-        addDisplayPrinter(fun (x:HtmlOutput) ->
-            { ContentType = "text/html"; Data = x.Html }
-        )
-        
-        // add latex printer
-        addDisplayPrinter(fun (x:LatexOutput) ->
-            { ContentType = "text/latex"; Data = x.Latex }
-        )
-
-        // add binaryoutput printer
-        addDisplayPrinter(fun (x:BinaryOutput) ->
-            x
-        )
-
-    (** Public API for addDisplayPrinter *)
-    let AddDisplayPrinter = addDisplayPrinter
-
-    (** Convenience method for adding an fsi printer *)
+    /// Convenience method for adding an fsi printer
     let AddFsiPrinter = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi.AddPrinter
 
-    (** Global clear display function *)
-    let Clear () = 
-        Kernel.Value.ClearDisplay()
+    /// Global clear display function
+    let Clear () = Kernel.Value.ClearDisplay()
 
-    (** Global display function *)
+    /// Global display function
     let Display (value : obj) =
 
         if value <> null then
-            let printer = findDisplayPrinter(value.GetType())
+            let printer = Printers.findDisplayPrinter(value.GetType())
             let (_, callback) = printer
             let callbackValue = callback(value)
             Kernel.Value.SendDisplayData(callbackValue.ContentType, callbackValue.Data)
 
-    (** Global help function *)
+    /// Global help function
     let Help (value : obj) = 
 
         let text = StringBuilder()
@@ -231,7 +144,7 @@ module App =
         // add to the payload
         Kernel.Value.AddPayload(text.ToString())
 
-    (** Installs the ifsharp files if they do not exist, then starts ipython with the ifsharp profile *)
+    /// Installs the ifsharp files if they do not exist, then starts ipython with the ifsharp profile
     let InstallAndStart(forceInstall) = 
 
         let thisExecutable = Assembly.GetEntryAssembly().Location
@@ -296,7 +209,7 @@ module App =
         // tell the user something bad happened
         if p.Start() = false then printfn "Unable to start ipython, please install ipython first"
 
-    (** First argument must be an ipython connection file, blocks forever *)
+    /// First argument must be an ipython connection file, blocks forever
     let Start (args : array<string>) = 
 
         let install = args.Length = 0
@@ -309,7 +222,7 @@ module App =
         else
 
             // adds the default display printers
-            addDefaultDisplayPrinters()
+            Printers.addDefaultDisplayPrinters()
 
             // get connection information
             let fileName = args.[0]

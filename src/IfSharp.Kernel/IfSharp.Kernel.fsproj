@@ -70,6 +70,7 @@
     <Compile Include="MainTypes.fs" />
     <Compile Include="ShellMessages.fs" />
     <Compile Include="Evaluation.fs" />
+    <Compile Include="Printers.fs" />
     <Compile Include="Kernel.fs" />
     <EmbeddedResource Include="IfSharpResources.resx" />
     <Compile Include="App.fs" />

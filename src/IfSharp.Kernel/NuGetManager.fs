@@ -10,13 +10,13 @@ open System.Text
 open System.Reflection
 open Microsoft.FSharp.Compiler
 
-(** Assembly information *)
+/// Assembly information
 type AssemblyInfo = { FileName : string; GuessedVersion : string; }
 
-(** Represents a NuGet package *)
+/// Represents a NuGet package
 type NuGetPackage = { Package : Option<IPackage>; Assemblies : seq<IPackageAssemblyReference>; Error : string }
 
-(** Wrapper for ErrorInfo *)
+/// Wrapper for ErrorInfo
 type CustomErrorInfo =
     {
         FileName : string
@@ -55,7 +55,7 @@ type CustomErrorInfo =
             CellNumber = 0
         }
 
-(** The results from preprocessing some code *)
+/// The results from preprocessing some code
 type PreprocessResults =
     {
         OriginalLines : string[];
@@ -71,11 +71,11 @@ type VersionWithType =
         Version : Version;
     }
 
-(** Custom command for installing nuget packages. This is needed because of protected members. *)
+/// Custom command for installing nuget packages. This is needed because of protected members.
 type CustomInstallCommand() = 
     inherit InstallCommand()
 
-    (** Finds the specified package with the specified version *)
+    /// Finds the specified package with the specified version
     member this.FindPackage (packageId : string, version : string) =
         
         let fileSystem = this.CreateFileSystem(this.OutputDirectory)
@@ -89,25 +89,23 @@ type CustomInstallCommand() =
 
 module NuGetManagerInternals =
 
-    (** Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines *)
+    /// Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines
     let partitionLines(directive) (lines : string[]) =
         lines
         |> Seq.mapi (fun (idx) (line) -> (idx, line))
         |> Seq.toList
         |> List.partition (fun (idx, line) -> line.StartsWith(directive))
 
-    (** Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines *)
+    /// Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines
     let partitionSource(directive) (source : string) =
         let delimiters = [|"\r\n"; "\n"; "\r";|]
         partitionLines directive (source.Split(delimiters, StringSplitOptions.None))
 
-    (**
-     * Parses a directive line. Example: #N "FSharp.Compiler.dll"
-     *)
+    /// Parses a directive line. Example: #N "Deedle"
     let parseDirectiveLine (prefix : string) (line : string) = 
         line.Substring(prefix.Length + 1).Trim().Trim('"')
 
-(** The NuGetManager class contains methods for downloading nuget packages and such *)
+/// The NuGetManager class contains methods for downloading nuget packages and such
 type NuGetManager (executingDirectory : string) =
 
     let syncObject = Object()
@@ -120,23 +118,23 @@ type NuGetManager (executingDirectory : string) =
     let errDataReceivedEvent = Event<_>()
     let outDataReceivedEvent = Event<_>()
 
-    (** The directory for the packages *)
+    /// The directory for the packages
     member this.PackagesDir = packagesDir
 
-    (** Gets the full assembly path of the specified package and assembly *)
+    /// Gets the full assembly path of the specified package and assembly
     member this.GetFullAssemblyPath (pkg : NuGetPackage, ass : IPackageAssemblyReference) =
         let dir = pkg.Package.Value.Id + "." + pkg.Package.Value.Version.ToString()
         FileInfo(Path.Combine(packagesDir, dir, ass.Path)).FullName
 
-    (** This event is called whenever a line is written to the error writer *)
+    /// This event is called whenever a line is written to the error writer
     [<CLIEvent>]
     member this.StdErrDataReceived = errDataReceivedEvent.Publish
 
-    (** This event is called whenever a line is written to the error writer *)
+    /// This event is called whenever a line is written to the error writer
     [<CLIEvent>]
     member this.StdOutDataReceived = outDataReceivedEvent.Publish
 
-    (** Downloads a nuget package by the specified name *)
+    /// Downloads a nuget package by the specified name
     member this.DownloadNugetPackage (nugetPackage : string, version : Option<string>, prerelease : bool) =
         
         let version = defaultArg version ""
@@ -195,11 +193,9 @@ type NuGetManager (executingDirectory : string) =
 
         )
 
-    (**
-     * Parses a 'nuget line'. Example #N "<package>[/<version>[/pre]]".
-     * Returns a tuple with the name of the package, the version, and if
-     * prerelease should be used or not.
-     *)
+    /// Parses a 'nuget line'. Example #N "<package>[/<version>[/pre]]".
+    /// Returns a tuple with the name of the package, the version, and if
+    /// prerelease should be used or not.
     member this.ParseNugetLine (line : string) = 
         
         let contents = NuGetManagerInternals.parseDirectiveLine "#N" line
@@ -212,7 +208,7 @@ type NuGetManager (executingDirectory : string) =
         else
             (contents, None, false)
 
-    (** Preprocesses the specified source string *)
+    /// Preprocesses the specified source string
     member this.Preprocess (source : string) =
         
         // split the source code into lines, then get the nuget lines

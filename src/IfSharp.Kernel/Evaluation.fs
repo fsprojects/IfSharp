@@ -16,6 +16,7 @@ module Evaluation =
     let internal fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
     let internal fsiEval = new FsiEvaluationSession(fsiConfig, [|"--noninteractive"|], inStream, outStream, errStream)
     
+    /// Gets `it` only if `it` was printed to the console
     let GetLastExpression() =
 
         let lines = 
@@ -25,7 +26,8 @@ module Evaluation =
 
         let index = lines |> Seq.tryFindIndex (fun x -> x.StartsWith("val it : "))
         if index.IsSome then
-            let newLines =  [| for i in [index.Value..lines.Length - 1] do yield lines.[i] |]
-            String.Join("\r\n", newLines)
+            try 
+                fsiEval.EvalExpression("it")
+            with _ -> None
         else 
-            ""
+            None
