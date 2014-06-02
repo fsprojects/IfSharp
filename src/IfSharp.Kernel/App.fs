@@ -212,12 +212,9 @@ module App =
     /// First argument must be an ipython connection file, blocks forever
     let Start (args : array<string>) = 
 
-        let install = args.Length = 0
-        let forceInstall = if args.Length = 0 then false else args.[0] = "--install"
-
-        if install || forceInstall then
+        if args.Length = 0 then
         
-            InstallAndStart(forceInstall)
+            InstallAndStart(true)
 
         else
 
