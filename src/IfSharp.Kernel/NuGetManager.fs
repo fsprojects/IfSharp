@@ -154,10 +154,11 @@ type NuGetManager (executingDirectory : string) =
                 installer.Arguments.Add(nugetPackage)
                 installer.OutputDirectory <- packagesDir
                 installer.Prerelease <- prerelease
-                if not (String.IsNullOrWhiteSpace(version)) then
+                if not <| String.IsNullOrWhiteSpace(version) then
                     installer.Version <- version
-                if not (String.IsNullOrWhiteSpace(packageSource)) then
-                    installer.Source.Add(packageSource)
+                if not <| String.IsNullOrWhiteSpace(packageSource) then
+                    for source in packageSource.Split([|';'|], StringSplitOptions.RemoveEmptyEntries) do
+                        installer.Source.Add(source)
 
                 // install
                 let executeResults = 

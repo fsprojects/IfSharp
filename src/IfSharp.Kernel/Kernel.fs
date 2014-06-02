@@ -30,7 +30,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         let code = File.ReadAllText(includeFile)
         String.Format(code, dir.Replace("\\", "\\\\"))
 
-    /// Splits the message up into lines and writes the lines to the specified file name
+    /// Splits the message up into lines and writes the lines to shell.log
     let logMessage (msg : string) =
         let fileName = "shell.log"
         let messages = 
@@ -136,7 +136,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendMessage ioSocket envelope "status" { execution_state = state } 
 
     /// Handles a 'kernel_info_request' message
-    let kernelInfoRequest(msg : KernelMessage) = 
+    let kernelInfoRequest(msg : KernelMessage) (content : KernelRequest) = 
         let content = 
             {
                 protocol_version = [| 4; 0 |]; 
@@ -161,11 +161,33 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
     let pyout (message) = sendDisplayData "text/plain" message "pyout"
 
+    /// Preprocesses the code and evaluates it
+    let preprocessAndEval(code) = 
+
+        logMessage code
+
+        // preprocess
+        let results = compiler.NuGetManager.Preprocess(code)
+        let newCode = String.Join("\n", results.FilteredLines)
+
+        // do nuget stuff
+        for package in results.Packages do
+            if not (String.IsNullOrWhiteSpace(package.Error)) then
+                pyout ("NuGet error: " + package.Error)
+            else
+                pyout ("NuGet package: " + package.Package.Value.Id)
+                for assembly in package.Assemblies do
+                    let fullAssembly = compiler.NuGetManager.GetFullAssemblyPath(package, assembly)
+                    pyout ("Referenced: " + fullAssembly)
+
+                    let code = String.Format(@"#r @""{0}""", fullAssembly)
+                    fsiEval.EvalInteraction(code)
+
+        if not <| String.IsNullOrEmpty(newCode) then
+            fsiEval.EvalInteraction(newCode)
+    
     /// Handles an 'execute_request' message
-    let executeRequest(msg : KernelMessage) = 
-        
-        // extract the contents
-        let content = match msg.Content with ExecuteRequest x -> x | _ -> failwith ("system error") 
+    let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
         
         // clear some state
         sbOut.Clear() |> ignore
@@ -184,25 +206,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         let ex = 
             try
                 // preprocess
-                let results = compiler.NuGetManager.Preprocess(content.code)
-                let newCode = String.Join("\n", results.FilteredLines)
-
-                // do nuget stuff
-                for package in results.Packages do
-                    if not (String.IsNullOrWhiteSpace(package.Error)) then
-                        pyout ("NuGet error: " + package.Error)
-                    else
-                        pyout ("NuGet package: " + package.Package.Value.Id)
-                        for assembly in package.Assemblies do
-                            let fullAssembly = compiler.NuGetManager.GetFullAssemblyPath(package, assembly)
-                            pyout ("Referenced: " + fullAssembly)
-
-                            let code = String.Format(@"#r @""{0}""", fullAssembly)
-                            fsiEval.EvalInteraction(code)
-        
-                if not(String.IsNullOrEmpty(newCode)) then
-                    fsiEval.EvalInteraction(newCode)
-
+                preprocessAndEval (content.code)
                 None
             with
             | exn -> Some exn
@@ -250,10 +254,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendState msg "idle"
 
     /// Handles a 'complete_request' message
-    let completeRequest (msg : KernelMessage) = 
-
-        // extract the contents
-        let content = match msg.Content with CompleteRequest x -> x | _ -> failwith ("system error")
+    let completeRequest (msg : KernelMessage) (content : CompleteRequest) = 
 
         // in our custom UI we put all cells in content.text and more information in content.block
         // the position is contains the selected index and the relative character and line number
@@ -317,9 +318,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
 
     /// Handles a 'connect_request' message
-    let connectRequest (msg : KernelMessage) = 
+    let connectRequest (msg : KernelMessage) (content : ConnectRequest) = 
 
-        let content = match msg.Content with ConnectRequest x -> x | _ -> failwith ("system error")
         let reply =
             {
                 hb_port = connectionInformation.hb_port;
@@ -331,23 +331,21 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         sendMessage shellSocket msg "connect_reply" reply
 
     /// Handles a 'shutdown_request' message
-    let shutdownRequest (msg : KernelMessage) =
+    let shutdownRequest (msg : KernelMessage) (content : ShutdownRequest) =
 
         // TODO: actually shutdown        
-        let content = match msg.Content with ShutdownRequest x -> x | _ -> failwith ("system error")
         let reply = { restart = true; }
 
         sendMessage shellSocket msg "shutdown_reply" reply
 
     /// Handles a 'history_request' message
-    let historyRequest (msg : KernelMessage) =
+    let historyRequest (msg : KernelMessage) (content : HistoryRequest) =
 
-        let content = match msg.Content with HistoryRequest x -> x | _ -> failwith ("system error")
         // TODO: actually handle this
         sendMessage shellSocket msg "history_reply" { history = [] }
 
     /// Handles a 'object_info_request' message
-    let objectInfoRequest (msg : KernelMessage) =
+    let objectInfoRequest (msg : KernelMessage) (content : ObjectInfoRequest) =
         // TODO: actually handle this
         ()
 
@@ -355,7 +353,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     let doShell() =
 
         try
-            fsiEval.EvalInteraction(headerCode)
+            Thread.Sleep(10000)
+            preprocessAndEval headerCode
         with
         | exn -> handleException exn
 
@@ -367,15 +366,15 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             let msg = recvMessage (shellSocket)
 
             try
-                match msg.Header.msg_type with
-                | "kernel_info_request" -> kernelInfoRequest (msg) 
-                | "execute_request"     -> executeRequest (msg) 
-                | "complete_request"    -> completeRequest (msg) 
-                | "connect_request"     -> connectRequest (msg)
-                | "shutdown_request"    -> shutdownRequest (msg)
-                | "history_request"     -> historyRequest (msg)
-                | "object_info_request" -> objectInfoRequest (msg)
-                | _                     -> logMessage (String.Format("msg_type not implemented {0}", msg.Header.msg_type))
+                match msg.Content with
+                | KernelRequest(r)      -> kernelInfoRequest msg r
+                | ExecuteRequest(r)     -> executeRequest msg r
+                | CompleteRequest(r)    -> completeRequest msg r
+                | ConnectRequest(r)     -> connectRequest msg r
+                | ShutdownRequest(r)    -> shutdownRequest msg r
+                | HistoryRequest(r)     -> historyRequest msg r
+                | ObjectInfoRequest(r)  -> objectInfoRequest msg r
+                | _                     -> logMessage (String.Format("Unknown content type. msg_type is `{0}`", msg.Header.msg_type))
             with 
             | ex -> handleException ex
    
