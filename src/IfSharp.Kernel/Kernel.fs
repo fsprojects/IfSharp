@@ -304,7 +304,10 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             [|
                 let headerLines = headerCode.Split('\n')
                 for e in errors do
-                    let realLineNumber = e.StartLine - headerLines.Length - 1
+                    let realLineNumber = 
+                        let x = e.StartLine - headerLines.Length - 1
+                        max x 1
+
                     let cellNumber, cellLineNumber, _ = allLines.[realLineNumber]
                     yield { e with CellNumber = cellNumber; StartLine = cellLineNumber; EndLine = cellLineNumber; }
             |]
