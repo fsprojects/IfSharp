@@ -234,15 +234,15 @@ module App =
             Socket.bind (hbSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
         
             // shell
-            use shellSocket = Context.route context
+            use shellSocket = Context.router context
             Socket.bind (shellSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
         
             // control
-            use controlSocket = Context.route context
+            use controlSocket = Context.router context
             Socket.bind (controlSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
 
             // stdin
-            use stdinSocket = Context.route context
+            use stdinSocket = Context.router context
             Socket.bind (stdinSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
 
             // iopub
