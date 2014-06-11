@@ -127,11 +127,41 @@ type FsCompiler (executingDirectory : string) =
     /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
     member this.ExtractNames (line : string, charIndex : int) =
         
-        let find = maxIndexOfAny line " \t\r\b" (Math.Max(charIndex, 1) - 1)
-        let start = find + 1
-        let len = Math.Max(charIndex - start, 0)
-        let splits = line.Substring(start, len).Split('.')
-        splits |> Seq.take (splits.Length - 1) |> Seq.toList
+        let sourceTok = SourceTokenizer([], "/home/test.fsx")
+        let tokenizer = sourceTok.CreateLineTokenizer(line)
+        let rec gatherTokens (tokenizer:LineTokenizer) state =
+            seq {
+                match tokenizer.ScanToken(state) with
+                | Some tok, state ->
+                    yield tok
+                    yield! gatherTokens tokenizer state
+                | None, state -> ()
+            }
+
+        let charIndex = line.Length
+        let tokens = gatherTokens tokenizer 0L |> Seq.toArray |> Array.rev
+
+        let startIndex = 
+            match tokens |> Array.tryFindIndex (fun x -> charIndex > x.LeftColumn && charIndex < x.LeftColumn + x.FullMatchedLength) with
+            | Some x -> x
+            | None -> 0
+
+        let endIndex = 
+            match tokens.[startIndex..tokens.Length - 1] |> Array.tryFindIndex (fun x -> x.TokenName <> "DOT" && x.TokenName <> "IDENT") with
+            | Some x -> x - 1
+            | None -> tokens.Length - 1
+
+        tokens.[startIndex..endIndex]
+        |> Array.filter (fun x -> x.TokenName <> "DOT")
+        |> Array.map (fun x -> line.Substring(x.LeftColumn, x.FullMatchedLength))
+        |> Array.rev
+        |> Array.toList
+
+//        let find = maxIndexOfAny line " \t\r\b" (Math.Max(charIndex, 1) - 1)
+//        let start = find + 1
+//        let len = Math.Max(charIndex - start, 0)
+//        let splits = line.Substring(start, len).Split('.')
+//        splits |> Seq.take (splits.Length - 1) |> Seq.toList
 
     /// Tries to figure out the names to pass to GetToolTip
     member this.ExtractTooltipName (line : string) (charIndex : int) =

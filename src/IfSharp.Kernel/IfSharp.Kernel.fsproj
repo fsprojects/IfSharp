@@ -94,8 +94,9 @@
     <EmbeddedResource Include="IfSharpResources.resx" />
     <Compile Include="App.fs" />
     <Compile Include="Globals.fs" />
+    <None Include="Scratch.fsx" />
     <None Include="libzmq.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +109,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="fszmq">
-      <HintPath>..\..\packages\fszmq.4.0.6\lib\net45\fszmq.dll</HintPath>
+      <HintPath>..\..\packages\fszmq.3.2.7\lib\net45\fszmq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />

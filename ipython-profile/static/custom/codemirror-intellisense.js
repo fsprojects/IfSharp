@@ -202,12 +202,17 @@ var Intellisense = function (editor, userCallback)
             {
                 var cursor = editor.doc.getCursor();
                 var line = editor.doc.getLine(self.autoCompleteStart.line);
+                var name = selectedDeclaration.name;
+                if (lastIndexOfAny(name, [' ', '[', ']', '.']) != -1)
+                {
+                    name = '``' + name + '``';
+                }
                 var newLine = line.substring(0, self.autoCompleteStart.ch)
-                    + selectedDeclaration.name
+                    + name
                     + line.substring(cursor.ch, line.length);
 
                 editor.doc.setLine(cursor.line, newLine);
-                editor.setSelection({ line: cursor.line, ch: cursor.ch + selectedDeclaration.name.length });
+                editor.setSelection({ line: cursor.line, ch: cursor.ch + name.length });
                 self.showAutoComplete(false);
                 editor.focus();
             }
