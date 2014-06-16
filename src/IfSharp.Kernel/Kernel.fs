@@ -176,6 +176,11 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
                 pyout ("NuGet error: " + package.Error)
             else
                 pyout ("NuGet package: " + package.Package.Value.Id)
+                for frameworkAssembly in package.FrameworkAssemblies do
+                    pyout ("Referenced Framework: " + frameworkAssembly.AssemblyName)
+                    let code = String.Format(@"#r @""{0}""", frameworkAssembly.AssemblyName)
+                    fsiEval.EvalInteraction(code)
+
                 for assembly in package.Assemblies do
                     let fullAssembly = compiler.NuGetManager.GetFullAssemblyPath(package, assembly)
                     pyout ("Referenced: " + fullAssembly)
