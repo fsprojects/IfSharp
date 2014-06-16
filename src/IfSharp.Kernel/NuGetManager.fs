@@ -14,7 +14,7 @@ open Microsoft.FSharp.Compiler
 type AssemblyInfo = { FileName : string; GuessedVersion : string; }
 
 /// Represents a NuGet package
-type NuGetPackage = { Package : Option<IPackage>; Assemblies : seq<IPackageAssemblyReference>; Error : string }
+type NuGetPackage = { Package : Option<IPackage>; Assemblies : seq<IPackageAssemblyReference>; FrameworkAssemblies: seq<FrameworkAssemblyReference>; Error : string }
 
 /// Wrapper for ErrorInfo
 type CustomErrorInfo =
@@ -171,25 +171,33 @@ type NuGetManager (executingDirectory : string) =
                 // start and wait for exit
                 if executeResults.IsSome then
                     
-                    { Package = None; Assemblies = Seq.empty; Error = executeResults.Value.Message }
+                    { Package = None; Assemblies = Seq.empty; FrameworkAssemblies = Seq.empty; Error = executeResults.Value.Message }
 
                 else
 
                     let pkg = installer.FindPackage(nugetPackage, version)
+                    let getCompatibleItems targetFramework items =
+                        let retval, compatibleItems = VersionUtility.TryGetCompatibleItems(targetFramework, items)
+                        if retval then compatibleItems else Seq.empty
+
+                    let maxFramework =
+                        pkg.GetSupportedFrameworks()
+                        |> Seq.maxBy (fun x -> x.Version)
+
                     let assemblies = 
                         if pkg.AssemblyReferences.IsEmpty() then
                             Seq.empty
                         else
-                            let maxFramework = 
-                                pkg.AssemblyReferences
-                                |> Seq.map (fun x -> x.TargetFramework)
-                                |> Seq.filter (fun x -> x.Identifier = ".NETFramework")
-                                |> Seq.maxBy (fun x -> x.Version)
-    
-                            pkg.AssemblyReferences 
-                            |> Seq.filter (fun x -> x.TargetFramework = maxFramework)
+                            let compatibleAssemblyReferences =
+                                getCompatibleItems maxFramework pkg.PackageAssemblyReferences
+                                |> Seq.collect (fun x -> x.References)
+                                |> Set.ofSeq
+                            pkg.AssemblyReferences
+                            |> Seq.filter (fun x -> compatibleAssemblyReferences.Contains x.Name && x.TargetFramework = maxFramework )
 
-                    packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; Error = ""; })
+                    let frameworkAssemblyReferences = getCompatibleItems maxFramework pkg.FrameworkAssemblies
+
+                    packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; FrameworkAssemblies = frameworkAssemblyReferences; Error = ""; })
                     packagesCache.[key]
 
         )
