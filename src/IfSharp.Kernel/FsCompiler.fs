@@ -138,30 +138,30 @@ type FsCompiler (executingDirectory : string) =
                 | None, state -> ()
             }
 
-        let charIndex = line.Length
         let tokens = gatherTokens tokenizer 0L |> Seq.toArray |> Array.rev
 
         let startIndex = 
-            match tokens |> Array.tryFindIndex (fun x -> charIndex > x.LeftColumn && charIndex < x.LeftColumn + x.FullMatchedLength) with
+            match tokens |> Array.tryFindIndex (fun x -> charIndex > x.LeftColumn && charIndex <= x.LeftColumn + x.FullMatchedLength) with
             | Some x -> x
             | None -> 0
 
         let endIndex = 
-            match tokens.[startIndex..tokens.Length - 1] |> Array.tryFindIndex (fun x -> x.TokenName <> "DOT" && x.TokenName <> "IDENT") with
+            let idx = 
+                tokens
+                |> Seq.mapi (fun i x -> i, x)
+                |> Seq.tryFindIndex (fun (i, x) -> x.TokenName <> "DOT" && x.TokenName <> "IDENT" && i > startIndex)
+
+            match idx with
+            | Some 0 -> startIndex
             | Some x -> x - 1
             | None -> tokens.Length - 1
 
         tokens.[startIndex..endIndex]
         |> Array.filter (fun x -> x.TokenName <> "DOT")
         |> Array.map (fun x -> line.Substring(x.LeftColumn, x.FullMatchedLength))
+        |> Array.map (fun x -> x.Trim([|'`'|]))
         |> Array.rev
         |> Array.toList
-
-//        let find = maxIndexOfAny line " \t\r\b" (Math.Max(charIndex, 1) - 1)
-//        let start = find + 1
-//        let len = Math.Max(charIndex - start, 0)
-//        let splits = line.Substring(start, len).Split('.')
-//        splits |> Seq.take (splits.Length - 1) |> Seq.toList
 
     /// Tries to figure out the names to pass to GetToolTip
     member this.ExtractTooltipName (line : string) (charIndex : int) =
