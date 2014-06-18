@@ -185,16 +185,19 @@ type NuGetManager (executingDirectory : string) =
                         |> Seq.maxBy (fun x -> x.Version)
 
                     let assemblies = 
-                        if pkg.AssemblyReferences.IsEmpty() then
-                            Seq.empty
-                        else
+                        if not(pkg.PackageAssemblyReferences.IsEmpty()) then
                             let compatibleAssemblyReferences =
                                 getCompatibleItems maxFramework pkg.PackageAssemblyReferences
                                 |> Seq.collect (fun x -> x.References)
                                 |> Set.ofSeq
                             pkg.AssemblyReferences
                             |> Seq.filter (fun x -> compatibleAssemblyReferences.Contains x.Name && x.TargetFramework = maxFramework )
-
+                        elif pkg.AssemblyReferences.IsEmpty() then
+                            Seq.empty
+                        else
+                            pkg.AssemblyReferences
+                            |> Seq.filter (fun x -> x.TargetFramework = maxFramework)
+                        
                     let frameworkAssemblyReferences = getCompatibleItems maxFramework pkg.FrameworkAssemblies
 
                     packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; FrameworkAssemblies = frameworkAssemblyReferences; Error = ""; })
