@@ -125,7 +125,7 @@ type FsCompiler (executingDirectory : string) =
         sb.ToString().Trim('\n', '\r')
 
     /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
-    member this.ExtractNames (line : string, charIndex : int) =
+    member this.ExtractNames (line, charIndex) =
         
         let sourceTok = SourceTokenizer([], "/home/test.fsx")
         let tokenizer = sourceTok.CreateLineTokenizer(line)
@@ -138,30 +138,35 @@ type FsCompiler (executingDirectory : string) =
                 | None, state -> ()
             }
 
-        let tokens = gatherTokens tokenizer 0L |> Seq.toArray |> Array.rev
+        let tokens = gatherTokens tokenizer 0L |> Seq.toArray
+        let idx = tokens |> Array.tryFindIndex(fun x -> charIndex >= x.LeftColumn && charIndex <= x.LeftColumn + x.FullMatchedLength)
 
-        let startIndex = 
-            match tokens |> Array.tryFindIndex (fun x -> charIndex > x.LeftColumn && charIndex <= x.LeftColumn + x.FullMatchedLength) with
-            | Some x -> x
-            | None -> 0
-
-        let endIndex = 
+        match idx with
+        | Some(endIndex) ->
+    
+            let token = tokens.[endIndex]
             let idx = 
-                tokens
-                |> Seq.mapi (fun i x -> i, x)
-                |> Seq.tryFindIndex (fun (i, x) -> x.TokenName <> "DOT" && x.TokenName <> "IDENT" && i > startIndex)
+                tokens.[0..endIndex]
+                |> Array.rev
+                |> Array.tryFindIndex (fun x -> x.TokenName <> "IDENT" && x.TokenName <> "DOT")
+    
+            let startIndex = 
+                match idx with
+                | Some(x) -> endIndex - x
+                | None -> 0
 
-            match idx with
-            | Some 0 -> startIndex
-            | Some x -> x - 1
-            | None -> tokens.Length - 1
+            let relevantTokens = 
+                tokens.[startIndex..endIndex]
+                |> Array.filter (fun x -> x.TokenName = "IDENT")
+                |> Array.map (fun x -> line.Substring(x.LeftColumn, x.FullMatchedLength))
+                |> Array.map (fun x -> x.Trim([|'`'|]))
 
-        tokens.[startIndex..endIndex]
-        |> Array.filter (fun x -> x.TokenName <> "DOT")
-        |> Array.map (fun x -> line.Substring(x.LeftColumn, x.FullMatchedLength))
-        |> Array.map (fun x -> x.Trim([|'`'|]))
-        |> Array.rev
-        |> Array.toList
+            if token.TokenName = "IDENT" then
+                relevantTokens |> Seq.take (relevantTokens.Length - 1) |> Seq.toList
+            else
+                relevantTokens |> Seq.toList
+
+        | None -> List.empty
 
     /// Tries to figure out the names to pass to GetToolTip
     member this.ExtractTooltipName (line : string) (charIndex : int) =
