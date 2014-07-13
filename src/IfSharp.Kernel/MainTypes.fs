@@ -18,9 +18,10 @@ type ConnectionInformation =
 
 type IntellisenseItem = 
     {
-        glyph: int;
-        name: string;
-        documentation: string;
+        glyph: int
+        name: string
+        documentation: string
+        value: string
     }
 
 type dict = Dictionary<string, obj>

@@ -59,11 +59,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{45519D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE}"
 	ProjectSection(SolutionItems) = preProject
-		ipython-profile\static\custom\codemirror-intellisense.js = ipython-profile\static\custom\codemirror-intellisense.js
 		ipython-profile\static\custom\custom.css = ipython-profile\static\custom\custom.css
 		ipython-profile\static\custom\custom.js = ipython-profile\static\custom\custom.js
 		ipython-profile\static\custom\fsharp.js = ipython-profile\static\custom\fsharp.js
 		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
+		ipython-profile\static\custom\webintellisense-codemirror.js = ipython-profile\static\custom\webintellisense-codemirror.js
+		ipython-profile\static\custom\webintellisense.js = ipython-profile\static\custom\webintellisense.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19}"

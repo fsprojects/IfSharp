@@ -279,9 +279,12 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         let (names, decls, tcr) = compiler.GetDeclarations(codeString, realLineNumber, position.ch)
         
         // convert to objects that ipython can understand
+        let getValue(str:string) =
+            if str.Contains(" ") then "``" + str + "``" else str
+
         let matches = 
             decls
-            |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.Documentation })
+            |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.Documentation; value = getValue(x.Name) })
             |> Seq.toList
 
         let newContent = 

@@ -16,6 +16,7 @@ module IfSharpResources =
     let custom_css() = resources.GetString("custom_css")
     let custom_js() = resources.GetString("custom_js")
     let fsharp_js() = resources.GetString("fsharp_js")
-    let codemirror_intellisense_js() = resources.GetString("codemirror-intellisense")
+    let webintellisense_js() = resources.GetString("webintellisense")
+    let webintellisense_codemirror_js() = resources.GetString("webintellisense-codemirror")
     let ipython_config() = getString("ipython_config")
 

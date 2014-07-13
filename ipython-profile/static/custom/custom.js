@@ -65,7 +65,7 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
         return results;
     }
 
-    require(['custom/codemirror-intellisense'], function ()
+    require(['custom/webintellisense', 'custom/webintellisense-codemirror'], function ()
     {
         // applies intellisense hooks onto a cell
         function applyIntellisense(cell)
@@ -75,9 +75,21 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
             var editor = cell.code_mirror;
             if (editor.intellisense == null)
             {
+                var intellisense = new CodeMirrorIntellisense(editor);
                 cell.force_highlight('fsharp');
                 cell.code_mirror.setOption('theme', 'neat');
-                editor.intellisense = new Intellisense(editor, function (callback, position)
+                editor.intellisense = intellisense;
+
+                intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
+                intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
+                intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
+                intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
+                intellisense.addMethodsTrigger({ keyCode: 8 }); // `backspace`
+                intellisense.onMethod(function (item, position)
+                {
+
+                });
+                intellisense.onDeclaration(function (item, position)
                 {
                     var cells = getCodeCells();
                     var codes = cells.codes;
@@ -85,9 +97,9 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                     var callbacks = { shell: {}, iopub: {} };
 
                     // v2
-                    callbacks.shell.reply = function (data)
+                    callbacks.shell.reply = function (msg)
                     {
-                        callback(data.content.matches);
+                        intellisense.setDeclarations(msg.content.matches);
                     };
 
                     callbacks.iopub.output = function (msg)
@@ -98,7 +110,7 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                     // v1
                     callbacks.complete_reply = function (data)
                     {
-                        callback(data.matches);
+                        intellisense.setDeclarations(data.matches);
                     };
 
                     callbacks.output = function (msgType, content, metadata)

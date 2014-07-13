@@ -14,7 +14,7 @@ module Evaluation =
     let internal outStream = new StringWriter(sbOut)
     let internal errStream = new StringWriter(sbErr)
     let internal fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
-    let internal fsiEval = new FsiEvaluationSession(fsiConfig, [|"--noninteractive"|], inStream, outStream, errStream)
+    let internal fsiEval = FsiEvaluationSession.Create(fsiConfig, [|"--noninteractive"|], inStream, outStream, errStream)
     
     /// Gets `it` only if `it` was printed to the console
     let GetLastExpression() =

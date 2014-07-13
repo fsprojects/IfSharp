@@ -2,6 +2,125 @@ th {
 	background-color: #ececec;
 }
 
+.br-intellisense {
+    min-width: 220px;
+    max-height: 176px;
+    min-height: 22px;
+    z-index: 10;
+    overflow: auto;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #E5C365;
+    box-shadow: 2px 3px 5px rgba(0, 0, 0, .2);
+    padding: 0;
+    margin: 5px;
+    display: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.br-documentation {
+    min-width: 200px;
+    padding: 3px;
+    overflow: auto;
+    position: absolute;
+    z-index: 10;
+    background-color: #E7E8EC;
+    border: 1px solid #CCCEDB;
+    box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+    font-family: 'Segoe UI';
+    font-size: 10pt;
+    white-space: pre-line;
+    display: none;
+}
+
+.br-listlink {
+    font-family: 'Segoe UI';
+    font-size: 10pt;
+    list-style: none;
+    cursor: pointer;
+    border: 1px solid white;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.br-listlink:hover {
+    background-color: #FDF4BF;
+}
+
+.br-selected {
+    background-color: #FDF4BF;
+    border: 1px dotted black;
+}
+
+.br-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: text-top;
+    margin: 2px;
+}
+
+.br-methods {
+    min-width: 220px;
+    min-height: 22px;
+    z-index: 10;
+    padding: 3px;
+    overflow: auto;
+    position: absolute;
+    background-color: #E7E8EC;
+    border: 1px solid #CCCEDB;
+    margin: 5px;
+    display: none;
+    font-family: 'Segoe UI';
+    font-size: 10pt;
+}
+
+.br-methods-text {
+    margin-left: 75px;
+}
+
+.br-methods-arrows {
+    width: 75px;
+    float: left;
+    font-family: Calibri;
+    font-weight: bold;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.br-methods-arrow {
+    cursor: pointer;
+}
+
+.br-methods-arrow-text {
+    font-weight: normal;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.br-tooltip {
+    min-width: 220px;
+    max-height: 176px;
+    min-height: 22px;
+    z-index: 10;
+    position: absolute;
+    background-color: #E7E8EC;
+    border: 1px solid #CCCEDB;
+    box-shadow: 2px 3px 5px rgba(0, 0, 0, .2);
+    padding: 5px;
+    margin: 5px;
+    display: none;
+    font-size: 12px;
+    font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+    overflow: auto;
+}
+
 .br-errormarker {
    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAQCAYAAAAxtt7zAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAABdJREFUKFNjGNbgPxihAZggiiSEw8AAAMxEB/k37k01AAAAAElFTkSuQmCC);
    background-repeat: repeat-x;

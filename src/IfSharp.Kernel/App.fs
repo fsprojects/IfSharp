@@ -196,9 +196,14 @@ module App =
             File.WriteAllText(jsFile, IfSharpResources.fsharp_js())
 
             // write fsharp js file
-            let jsFile = Path.Combine(customDir, "codemirror-intellisense.js")
-            printfn "Saving codemirror-intellisense js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.codemirror_intellisense_js())
+            let jsFile = Path.Combine(customDir, "webintellisense.js")
+            printfn "Saving webintellisense js [%s]" jsFile
+            File.WriteAllText(jsFile, IfSharpResources.webintellisense_js())
+
+            // write fsharp js file
+            let jsFile = Path.Combine(customDir, "webintellisense-codemirror.js")
+            printfn "Saving webintellisense-codemirror js [%s]" jsFile
+            File.WriteAllText(jsFile, IfSharpResources.webintellisense_codemirror_js())
 
         printfn "Starting ipython..."
         let p = new Process()
