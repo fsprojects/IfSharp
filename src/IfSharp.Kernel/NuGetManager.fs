@@ -197,9 +197,8 @@ type NuGetManager (executingDirectory : string) =
                         elif pkg.AssemblyReferences.IsEmpty() then
                             Seq.empty
                         else
-                            pkg.AssemblyReferences
-                            |> Seq.filter (fun x -> x.TargetFramework = maxFramework)
-                        
+                            getCompatibleItems maxFramework pkg.AssemblyReferences
+
                     let frameworkAssemblyReferences = getCompatibleItems maxFramework pkg.FrameworkAssemblies
 
                     packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; FrameworkAssemblies = frameworkAssemblyReferences; Error = ""; })
