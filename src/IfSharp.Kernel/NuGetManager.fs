@@ -181,10 +181,12 @@ type NuGetManager (executingDirectory : string) =
                         if retval then compatibleItems else Seq.empty
 
                     let maxFramework =
-                        pkg.GetSupportedFrameworks()
-                        |> Seq.maxBy (fun x -> x.Version)
+                        // try full framework first - if none is supported, fall back
+                        let fullFrameworks = pkg.GetSupportedFrameworks() |> Seq.filter (fun x -> x.Identifier = ".NETFramework") |> Seq.toArray
+                        if Array.length fullFrameworks > 0 then fullFrameworks |> Array.maxBy (fun x -> x.Version)
+                        else pkg.GetSupportedFrameworks() |> Seq.maxBy (fun x -> x.Version)
 
-                    let assemblies = 
+                    let assemblies =
                         if not(pkg.PackageAssemblyReferences.IsEmpty()) then
                             let compatibleAssemblyReferences =
                                 getCompatibleItems maxFramework pkg.PackageAssemblyReferences
@@ -195,9 +197,8 @@ type NuGetManager (executingDirectory : string) =
                         elif pkg.AssemblyReferences.IsEmpty() then
                             Seq.empty
                         else
-                            pkg.AssemblyReferences
-                            |> Seq.filter (fun x -> x.TargetFramework = maxFramework)
-                        
+                            getCompatibleItems maxFramework pkg.AssemblyReferences
+
                     let frameworkAssemblyReferences = getCompatibleItems maxFramework pkg.FrameworkAssemblies
 
                     packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; FrameworkAssemblies = frameworkAssemblyReferences; Error = ""; })
