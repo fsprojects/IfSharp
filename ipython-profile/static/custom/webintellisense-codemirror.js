@@ -62,9 +62,17 @@ var CodeMirrorIntellisense = function (editor)
         {
             if (decls.isVisible())
             {
+                // backspace
                 if (evt.keyCode === 8)
                 {
                     decls.setFilter(getFilterText());
+
+                    // hide if we go too far left
+                    var cursor = editor.getCursor();
+                    if (cursor.ch <= autoCompleteStart.columnIndex)
+                    {
+                        decls.setVisible(false);
+                    }
                 }
                 else
                 {
@@ -223,7 +231,11 @@ var CodeMirrorIntellisense = function (editor)
      * @param {int} i - The index to set
      * @function setStartColumnIndex
      */
-    this.setStartColumnIndex = function (i) { autoCompleteStart.columnIndex = i; };
+    this.setStartColumnIndex = function (i)
+    {
+        autoCompleteStart.columnIndex = i;
+        decls.setFilter(getFilterText());
+    };
 
     /**
      * Gets the text after startColumnIndex but before caret offset.

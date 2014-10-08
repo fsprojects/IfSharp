@@ -82,9 +82,12 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
 
                 intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
                 intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
+                intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
+                intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
+                intellisense.addDeclarationTrigger({ keyCode: 222 }); // `"`
+                intellisense.addDeclarationTrigger({ keyCode: 222, shiftKey: true }); // `"`
                 intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
                 intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
-                intellisense.addMethodsTrigger({ keyCode: 8 }); // `backspace`
                 intellisense.onMethod(function (item, position)
                 {
 
@@ -95,11 +98,32 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                     var codes = cells.codes;
                     var cursor = cells.selectedCell.code_mirror.doc.getCursor();
                     var callbacks = { shell: {}, iopub: {} };
+                    var line = editor.getLine(cursor.line);
+                    var isSlash = item.keyCode === 191 || item.keyCode === 220;
+                    var isQuote = item.keyCode === 222;
+
+                    var isLoadOrRef = line.indexOf('#load') === 0
+                        || line.indexOf('#r') === 0;
+
+                    var isStartLoadOrRef = line === '#load "'
+                        || line === '#r "'
+                        || line === '#load @"'
+                        || line === '#r @"';
+
+                    if (isSlash && !isLoadOrRef)
+                    {
+                        return;
+                    }
+                    if (isQuote && !isStartLoadOrRef)
+                    {
+                        return;
+                    }
 
                     // v2
                     callbacks.shell.reply = function (msg)
                     {
                         intellisense.setDeclarations(msg.content.matches);
+                        intellisense.setStartColumnIndex(data.filter_start_index);
                     };
 
                     callbacks.iopub.output = function (msg)
@@ -111,6 +135,7 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                     callbacks.complete_reply = function (data)
                     {
                         intellisense.setDeclarations(data.matches);
+                        intellisense.setStartColumnIndex(data.filter_start_index);
                     };
 
                     callbacks.output = function (msgType, content, metadata)

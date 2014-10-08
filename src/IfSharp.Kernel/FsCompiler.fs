@@ -31,9 +31,10 @@ type TooltipInfo =
 
 type SimpleDeclaration =
     {
-        Documentation: string;
-        Glyph: int;
-        Name: string;
+        Documentation: string
+        Glyph: int
+        Name: string
+        Value: string
     }
 
 type TypeCheckResults = 
@@ -42,6 +43,103 @@ type TypeCheckResults =
         Check : CheckFileResults
         Preprocess : PreprocessResults
     }
+
+[<AutoOpen>]
+module FsCompilerInternals = 
+    
+    type PreprocessorMatchType = 
+        | Folder
+        | File
+
+    type PreprocessorMatch = 
+        {
+            MatchType: PreprocessorMatchType
+            Name: string
+        }
+
+    type Directive =
+        | Load
+        | Reference
+
+    type PreprocessorMatches =
+        {
+            Directive: Directive
+            Directory: string
+            Filter: string
+            Matches: PreprocessorMatch[]
+            FilterStartIndex: int
+        }
+
+    type String with 
+        member this.Substring2(startIndex, endIndex) =
+           this.Substring(startIndex, endIndex - startIndex)
+
+    let matchToDocumentation (m:PreprocessorMatch) =
+        match m.MatchType with
+        | File -> "File: " + m.Name
+        | Folder -> "Folder: " + m.Name
+
+    let directiveToFileFilter d = 
+        match d with 
+        | Reference -> "*.dll"
+        | Load -> "*.fsx"
+
+    let matchToGlyph m = 
+        match m with
+        | File -> 1000
+        | Folder -> 1001
+
+    let getPreprocessorIntellisense baseDirectory charIndex (line:string) = 
+    
+        let directive = 
+            if line.StartsWith "#load" then Some Load
+            elif line.StartsWith "#r" then Some Reference
+            else None
+
+        match directive with
+        | Some d ->
+            let nextQuote = line.IndexOf('"')
+            let firstQuote = line.LastIndexOf('"', charIndex - 1)
+    
+            // make sure we are inside quotes
+            if firstQuote <> -1 && nextQuote <> -1 && firstQuote = nextQuote then
+
+                let previousSlash = line.LastIndexOfAny([| '/'; '\\' |], charIndex - 1)
+
+                let directory, filter, startIndex = 
+                    if previousSlash <> -1 && previousSlash > firstQuote then
+                        let directory = line.Substring2(firstQuote + 1, previousSlash + 1)
+                        let filter = line.Substring2(previousSlash + 1, charIndex)
+                        if Path.IsPathRooted(directory) then
+                            directory, filter, previousSlash + 1
+                        else
+                            Path.Combine(baseDirectory, directory), filter, previousSlash + 1
+                    else 
+                        baseDirectory, line.Substring2(firstQuote + 1, charIndex), firstQuote + 1
+
+                let files = 
+                    Directory.GetFiles(directory, directiveToFileFilter d)
+                    |> Array.map Path.GetFileName
+                    |> Array.map (fun x -> { MatchType = PreprocessorMatchType.File; Name = x })
+
+                let dirs = 
+                    DirectoryInfo(directory).GetDirectories()
+                    |> Array.map (fun x -> x.Name)
+                    |> Array.map (fun x -> { MatchType = PreprocessorMatchType.Folder; Name = x })
+
+                {
+                    Matches = Array.append dirs files
+                    Directory = directory
+                    Filter = filter
+                    FilterStartIndex = startIndex
+                    Directive = d
+                } |> Some
+        
+            else
+
+                None
+
+        | None -> None
 
 /// The Compiler class contains methods and for compiling F# code and other tasks
 type FsCompiler (executingDirectory : string) =
@@ -155,18 +253,23 @@ type FsCompiler (executingDirectory : string) =
                 | Some(x) -> endIndex - x
                 | None -> 0
 
+            let finalIndex = 
+                if token.TokenName = "IDENT" then
+                    endIndex - 1
+                else
+                    endIndex
+
             let relevantTokens = 
-                tokens.[startIndex..endIndex]
+                tokens.[startIndex..finalIndex]
                 |> Array.filter (fun x -> x.TokenName = "IDENT")
                 |> Array.map (fun x -> line.Substring(x.LeftColumn, x.FullMatchedLength))
                 |> Array.map (fun x -> x.Trim([|'`'|]))
 
-            if token.TokenName = "IDENT" then
-                relevantTokens |> Seq.take (relevantTokens.Length - 1) |> Seq.toList
-            else
-                relevantTokens |> Seq.toList
+            let filterStartIndex = if finalIndex = -1 then tokens.[0].LeftColumn else tokens.[finalIndex].RightColumn + 1
+            let lst = relevantTokens |> Seq.toList
+            (lst, filterStartIndex)
 
-        | None -> List.empty
+        | None -> (List.empty, 0)
 
     /// Tries to figure out the names to pass to GetToolTip
     member this.ExtractTooltipName (line : string) (charIndex : int) =
@@ -231,7 +334,7 @@ type FsCompiler (executingDirectory : string) =
         let fileName = "/home/Test.fsx"
         let tcr = this.TypeCheck(source, fileName)
         let line = tcr.Preprocess.OriginalLines.[lineNumber - 1]
-        let names = this.ExtractNames(line, charIndex)
+        let names, _ = this.ExtractNames(line, charIndex)
 
         // get declarations for a location
         let methods = tcr.Check.GetMethodsAlternate(lineNumber, charIndex, line, Some(names))
@@ -242,21 +345,35 @@ type FsCompiler (executingDirectory : string) =
 
         let fileName = "/home/Test.fsx"
         let tcr = this.TypeCheck(source, fileName)
-        let lines = tcr.Preprocess.OriginalLines
         let line = tcr.Preprocess.OriginalLines.[lineNumber - 1]
-        let names = this.ExtractNames(line, charIndex)
+        let preprocess = FsCompilerInternals.getPreprocessorIntellisense "." charIndex line
 
-        // get declarations for a location
-        let decls = 
-            tcr.Check.GetDeclarationsAlternate(Some(tcr.Parse), lineNumber, charIndex, line, names, "")
-            |> Async.RunSynchronously
+        match preprocess with
+        | None ->
 
-        let items = 
-            decls.Items
-            |> Seq.map (fun x -> { Documentation = this.FormatTip(x.DescriptionText, None); Glyph = x.Glyph; Name = x.Name })
-            |> Seq.toArray
+            let getValue(str:string) =
+                if str.Contains(" ") then "``" + str + "``" else str
 
-        (names, items, tcr)
+            // get declarations for a location
+            let names, filterStartIndex = this.ExtractNames(line, charIndex)
+            let decls = 
+                tcr.Check.GetDeclarationsAlternate(Some(tcr.Parse), lineNumber, charIndex, line, names, "")
+                |> Async.RunSynchronously
+
+            let items = 
+                decls.Items
+                |> Seq.map (fun x -> { Documentation = this.FormatTip(x.DescriptionText, None); Glyph = x.Glyph; Name = x.Name; Value = getValue x.Name })
+                |> Seq.toArray
+
+            (names, items, tcr, filterStartIndex)
+
+        | Some(x) -> 
+            
+            let items = 
+                x.Matches
+                |> Array.map (fun x -> { Documentation = matchToDocumentation x; Glyph = matchToGlyph x.MatchType; Name = x.Name; Value = x.Name })
+            
+            (List.empty, items, tcr, x.FilterStartIndex)
 
     /// Gets tooltip information for the specified information
     member this.GetToolTipText (source, lineNumber : int, charIndex : int) =

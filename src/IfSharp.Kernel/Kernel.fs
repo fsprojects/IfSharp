@@ -135,6 +135,14 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     let sendState (envelope) (state) =
         sendMessage ioSocket envelope "status" { execution_state = state } 
 
+    /// Convenience method for sending the state of 'busy' to the kernel
+    let sendStateBusy (envelope) =
+        sendState envelope "busy"
+
+    /// Convenience method for sending the state of 'idle' to the kernel
+    let sendStateIdle (envelope) =
+        sendState envelope "idle"
+
     /// Handles a 'kernel_info_request' message
     let kernelInfoRequest(msg : KernelMessage) (content : KernelRequest) = 
         let content = 
@@ -159,6 +167,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             let reply = { execution_count = executionCount; data = d; metadata = dict() }
             sendMessage ioSocket lastMessage.Value messageType reply
 
+    /// Sends a message to pyout
     let pyout (message) = sendDisplayData "text/plain" message "pyout"
 
     /// Preprocesses the code and evaluates it
@@ -204,7 +213,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         if content.silent = false then executionCount <- executionCount + 1
         
         // send busy
-        sendState msg "busy"
+        sendStateBusy msg
         sendMessage ioSocket msg "pyin" { code = content.code; execution_count = executionCount  }
 
         // evaluate
@@ -214,7 +223,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
                 preprocessAndEval (content.code)
                 None
             with
-            | exn -> Some exn
+            | exn -> 
+                handleException exn
+                Some exn
 
         if sbErr.Length > 0 then
             let err = sbErr.ToString().Trim()
@@ -242,7 +253,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             sendMessage shellSocket msg "execute_reply" executeReply
 
             // send all the data
-            if content.silent = false then
+            if not <| content.silent then
                 if data.Count = 0 then
                     let lastExpression = GetLastExpression()
                     match lastExpression with
@@ -256,7 +267,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
                     | None -> ()
 
         // we are now idle
-        sendState msg "idle"
+        sendStateIdle msg
 
     /// Handles a 'complete_request' message
     let completeRequest (msg : KernelMessage) (content : CompleteRequest) = 
@@ -276,20 +287,17 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         let realLineNumber = position.line + lineOffset + 1
         let codeString = String.Join("\n", codes)
-        let (names, decls, tcr) = compiler.GetDeclarations(codeString, realLineNumber, position.ch)
+        let (_, decls, tcr, filterStartIndex) = compiler.GetDeclarations(codeString, realLineNumber, position.ch)
         
-        // convert to objects that ipython can understand
-        let getValue(str:string) =
-            if str.Contains(" ") then "``" + str + "``" else str
-
         let matches = 
             decls
-            |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.Documentation; value = getValue(x.Name) })
+            |> Seq.map (fun x -> { glyph = x.Glyph; name = x.Name; documentation = x.Documentation; value = x.Value })
             |> Seq.toList
 
         let newContent = 
             {
                 matched_text = ""
+                filter_start_index = filterStartIndex
                 matches = matches
                 status = "ok"
             }
@@ -315,7 +323,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
                 for e in errors do
                     let realLineNumber = 
                         let x = e.StartLine - headerLines.Length - 1
-                        max x 1
+                        max x 0
 
                     let cellNumber, cellLineNumber, _ = allLines.[realLineNumber]
                     yield { e with CellNumber = cellNumber; StartLine = cellLineNumber; EndLine = cellLineNumber; }
@@ -336,6 +344,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
                 stdin_port = connectionInformation.stdin_port; 
             }
 
+        logMessage "connectRequest()"
         sendMessage shellSocket msg "connect_reply" reply
 
     /// Handles a 'shutdown_request' message
@@ -361,7 +370,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     let doShell() =
 
         try
-            Thread.Sleep(10000)
             preprocessAndEval headerCode
         with
         | exn -> handleException exn
@@ -398,20 +406,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         | ex -> handleException ex
 
     /// Clears the display
-    member self.ClearDisplay () =
+    member __.ClearDisplay () =
         if lastMessage.IsSome then
             sendMessage (ioSocket) (lastMessage.Value) ("clear_output") { wait = false; stderr = true; stdout = true; other = true; }
 
     /// Sends auto complete information to the client
-    member self.AddPayload (text) =
+    member __.AddPayload (text) =
         payload.Add( { html = ""; source = "page"; start_line_number = 1; text = text })
 
     /// Adds display data to the list of display data to send to the client
-    member self.SendDisplayData (contentType, displayItem) =
+    member __.SendDisplayData (contentType, displayItem) =
         sendDisplayData contentType displayItem "display_data"
 
     /// Starts the kernel asynchronously
-    member self.StartAsync() = 
+    member __.StartAsync() = 
         
         Async.Start (async { doHeartbeat() } )
         Async.Start (async { doShell() } )

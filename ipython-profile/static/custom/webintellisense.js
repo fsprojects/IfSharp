@@ -765,9 +765,10 @@ var DeclarationsIntellisense = function ()
         }
 
         var ret = [];
+        var lowerFilter = filterText.toLowerCase();
         declarations.forEach(function (item)
         {
-            if (filterMode(item, filterText))
+            if (filterMode(item, lowerFilter))
             {
                 ret.push(item);
             }

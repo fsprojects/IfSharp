@@ -1,3 +1,9 @@
+### New in 2.0.2 Beta (Released 2014/10/08)
+* Improved intellisense experience
+    * More consistent **ctrl+space** behavior
+    * **#r** intellisense
+    * **#load** intellisense
+
 ### New in 2.0.1 Beta (Released 2014/06/02)
 * Added gcAllowVeryLargeObjects to the app.config
 * The `--install` command line argument no longer supported. File system is automatically copied if no command line arguments are supplied

@@ -224,18 +224,20 @@ type CompleteReply =
         // # The list of all matches to the completion request, such as
         // # ['a.isalnum', 'a.isalpha'] for the above example.
 //        matches: array<string>;
-        matches: obj; // changed for custom UI
+        matches: obj // changed for custom UI
 
         // # the substring of the matched text
         // # this is typically the common prefix of the matches,
         // # and the text that is already in the block that would be replaced by the full completion.
         // # This would be 'a.is' in the above example.
-        matched_text: string;
+        matched_text: string
 
         // # status should be 'ok' unless an exception was raised during the request,
         // # in which case it should be 'error', along with the usual error message content
         // # in other messages.
-        status: string;
+        status: string
+
+        filter_start_index: int
     }
 
 type HistoryRequest =
