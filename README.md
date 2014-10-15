@@ -28,7 +28,7 @@ See our [release repository](https://github.com/BayardRock/IfSharp/releases). Al
 ![Intellisense Example #3 With Chart](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/intellisense-3.png "Intellisense Example #3 With Chart")
 ***
 
-![Intellisense Example #4 #r Directive](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/intellisense-4.png "Intellisense Example #3 #r Directive")
+![Intellisense Example #4 #r Directive](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/intellisense-reference.gif "Intellisense Example #3 #r Directive")
 ***
 
 ![Intellisense Example #5 #load Directive](https://raw.github.com/BayardRock/IfSharp/master/docs/files/img/intellisense-5.png "Intellisense Example #load Directive")
