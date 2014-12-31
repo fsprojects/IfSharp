@@ -41,8 +41,8 @@ type CustomErrorInfo =
             Subcategory = subcategory
             CellNumber = 0
         }
-    static member From(e : ErrorInfo) =
-        let severityString = match e.Severity with Severity.Error -> "Error" | _ -> "Warning"
+    static member From(e : FSharpErrorInfo) =
+        let severityString = match e.Severity with FSharpErrorSeverity.Error -> "Error" | _ -> "Warning"
         {
             FileName = e.FileName
             StartLine = e.StartLineAlternate

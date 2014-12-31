@@ -208,7 +208,8 @@ module App =
         printfn "Starting ipython..."
         let p = new Process()
         p.StartInfo.FileName <- "ipython"
-        p.StartInfo.Arguments <- "notebook --profile ifsharp"
+//        p.StartInfo.Arguments <- "notebook --profile ifsharp"
+        p.StartInfo.Arguments <- "qtconsole --profile ifsharp"
         p.StartInfo.WorkingDirectory <- appData
 
         // tell the user something bad happened

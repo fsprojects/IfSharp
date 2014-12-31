@@ -208,6 +208,14 @@ type CompleteRequest =
         cursor_pos: int;
     }
 
+/// Custom message used only by the web front end.
+type IntellisenseRequest = {
+    text: string
+    line: string
+    block: string
+    cursor_pos: int
+}
+
 type BlockType =
     {
         selectedIndex: int;
@@ -405,6 +413,7 @@ type ShellMessage =
     // intellisense
     | ObjectInfoRequest of ObjectInfoRequest
     | CompleteRequest of CompleteRequest
+    | IntellisenseRequest of IntellisenseRequest
     | CompleteReply of CompleteReply
 
     // history
@@ -451,23 +460,25 @@ module ShellMessages =
     let Deserialize (messageType:string) (messageJson:string) =
         
         match messageType with
-        | "execute_request"     -> ExecuteRequest (JsonConvert.DeserializeObject<ExecuteRequest>(messageJson))
-        | "execute_reply_ok"    -> ExecuteReplyOk (JsonConvert.DeserializeObject<ExecuteReplyOk>(messageJson))
-        | "execute_reply_error" -> ExecuteReplyError (JsonConvert.DeserializeObject<ExecuteReplyError>(messageJson))
+        | "execute_request"      -> ExecuteRequest (JsonConvert.DeserializeObject<ExecuteRequest>(messageJson))
+        | "execute_reply_ok"     -> ExecuteReplyOk (JsonConvert.DeserializeObject<ExecuteReplyOk>(messageJson))
+        | "execute_reply_error"  -> ExecuteReplyError (JsonConvert.DeserializeObject<ExecuteReplyError>(messageJson))
 
-        | "object_info_request" -> ObjectInfoRequest (JsonConvert.DeserializeObject<ObjectInfoRequest>(messageJson))
-        | "complete_request"    -> CompleteRequest (JsonConvert.DeserializeObject<CompleteRequest>(messageJson))
-        | "complete_reply"      -> CompleteReply (JsonConvert.DeserializeObject<CompleteReply>(messageJson))
+        | "object_info_request"  -> ObjectInfoRequest (JsonConvert.DeserializeObject<ObjectInfoRequest>(messageJson))
+        | "complete_request"     -> CompleteRequest (JsonConvert.DeserializeObject<CompleteRequest>(messageJson))
+        | "complete_reply"       -> CompleteReply (JsonConvert.DeserializeObject<CompleteReply>(messageJson))
 
-        | "history_request"     -> HistoryRequest (JsonConvert.DeserializeObject<HistoryRequest>(messageJson))
-        | "history_reply"       -> HistoryReply (JsonConvert.DeserializeObject<HistoryReply>(messageJson))
+        | "intellisense_request" -> IntellisenseRequest (JsonConvert.DeserializeObject<IntellisenseRequest>(messageJson))
 
-        | "connect_request"     -> ConnectRequest (JsonConvert.DeserializeObject<ConnectRequest>(messageJson))
-        | "connect_reply"       -> ConnectReply (JsonConvert.DeserializeObject<ConnectReply>(messageJson))
+        | "history_request"      -> HistoryRequest (JsonConvert.DeserializeObject<HistoryRequest>(messageJson))
+        | "history_reply"        -> HistoryReply (JsonConvert.DeserializeObject<HistoryReply>(messageJson))
 
-        | "kernel_info_request" -> KernelRequest (JsonConvert.DeserializeObject<KernelRequest>(messageJson))
-        | "kernel_info_reply"   -> KernelReply (JsonConvert.DeserializeObject<KernelReply>(messageJson))
+        | "connect_request"      -> ConnectRequest (JsonConvert.DeserializeObject<ConnectRequest>(messageJson))
+        | "connect_reply"        -> ConnectReply (JsonConvert.DeserializeObject<ConnectReply>(messageJson))
 
-        | "shutdown_request"    -> ShutdownRequest (JsonConvert.DeserializeObject<ShutdownRequest>(messageJson))
-        | "shutdown_reply"      -> ShutdownReply (JsonConvert.DeserializeObject<ShutdownReply>(messageJson))
-        | _                     -> failwith ("Unsupported messageType: " + messageType)
+        | "kernel_info_request"  -> KernelRequest (JsonConvert.DeserializeObject<KernelRequest>(messageJson))
+        | "kernel_info_reply"    -> KernelReply (JsonConvert.DeserializeObject<KernelReply>(messageJson))
+
+        | "shutdown_request"     -> ShutdownRequest (JsonConvert.DeserializeObject<ShutdownRequest>(messageJson))
+        | "shutdown_reply"       -> ShutdownReply (JsonConvert.DeserializeObject<ShutdownReply>(messageJson))
+        | _                      -> failwith ("Unsupported messageType: " + messageType)

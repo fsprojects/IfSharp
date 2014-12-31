@@ -39,8 +39,8 @@ type SimpleDeclaration =
 
 type TypeCheckResults = 
     {
-        Parse : ParseFileResults
-        Check : CheckFileResults
+        Parse : FSharpParseFileResults
+        Check : FSharpCheckFileResults
         Preprocess : PreprocessResults
     }
 
@@ -88,6 +88,106 @@ module FsCompilerInternals =
         match m with
         | File -> 1000
         | Folder -> 1001
+
+    /// Formats a comment into a string
+    let buildFormatComment (xmlCommentRetriever: string * string -> string) cmt (sb: StringBuilder) =
+        match cmt with
+        | FSharpXmlDoc.Text(s) -> sb.AppendLine(s) |> ignore
+        | FSharpXmlDoc.XmlDocFileSignature(file, signature) ->
+            let comment = xmlCommentRetriever (file, signature)
+            if (not (comment.Equals(null))) && comment.Length > 0 then sb.AppendLine(comment) |> ignore
+        | FSharpXmlDoc.None -> ()
+
+    /// Converts a ToolTipElement into a string
+    let buildFormatElement isSingle el (sb: StringBuilder) xmlCommentRetriever =
+        
+        match el with
+        | FSharpToolTipElement.None -> ()
+        | FSharpToolTipElement.Single(it, comment) ->
+            sb.AppendLine(it) |> buildFormatComment xmlCommentRetriever comment
+        | FSharpToolTipElement.Group(items) ->
+            let items, msg =
+                if items.Length > 10 then
+                    (items |> Seq.take 10 |> List.ofSeq),
+                    sprintf "   (+%d other overloads)" (items.Length - 10)
+                else items, null
+            if isSingle && items.Length > 1 then
+                sb.AppendLine("Multiple overloads") |> ignore
+            for (it, comment) in items do
+                sb.AppendLine(it) |> buildFormatComment xmlCommentRetriever comment
+            if msg <> null then sb.AppendFormat(msg) |> ignore
+        | FSharpToolTipElement.CompositionError(err) ->
+            sb.Append("Composition error: " + err) |> ignore
+
+    /// Formats a DataTipText into a string
+    let formatTip (tip, xmlCommentRetriever) =
+        let commentRetriever = defaultArg xmlCommentRetriever (fun _ -> "")
+        let sb = new StringBuilder()
+        match tip with
+        | FSharpToolTipText.FSharpToolTipText([single]) -> buildFormatElement true single sb commentRetriever
+        | FSharpToolTipText.FSharpToolTipText(its) -> for item in its do buildFormatElement false item sb commentRetriever
+        sb.ToString().Trim('\n', '\r')
+    /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
+    let extractNames (line, charIndex) =
+        
+        let sourceTok = SourceTokenizer([], "/home/test.fsx")
+        let tokenizer = sourceTok.CreateLineTokenizer(line)
+        let rec gatherTokens (tokenizer:FSharpLineTokenizer) state =
+            seq {
+                match tokenizer.ScanToken(state) with
+                | Some tok, state ->
+                    yield tok
+                    yield! gatherTokens tokenizer state
+                | None, state -> ()
+            }
+
+        let invalidTokens = 
+            [|
+                "IEEE64"
+                "INT32_DOT_DOT"
+                "INFIX_BAR_OP"
+                "STRING_TEXT"
+                "RARROW"
+            |]
+
+        let tokens = gatherTokens tokenizer 0L |> Seq.toArray
+        let idx = tokens |> Array.tryFindIndex(fun x -> charIndex >= x.LeftColumn && charIndex <= x.LeftColumn + x.FullMatchedLength)
+
+        match idx with
+        | Some(endIndex) ->
+    
+            let token = tokens.[endIndex]
+            if invalidTokens.Contains(token.TokenName) then
+                None
+            else
+                let idx = 
+                    tokens.[0..endIndex]
+                    |> Array.rev
+                    |> Array.tryFindIndex (fun x -> x.TokenName <> "IDENT" && x.TokenName <> "DOT")
+    
+                let startIndex = 
+                    match idx with
+                    | Some(x) -> endIndex - x
+                    | None -> 0
+
+                let finalIndex = 
+                    if token.TokenName = "IDENT" then
+                        endIndex - 1
+                    else
+                        endIndex
+
+                let relevantTokens = 
+                    tokens.[startIndex..finalIndex]
+                    |> Array.filter (fun x -> x.TokenName = "IDENT")
+                    |> Array.map (fun x -> line.Substring(x.LeftColumn, x.FullMatchedLength))
+                    |> Array.map (fun x -> x.Trim([|'`'|]))
+
+                let filterStartIndex = if finalIndex = -1 then tokens.[0].LeftColumn else tokens.[finalIndex].RightColumn + 1
+                let lst = relevantTokens |> Seq.toList
+                Some <| (lst, filterStartIndex)
+
+        | None -> 
+            Some <| ([], 0)
 
     let getPreprocessorIntellisense baseDirectory charIndex (line:string) = 
     
@@ -146,9 +246,9 @@ type FsCompiler (executingDirectory : string) =
 
     let baseReferences = [||]
     let scs = SimpleSourceCodeServices()
-    let checker = InteractiveChecker.Create()
+    let checker = FSharpChecker.Create()
     let nuGetManager = NuGetManager(executingDirectory)
-    let optionsCache = Dictionary<string, ProjectOptions>()
+    let optionsCache = Dictionary<string, FSharpProjectOptions>()
     let mutable buildingLibraries = false
 
     let lastIndexOfAll(str : string) (find : string) (startIndex) =
@@ -185,20 +285,20 @@ type FsCompiler (executingDirectory : string) =
     /// Formats a comment into a string
     member this.BuildFormatComment (xmlCommentRetriever: string * string -> string) cmt (sb: StringBuilder) =
         match cmt with
-        | XmlCommentText(s) -> sb.AppendLine(s) |> ignore
-        | XmlCommentSignature(file, signature) ->
+        | FSharpXmlDoc.Text(s) -> sb.AppendLine(s) |> ignore
+        | FSharpXmlDoc.XmlDocFileSignature(file, signature) ->
             let comment = xmlCommentRetriever (file, signature)
             if (not (comment.Equals(null))) && comment.Length > 0 then sb.AppendLine(comment) |> ignore
-        | XmlCommentNone -> ()
+        | FSharpXmlDoc.None -> ()
 
     /// Converts a ToolTipElement into a string
     member this.BuildFormatElement isSingle el (sb: StringBuilder) xmlCommentRetriever =
         
         match el with
-        | ToolTipElementNone -> ()
-        | ToolTipElement(it, comment) ->
+        | FSharpToolTipElement.None -> ()
+        | FSharpToolTipElement.Single(it, comment) ->
             sb.AppendLine(it) |> this.BuildFormatComment xmlCommentRetriever comment
-        | ToolTipElementGroup(items) ->
+        | FSharpToolTipElement.Group(items) ->
             let items, msg =
                 if items.Length > 10 then
                     (items |> Seq.take 10 |> List.ofSeq),
@@ -209,7 +309,7 @@ type FsCompiler (executingDirectory : string) =
             for (it, comment) in items do
                 sb.AppendLine(it) |> this.BuildFormatComment xmlCommentRetriever comment
             if msg <> null then sb.AppendFormat(msg) |> ignore
-        | ToolTipElementCompositionError(err) ->
+        | FSharpToolTipElement.CompositionError(err) ->
             sb.Append("Composition error: " + err) |> ignore
             
     /// Formats a DataTipText into a string
@@ -218,8 +318,8 @@ type FsCompiler (executingDirectory : string) =
         let commentRetriever = defaultArg xmlCommentRetriever (fun _ -> "")
         let sb = new StringBuilder()
         match tip with
-        | ToolTipText([single]) -> this.BuildFormatElement true single sb commentRetriever
-        | ToolTipText(its) -> for item in its do this.BuildFormatElement false item sb commentRetriever
+        | FSharpToolTipText([single]) -> this.BuildFormatElement true single sb commentRetriever
+        | FSharpToolTipText(its) -> for item in its do this.BuildFormatElement false item sb commentRetriever
         sb.ToString().Trim('\n', '\r')
 
     /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
@@ -227,7 +327,7 @@ type FsCompiler (executingDirectory : string) =
         
         let sourceTok = SourceTokenizer([], "/home/test.fsx")
         let tokenizer = sourceTok.CreateLineTokenizer(line)
-        let rec gatherTokens (tokenizer:LineTokenizer) state =
+        let rec gatherTokens (tokenizer:FSharpLineTokenizer) state =
             seq {
                 match tokenizer.ScanToken(state) with
                 | Some tok, state ->
@@ -323,8 +423,8 @@ type FsCompiler (executingDirectory : string) =
                 let answer = checker.CheckFileInProject(parse, fileName, 0, source, options, IsResultObsolete(fun () -> false), null) |> Async.RunSynchronously
         
                 match answer with
-                | CheckFileAnswer.Succeeded(check) -> (parse, check)
-                | CheckFileAnswer.Aborted -> failwithf "Parsing did not finish... (%A)" answer
+                | FSharpCheckFileAnswer.Succeeded(check) -> (parse, check)
+                | FSharpCheckFileAnswer.Aborted -> failwithf "Parsing did not finish... (%A)" answer
 
         { Check = check; Parse = parse; Preprocess = preprocessResults }
 
@@ -357,7 +457,7 @@ type FsCompiler (executingDirectory : string) =
             // get declarations for a location
             let names, filterStartIndex = this.ExtractNames(line, charIndex)
             let decls = 
-                tcr.Check.GetDeclarationsAlternate(Some(tcr.Parse), lineNumber, charIndex, line, names, "")
+                tcr.Check.GetDeclarationListInfo(Some(tcr.Parse), lineNumber, charIndex, line, names, "")
                 |> Async.RunSynchronously
 
             let items = 

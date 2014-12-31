@@ -271,6 +271,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
     /// Handles a 'complete_request' message
     let completeRequest (msg : KernelMessage) (content : CompleteRequest) = 
+        let decls, pos, filterString = GetDeclarations(content.line, 0, content.cursor_pos)
+        let items = decls |> Array.map (fun x -> x.Value)
+        let newContent = 
+            {
+                matched_text = filterString
+                filter_start_index = pos
+                matches = items
+                status = "ok"
+            }
+
+        sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
+
+    /// Handles a 'intellisense_request' message
+    let intellisenseRequest (msg : KernelMessage) (content : IntellisenseRequest) = 
 
         // in our custom UI we put all cells in content.text and more information in content.block
         // the position is contains the selected index and the relative character and line number
@@ -383,14 +397,15 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
             try
                 match msg.Content with
-                | KernelRequest(r)      -> kernelInfoRequest msg r
-                | ExecuteRequest(r)     -> executeRequest msg r
-                | CompleteRequest(r)    -> completeRequest msg r
-                | ConnectRequest(r)     -> connectRequest msg r
-                | ShutdownRequest(r)    -> shutdownRequest msg r
-                | HistoryRequest(r)     -> historyRequest msg r
-                | ObjectInfoRequest(r)  -> objectInfoRequest msg r
-                | _                     -> logMessage (String.Format("Unknown content type. msg_type is `{0}`", msg.Header.msg_type))
+                | KernelRequest(r)       -> kernelInfoRequest msg r
+                | ExecuteRequest(r)      -> executeRequest msg r
+                | CompleteRequest(r)     -> completeRequest msg r
+                | IntellisenseRequest(r) -> intellisenseRequest msg r
+                | ConnectRequest(r)      -> connectRequest msg r
+                | ShutdownRequest(r)     -> shutdownRequest msg r
+                | HistoryRequest(r)      -> historyRequest msg r
+                | ObjectInfoRequest(r)   -> objectInfoRequest msg r
+                | _                      -> logMessage (String.Format("Unknown content type. msg_type is `{0}`", msg.Header.msg_type))
             with 
             | ex -> handleException ex
    

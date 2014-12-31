@@ -149,7 +149,8 @@ $([IPython.events]).on('app_initialized.NotebookApp', function ()
                         block: JSON.stringify({ selectedIndex: cells.selectedIndex, ch: cursor.ch, line: cursor.line }),
                         cursor_pos: cursor.ch
                     };
-                    var msg = IPython.notebook.kernel._get_msg("complete_request", content);
+                    debugger;
+                    var msg = IPython.notebook.kernel._get_msg("intellisense_request", content);
                     IPython.notebook.kernel.shell_channel.send(JSON.stringify(msg));
                     IPython.notebook.kernel.set_callbacks_for_msg(msg.header.msg_id, callbacks);
                 });
