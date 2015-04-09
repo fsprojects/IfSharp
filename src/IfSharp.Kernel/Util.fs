@@ -32,6 +32,11 @@ type HtmlOutput =
         Html: string;
     }
 
+type SvgOutput =
+    {
+        Svg: string;
+    }
+
 type GenericChartWithSize = 
     {
         Chart: ChartTypes.GenericChart;
@@ -96,6 +101,9 @@ type Util =
     /// Wraps a LatexOutput around a string in order to send to the UI.
     static member Latex (str) =
         { Latex = str}
+
+    static member Svg (str) =
+        { Svg = str}
 
     /// Wraps a LatexOutput around a string in order to send to the UI.
     static member Math (str) =

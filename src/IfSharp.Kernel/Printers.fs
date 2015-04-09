@@ -77,6 +77,11 @@ module Printers =
             { ContentType = "text/html"; Data = sb.ToString() } 
         )
 
+        // add svg printer
+        addDisplayPrinter(fun (x:SvgOutput) ->
+           { ContentType = "image/svg+xml"; Data = x.Svg }
+        )
+
         // add html printer
         addDisplayPrinter(fun (x:HtmlOutput) ->
             { ContentType = "text/html"; Data = x.Html }
