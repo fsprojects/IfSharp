@@ -148,7 +148,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         let content = 
             {
                 protocol_version = [| 4; 0 |]; 
-                ipython_version = None;
+                ipython_version = Some [| 1; 0; 0 |];
                 language_version = [| 1; 0; 0 |];
                 language = "fsharp";
             }
