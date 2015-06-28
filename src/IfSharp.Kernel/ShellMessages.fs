@@ -1,6 +1,7 @@
 ﻿namespace IfSharp.Kernel
 
 open System
+open System.Collections.Generic
 open Newtonsoft.Json
 
 type ExecuteRequest =
@@ -31,7 +32,7 @@ type ExecuteRequest =
 
         // # Similarly, a dict mapping names to expressions to be evaluated in the
         // # user's dict.
-        user_expressions: dict;
+        user_expressions: Dictionary<string,obj>;
 
         // # Some frontends (e.g. the Notebook) do not support stdin requests. If
         // # raw_input is called from code executed from such a frontend, a
@@ -60,8 +61,8 @@ type ExecuteReplyOk =
         payload: list<Payload>;
 
         // # Results for the user_variables and user_expressions.
-        user_variables: dict;
-        user_expressions: dict;
+        user_variables: Dictionary<string,obj>;
+        user_expressions: Dictionary<string,obj>;
     }
 
 type ExecuteReplyError =
@@ -352,10 +353,10 @@ type DisplayData =
         // # The data dict contains key/value pairs, where the kids are MIME
         // # types and the values are the raw data of the representation in that
         // # format.
-        data: dict;
+        data: Dictionary<string,obj>;
 
         // # Any metadata that describes the data
-        metadata: dict;
+        metadata: Dictionary<string,obj>;
     }
 
 type Pyin = 
@@ -378,8 +379,8 @@ type Pyout =
         // # data and metadata are identical to a display_data message.
         // # the object being displayed is that passed to the display hook,
         // # i.e. the *result* of the execution.
-        data: dict;
-        metadata: dict;
+        data: Dictionary<string,obj>;
+        metadata: Dictionary<string,obj>;
     }
 
 type Stream = 

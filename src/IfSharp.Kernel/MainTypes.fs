@@ -23,5 +23,3 @@ type IntellisenseItem =
         documentation: string
         value: string
     }
-
-type dict = Dictionary<string, obj>
