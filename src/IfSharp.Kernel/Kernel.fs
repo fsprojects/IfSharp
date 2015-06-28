@@ -161,10 +161,10 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         
         if lastMessage.IsSome then
 
-            let d = dict()
+            let d = Dictionary<string,obj>()
             d.Add(contentType, displayItem)
 
-            let reply = { execution_count = executionCount; data = d; metadata = dict() }
+            let reply = { execution_count = executionCount; data = d; metadata = Dictionary<string,obj>() }
             sendMessage ioSocket lastMessage.Value messageType reply
 
     /// Sends a message to pyout
@@ -246,8 +246,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
                     status = "ok";
                     execution_count = executionCount;
                     payload = payload |> Seq.toList;
-                    user_variables = dict();
-                    user_expressions = dict()
+                    user_variables = Dictionary<string,obj>();
+                    user_expressions = Dictionary<string,obj>()
                 }
 
             sendMessage shellSocket msg "execute_reply" executeReply
