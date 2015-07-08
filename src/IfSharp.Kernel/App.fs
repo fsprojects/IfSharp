@@ -151,6 +151,7 @@ module App =
         let appData = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
         let ipythonDir = Path.Combine(appData, ".ipython")
         let profileDir = Path.Combine(ipythonDir, "profile_ifsharp")
+        let kernelDir = Path.Combine([| ipythonDir; "kernels" ; "ifsharp" |] )
         let staticDir = Path.Combine(profileDir, "static")
         let customDir = Path.Combine(staticDir, "custom")
             
@@ -163,17 +164,29 @@ module App =
         createDir profileDir
         createDir staticDir
         createDir customDir
+        createDir kernelDir
 
         let configFile = Path.Combine(profileDir, "ipython_config.py")
+        let configqtFile = Path.Combine(profileDir, "ipython_qtconsole_config.py")
+        let kernelFile = Path.Combine(kernelDir, "kernel.json")
         if forceInstall || (File.Exists(configFile) = false) then
             
             printfn "Config file does not exist, performing install..."
 
             // write the startup script
             let codeTemplate = IfSharpResources.ipython_config()
-            let code = codeTemplate.Replace("%s", thisExecutable)
+            let code = 
+              match Environment.OSVersion.Platform with
+                | PlatformID.Win32Windows -> codeTemplate.Replace("\"mono\",", "")
+                | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
+                | _ -> codeTemplate
+            let code = code.Replace("%s", thisExecutable)
             printfn "Saving custom config file [%s]" configFile
             File.WriteAllText(configFile, code)
+            
+            let codeqt = IfSharpResources.ipython_qt_config()
+            printfn "Saving custom qt config file [%s]" codeqt
+            File.WriteAllText(configqtFile, codeqt)
 
             // write custom logo file
             let logoFile = Path.Combine(customDir, "ifsharp_logo.png")
@@ -205,11 +218,30 @@ module App =
             printfn "Saving webintellisense-codemirror js [%s]" jsFile
             File.WriteAllText(jsFile, IfSharpResources.webintellisense_codemirror_js())
 
+            // Make the Kernel info folder 
+            let jsonTemplate = IfSharpResources.ifsharp_kernel_json()
+            let code = 
+              match Environment.OSVersion.Platform with
+                | PlatformID.Win32Windows -> jsonTemplate.Replace("\"mono\",", "")
+                | PlatformID.Win32NT -> jsonTemplate.Replace("\"mono\",", "")
+                | _ -> jsonTemplate
+            let code = code.Replace("%s", thisExecutable.Replace("\\","\/"))
+            printfn "Saving custom kernel.json file [%s]" kernelFile
+            File.WriteAllText(kernelFile, code)
+            
+            let logo64File = Path.Combine(kernelDir, "logo-64x64.png")
+            printfn "Saving kernel icon [%s]" logo64File
+            IfSharpResources.ifsharp_64logo().Save(logo64File)
+            
+            let logo32File = Path.Combine(kernelDir, "logo-32x32.png")
+            printfn "Saving kernel icon [%s]" logo32File
+            IfSharpResources.ifsharp_32logo().Save(logo32File)
+
         printfn "Starting ipython..."
         let p = new Process()
         p.StartInfo.FileName <- "ipython"
-//        p.StartInfo.Arguments <- "notebook --profile ifsharp"
-        p.StartInfo.Arguments <- "qtconsole --profile ifsharp"
+        p.StartInfo.Arguments <- "notebook --profile ifsharp"
+        //p.StartInfo.Arguments <- "qtconsole --profile ifsharp"
         p.StartInfo.WorkingDirectory <- appData
 
         // tell the user something bad happened
