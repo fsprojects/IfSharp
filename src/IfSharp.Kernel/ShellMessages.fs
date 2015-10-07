@@ -301,6 +301,8 @@ type ConnectReply =
         hb_port: int;      // # The port the heartbeat socket is listening on.
     }
 
+type CommOpen = obj
+
 type KernelRequest = obj
 
 type KernelReply =
@@ -425,6 +427,9 @@ type ShellMessage =
     | ConnectRequest of ConnectRequest
     | ConnectReply of ConnectReply
 
+    // comm open?
+    | CommOpen of CommOpen
+
     // kernel info
     | KernelRequest of KernelRequest
     | KernelReply of KernelReply
@@ -482,4 +487,8 @@ module ShellMessages =
 
         | "shutdown_request"     -> ShutdownRequest (JsonConvert.DeserializeObject<ShutdownRequest>(messageJson))
         | "shutdown_reply"       -> ShutdownReply (JsonConvert.DeserializeObject<ShutdownReply>(messageJson))
+
+        //Jupyter 4.x support, do we need to do anything with this?
+        | "comm_open"            -> CommOpen (JsonConvert.DeserializeObject<CommOpen>(messageJson))
+
         | _                      -> failwith ("Unsupported messageType: " + messageType)
