@@ -7,6 +7,7 @@ open System.IO
 open System.Reflection
 open System.Text
 open System.Threading
+open System.Security.Cryptography
 
 open FSharp.Charting
 
@@ -65,6 +66,14 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         ser.Serialize(sw, obj)
         sw.ToString()
 
+    /// Sign a set of strings.
+    let hmac = new HMACSHA256(Encoding.UTF8.GetBytes(connectionInformation.key))
+    let sign (parts:string list) : string =
+        ignore (hmac.Initialize())
+        List.iter (fun (s:string) -> let bytes = Encoding.UTF8.GetBytes(s) in ignore(hmac.TransformBlock(bytes, 0, bytes.Length, null, 0))) parts
+        ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
+        BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
+
     /// Constructs an 'envelope' from the specified socket
     let recvMessage (socket) = 
         
@@ -93,6 +102,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         let parentHeader     = JsonConvert.DeserializeObject<Header>(parentHeaderJson)
         let metaDataDict     = deserializeDict (metadata)
         let content          = ShellMessages.Deserialize (header.msg_type) (contentJson)
+
+        let calculated_signature = sign [headerJson; parentHeaderJson; metadata; contentJson]
+        if calculated_signature <> hmac then failwith("Wrong message signature")
 
         lastMessage <- Some
             {
@@ -123,13 +135,19 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         for ident in envelope.Identifiers do
             socket <~| (encode ident) |> ignore
 
+        let header = serialize header
+        let parent_header = serialize envelope.Header
+        let meta = "{}"
+        let content = serialize content
+        let signature = sign [header; parent_header; meta; content]
+
         socket
             <~| (encode "<IDS|MSG>")
-            <~| (encode "")
-            <~| (encode (serialize header))
-            <~| (encode (serialize envelope.Header))
+            <~| (encode signature)
+            <~| (encode header)
+            <~| (encode parent_header)
             <~| (encode "{}")
-            <<| (encode (serialize content))
+            <<| (encode content)
         
     /// Convenience method for sending the state of the kernel
     let sendState (envelope) (state) =
