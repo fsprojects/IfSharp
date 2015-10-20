@@ -69,10 +69,11 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
     /// Sign a set of strings.
     let hmac = new HMACSHA256(Encoding.UTF8.GetBytes(connectionInformation.key))
     let sign (parts:string list) : string =
-        ignore (hmac.Initialize())
-        List.iter (fun (s:string) -> let bytes = Encoding.UTF8.GetBytes(s) in ignore(hmac.TransformBlock(bytes, 0, bytes.Length, null, 0))) parts
-        ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
-        BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
+        if connectionInformation.key = "" then "" else
+          ignore (hmac.Initialize())
+          List.iter (fun (s:string) -> let bytes = Encoding.UTF8.GetBytes(s) in ignore(hmac.TransformBlock(bytes, 0, bytes.Length, null, 0))) parts
+          ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
+          BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
 
     /// Constructs an 'envelope' from the specified socket
     let recvMessage (socket) = 
