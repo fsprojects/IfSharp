@@ -1,0 +1,5 @@
+{
+  "display_name": "IFSharp",
+  "argv": ["mono", "%s", "{connection_file}"],
+  "language": "fsharp"
+}

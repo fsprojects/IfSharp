@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel", "src\IfSharp.Kernel\IfSharp.Kernel.fsproj", "{2FE619B3-4756-4285-B31F-232607F62D78}"
 EndProject
@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9D4EDE1C-A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{D2376EF6-662E-45C9-A440-0530EFD799BF}"
 	ProjectSection(SolutionItems) = preProject
+		Feature Notebook format 4_0.ipynb = Feature Notebook format 4_0.ipynb
 		Feature Notebook.ipynb = Feature Notebook.ipynb
 		ifsharpsetup.iss = ifsharpsetup.iss
 		LICENSE.txt = LICENSE.txt
@@ -102,6 +103,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{8BA6BD71-43A
 		lib\README.md = lib\README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kernel-spec", "kernel-spec", "{4D56C9F0-7F98-4587-A320-98C06876AC9B}"
+	ProjectSection(SolutionItems) = preProject
+		kernel-spec\kernel.json = kernel-spec\kernel.json
+		kernel-spec\logo-32x32.png = kernel-spec\logo-32x32.png
+		kernel-spec\logo-64x64.png = kernel-spec\logo-64x64.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -127,10 +135,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A8428CDC-273B-434D-AAA2-0D0164E3D329} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
 		{E7CBA335-71DC-45BC-BB08-8837F866EDB9} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
-		{F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
 		{52627028-50B5-427F-BDDB-9DEADB72E7D6} = {88BC26ED-4DC4-4035-AA6D-44CD2A160996}
 		{45519D10-5973-41C3-A8D0-BCBF0008044D} = {F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}
 		{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE} = {45519D10-5973-41C3-A8D0-BCBF0008044D}
+		{F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
 		{7B100429-EB1D-4D08-919F-5F9D6D148BFA} = {F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19}
 	EndGlobalSection
 EndGlobal
