@@ -176,34 +176,38 @@ type NuGetManager (executingDirectory : string) =
                 else
 
                     let pkg = installer.FindPackage(nugetPackage, version)
-                    let getCompatibleItems targetFramework items =
-                        let retval, compatibleItems = VersionUtility.TryGetCompatibleItems(targetFramework, items)
-                        if retval then compatibleItems else Seq.empty
+                    
+                    if pkg.GetSupportedFrameworks().IsEmpty() then // content-only package
+                        packagesCache.Add(key, { Package = Some pkg; Assemblies = Seq.empty; FrameworkAssemblies = Seq.empty; Error = ""; });
+                    else
+                        let getCompatibleItems targetFramework items =
+                            let retval, compatibleItems = VersionUtility.TryGetCompatibleItems(targetFramework, items)
+                            if retval then compatibleItems else Seq.empty
 
-                    let maxFramework =
-                        // try full framework first - if none is supported, fall back
-                        let fullFrameworks = pkg.GetSupportedFrameworks() |> Seq.filter (fun x -> x.Identifier = ".NETFramework") |> Seq.toArray
-                        if Array.length fullFrameworks > 0 then fullFrameworks |> Array.maxBy (fun x -> x.Version)
-                        else pkg.GetSupportedFrameworks() |> Seq.maxBy (fun x -> x.Version)
+                        let maxFramework =
+                            // try full framework first - if none is supported, fall back
+                            let fullFrameworks = pkg.GetSupportedFrameworks() |> Seq.filter (fun x -> x.Identifier = ".NETFramework") |> Seq.toArray
+                            if Array.length fullFrameworks > 0 then fullFrameworks |> Array.maxBy (fun x -> x.Version)
+                            else pkg.GetSupportedFrameworks() |> Seq.maxBy (fun x -> x.Version)
 
-                    let assemblies =
-                        if not(pkg.PackageAssemblyReferences.IsEmpty()) then
-                            let compatibleAssemblyReferences =
-                                getCompatibleItems maxFramework pkg.PackageAssemblyReferences
-                                |> Seq.collect (fun x -> x.References)
-                                |> Set.ofSeq
-                            pkg.AssemblyReferences
-                            |> Seq.filter (fun x -> compatibleAssemblyReferences.Contains x.Name && x.TargetFramework = maxFramework )
-                        elif pkg.AssemblyReferences.IsEmpty() then
-                            Seq.empty
-                        else
-                            getCompatibleItems maxFramework pkg.AssemblyReferences
+                        let assemblies =
+                            if not(pkg.PackageAssemblyReferences.IsEmpty()) then
+                                let compatibleAssemblyReferences =
+                                    getCompatibleItems maxFramework pkg.PackageAssemblyReferences
+                                    |> Seq.collect (fun x -> x.References)
+                                    |> Set.ofSeq
+                                pkg.AssemblyReferences
+                                |> Seq.filter (fun x -> compatibleAssemblyReferences.Contains x.Name && x.TargetFramework = maxFramework )
+                            elif pkg.AssemblyReferences.IsEmpty() then
+                                Seq.empty
+                            else
+                                getCompatibleItems maxFramework pkg.AssemblyReferences
 
-                    let frameworkAssemblyReferences = getCompatibleItems maxFramework pkg.FrameworkAssemblies
+                        let frameworkAssemblyReferences = getCompatibleItems maxFramework pkg.FrameworkAssemblies
 
-                    packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; FrameworkAssemblies = frameworkAssemblyReferences; Error = ""; })
+                        packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; FrameworkAssemblies = frameworkAssemblyReferences; Error = ""; })
+                    
                     packagesCache.[key]
-
         )
 
     /// Parses a 'nuget line'. Example #N "<package>[/<version>[/pre]]".

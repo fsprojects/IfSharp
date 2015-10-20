@@ -51,6 +51,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-
 	ProjectSection(SolutionItems) = preProject
 		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
 		ipython-profile\ipython_config.py = ipython-profile\ipython_config.py
+		ipython-profile\kernel.js = ipython-profile\kernel.js
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IfSharpConsole", "src\IfSharpConsole\IfSharpConsole.csproj", "{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}"
@@ -59,8 +60,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{45519D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE}"
 	ProjectSection(SolutionItems) = preProject
-		ipython-profile\static\custom\custom.css = ipython-profile\static\custom\custom.css
-		ipython-profile\static\custom\custom.js = ipython-profile\static\custom\custom.js
+		ipython-profile\static\custom\fsharp.css = ipython-profile\static\custom\fsharp.css
 		ipython-profile\static\custom\fsharp.js = ipython-profile\static\custom\fsharp.js
 		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
 		ipython-profile\static\custom\webintellisense-codemirror.js = ipython-profile\static\custom\webintellisense-codemirror.js
@@ -100,6 +100,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{8BA6BD71-43A
 		lib\fsiAnyCpu.exe = lib\fsiAnyCpu.exe
 		lib\NuGet.dll = lib\NuGet.dll
 		lib\README.md = lib\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kernel-spec", "kernel-spec", "{4D56C9F0-7F98-4587-A320-98C06876AC9B}"
+	ProjectSection(SolutionItems) = preProject
+		kernel-spec\kernel.json = kernel-spec\kernel.json
+		kernel-spec\logo-32x32.png = kernel-spec\logo-32x32.png
+		kernel-spec\logo-64x64.png = kernel-spec\logo-64x64.png
 	EndProjectSection
 EndProject
 Global
