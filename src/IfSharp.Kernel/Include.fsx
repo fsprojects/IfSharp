@@ -7,7 +7,7 @@
 #r "System.Windows.Forms.DataVisualization.dll"
 #r "FSharp.Data.TypeProviders.dll"
 #r "FSharp.Charting.dll"
-#r "fszmq.dll"
+#r "NetMQ.dll"
 
 // open the global functions and methods
 open FSharp.Charting

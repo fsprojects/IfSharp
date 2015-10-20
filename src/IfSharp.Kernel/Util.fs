@@ -5,7 +5,6 @@ open System.Drawing
 open System.IO
 open System.Net
 open System.Text
-open System.Web
 open System.Drawing.Imaging
 open System.Windows.Forms
 open FSharp.Charting

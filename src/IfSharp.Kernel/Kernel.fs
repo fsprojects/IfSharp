@@ -2,20 +2,40 @@
 
 open System
 open System.Collections.Generic
-open System.Diagnostics
 open System.IO
 open System.Reflection
 open System.Text
 open System.Threading
 open System.Security.Cryptography
 
-open FSharp.Charting
 
 open Newtonsoft.Json
-open fszmq
-open fszmq.Socket
+open NetMQ
 
-type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Socket, shellSocket : Socket, hbSocket : Socket, controlSocket : Socket, stdinSocket : Socket) = 
+type IfSharpKernel(connectionInformation : ConnectionInformation) = 
+
+    // startup 0mq stuff
+    let context = NetMQContext.Create()
+
+    // heartbeat
+    let hbSocket = context.CreateRequestSocket()
+    do hbSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
+        
+    // shell
+    let shellSocket = context.CreateRouterSocket()
+    do shellSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
+        
+    // control
+    let controlSocket = context.CreateRouterSocket()
+    do controlSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
+
+    // stdin
+    let stdinSocket = context.CreateRouterSocket()
+    do stdinSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
+
+    // iopub
+    let ioSocket = context.CreatePublisherSocket()
+    do ioSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
 
     let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
@@ -75,8 +95,10 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
           ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
           BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
 
+    let recvAll (socket: NetMQSocket) = socket.ReceiveMessages()
+    
     /// Constructs an 'envelope' from the specified socket
-    let recvMessage (socket) = 
+    let recvMessage (socket: NetMQSocket) = 
         
         // receive all parts of the message
         let message =
@@ -129,12 +151,13 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         }
 
     /// Convenience method for sending a message
-    let sendMessage (socket) (envelope) (messageType) (content) =
+    let sendMessage (socket: NetMQSocket) (envelope) (messageType) (content) =
 
         let header = createHeader messageType envelope
+        let msg = NetMQMessage()
 
         for ident in envelope.Identifiers do
-            socket <~| (encode ident) |> ignore
+            msg.Append(ident)
 
         let header = serialize header
         let parent_header = serialize envelope.Header
@@ -142,6 +165,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
         let content = serialize content
         let signature = sign [header; parent_header; meta; content]
 
+	(*
         socket
             <~| (encode "<IDS|MSG>")
             <~| (encode signature)
@@ -149,6 +173,16 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
             <~| (encode parent_header)
             <~| (encode "{}")
             <<| (encode content)
+	*)
+
+        msg.Append(encode "<IDS|MSG>")
+        msg.Append(encode signature)
+        msg.Append(encode (serialize header))
+        msg.Append(encode (serialize envelope.Header))
+        msg.Append(encode "{}")
+        msg.Append(encode (serialize content))
+        socket.SendMessage(msg)
+
         
     /// Convenience method for sending the state of the kernel
     let sendState (envelope) (state) =
@@ -433,9 +467,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, ioSocket : Soc
 
         try
             while true do
-                let bytes = recv hbSocket
-                let str = decode bytes
-                send hbSocket bytes
+                hbSocket.Send(hbSocket.Receive())
         with
         | ex -> handleException ex
 

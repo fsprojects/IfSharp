@@ -8,7 +8,7 @@
 #r "System.Windows.Forms.DataVisualization.dll"
 #r "FSharp.Data.TypeProviders.dll"
 #r "FSharp.Charting.dll"
-#r "fszmq.dll"
+#r "NetMQ.dll"
 
 open FSharp.Charting
 open IfSharp.Kernel
@@ -42,7 +42,7 @@ is executed on startup. The script automatically references the following assemb
 * System.Windows.Forms.DataVisualization.dll
 * FSharp.Data.TypeProviders.dll
 * FSharp.Charting.dll
-* fszmq.dll
+* NetMQ.dll
 
 And automatically opens the following namespaces:
 
