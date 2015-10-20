@@ -165,16 +165,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         let content = serialize content
         let signature = sign [header; parent_header; meta; content]
 
-	(*
-        socket
-            <~| (encode "<IDS|MSG>")
-            <~| (encode signature)
-            <~| (encode header)
-            <~| (encode parent_header)
-            <~| (encode "{}")
-            <<| (encode content)
-	*)
-
         msg.Append(encode "<IDS|MSG>")
         msg.Append(encode signature)
         msg.Append(encode (serialize header))
