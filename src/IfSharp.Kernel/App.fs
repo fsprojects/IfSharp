@@ -149,8 +149,15 @@ module App =
 
         let thisExecutable = Assembly.GetEntryAssembly().Location
         let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        let appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-        let jupyterDir = Path.Combine(appData, "Jupyter")
+        let appData =  
+              match Environment.OSVersion.Platform with
+                | PlatformID.Win32Windows | PlatformID.Win32NT -> Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                | PlatformID.MacOSX -> Path.Combine(userDir, "Library")
+                | _ -> Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) // PlatformID.Unix
+        let jupyterDir = 
+              match Environment.OSVersion.Platform with 
+                | PlatformID.Unix -> Path.Combine(appData, "jupyter")
+                | _ -> Path.Combine(appData, "Jupyter")
         let kernelsDir = Path.Combine(jupyterDir, "kernels")
         let kernelDir = Path.Combine(kernelsDir, "ifsharp")
         let staticDir = Path.Combine(kernelDir, "static")
@@ -178,8 +185,7 @@ module App =
             let codeTemplate = IfSharpResources.ipython_config()
             let code = 
               match Environment.OSVersion.Platform with
-                | PlatformID.Win32Windows -> codeTemplate.Replace("\"mono\",", "")
-                | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
+                | PlatformID.Win32Windows | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
                 | _ -> codeTemplate
             let code = code.Replace("%kexe", thisExecutable)
             let code = code.Replace("%kfolder", staticDir)
