@@ -44,9 +44,8 @@ Source: "{#BaseDirectory}\bin\FSharp.Compiler.Service.dll"; DestDir: "{app}"; Fl
 Source: "{#BaseDirectory}\bin\FSharp.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Core.optdata"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\FSharp.Core.sigdata"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\fszmq.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\NetMQ.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\IfSharp.Kernel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\libzmq.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\NuGet.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDirectory}\bin\Include.fsx"; DestDir: "{app}"; Flags: ignoreversion

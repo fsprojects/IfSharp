@@ -1,7 +1,6 @@
 ﻿namespace IfSharp.Kernel
 
 open System
-open System.Collections.Generic
 open System.Diagnostics
 open System.IO
 open System.Reflection
@@ -9,8 +8,7 @@ open System.Text
 open System.Threading
 
 open Newtonsoft.Json
-open fszmq
-open fszmq.Socket
+open NetMQ
 
 open Microsoft.FSharp.Reflection
 
@@ -191,7 +189,7 @@ module App =
             let code = code.Replace("%kfolder", staticDir)
             printfn "Saving custom config file [%s]" configFile
             File.WriteAllText(configFile, code)
-            
+
             let codeqt = IfSharpResources.ipython_qt_config()
             printfn "Saving custom qt config file [%s]" codeqt
             File.WriteAllText(configqtFile, codeqt)
@@ -266,36 +264,14 @@ module App =
             // adds the default display printers
             Printers.addDefaultDisplayPrinters()
 
+
             // get connection information
             let fileName = args.[0]
             let json = File.ReadAllText(fileName)
             let connectionInformation = JsonConvert.DeserializeObject<ConnectionInformation>(json)
 
-            // startup 0mq stuff
-            use context = new Context()
-
-            // heartbeat
-            use hbSocket = Context.rep context
-            Socket.bind (hbSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
-        
-            // shell
-            use shellSocket = Context.route context
-            Socket.bind (shellSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
-        
-            // control
-            use controlSocket = Context.route context
-            Socket.bind (controlSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
-
-            // stdin
-            use stdinSocket = Context.route context
-            Socket.bind (stdinSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
-
-            // iopub
-            use iopubSocket = Context.pub context
-            Socket.bind (iopubSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
-
             // start the kernel
-            Kernel <- Some (IfSharpKernel(connectionInformation, iopubSocket, shellSocket, hbSocket, controlSocket, stdinSocket))
+            Kernel <- Some (IfSharpKernel(connectionInformation))
             Kernel.Value.StartAsync()
 
             // block forever
