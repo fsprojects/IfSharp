@@ -167,10 +167,10 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         msg.Append(encode "<IDS|MSG>")
         msg.Append(encode signature)
-        msg.Append(encode (serialize header))
-        msg.Append(encode (serialize envelope.Header))
+        msg.Append(encode header)
+        msg.Append(encode parent_header)
         msg.Append(encode "{}")
-        msg.Append(encode (serialize content))
+        msg.Append(encode content)
         socket.SendMessage(msg)
 
         
