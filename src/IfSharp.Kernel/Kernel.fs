@@ -423,6 +423,10 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // TODO: actually handle this
         ()
 
+    let inspectRequest (msg : KernelMessage) (content : InspectRequest) =
+        // TODO: actually handle this
+        ()
+
     /// Loops forever receiving messages from the client and processing them
     let doShell() =
 
@@ -448,6 +452,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 | ShutdownRequest(r)     -> shutdownRequest msg r
                 | HistoryRequest(r)      -> historyRequest msg r
                 | ObjectInfoRequest(r)   -> objectInfoRequest msg r
+                | InspectRequest(r)      -> inspectRequest msg r
                 | _                      -> logMessage (String.Format("Unknown content type. msg_type is `{0}`", msg.Header.msg_type))
             with 
             | ex -> handleException ex
