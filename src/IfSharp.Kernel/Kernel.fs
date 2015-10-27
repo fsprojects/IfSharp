@@ -425,6 +425,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
     let inspectRequest (msg : KernelMessage) (content : InspectRequest) =
         // TODO: actually handle this
+        let reply = { status = "ok"; found = false; data = Dictionary<string,obj>(); metadata = Dictionary<string,obj>() }
+        sendMessage shellSocket msg "inspect_reply" reply
         ()
 
     /// Loops forever receiving messages from the client and processing them
