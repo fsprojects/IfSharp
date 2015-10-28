@@ -42,6 +42,12 @@ type GenericChartWithSize =
         Size: int * int;
     }
 
+type GenericChartsWithSize =
+    {
+        Charts: ChartTypes.GenericChart list;
+        Size: int * int;
+    }
+
 [<AutoOpen>]
 module ExtensionMethods =
 
@@ -156,3 +162,6 @@ type Util =
     /// Loads a local image from disk and wraps a BinaryOutput around the image data.
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
+
+    static member MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) =
+        { Charts = charts; Size = size }
