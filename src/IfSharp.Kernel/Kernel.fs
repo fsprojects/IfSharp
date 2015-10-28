@@ -59,8 +59,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             |> Seq.filter (fun x -> x <> "")
             |> Seq.map (fun x -> String.Format("{0:yyyy-MM-dd HH:mm:ss} - {1}", DateTime.Now, x))
             |> Seq.toArray
-        
-        File.AppendAllLines(fileName, messages)
+        try
+            File.AppendAllLines(fileName, messages)
+        with _ -> ()
 
     /// Logs the exception to the specified file name
     let handleException (ex : exn) = 
