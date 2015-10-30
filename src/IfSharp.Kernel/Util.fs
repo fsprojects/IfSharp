@@ -46,6 +46,7 @@ type GenericChartsWithSize =
     {
         Charts: ChartTypes.GenericChart list;
         Size: int * int;
+        Columns: int;
     }
 
 [<AutoOpen>]
@@ -163,5 +164,5 @@ type Util =
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
 
-    static member MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) =
-        { Charts = charts; Size = size }
+    static member MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) (cols:int) =
+        { Charts = charts; Size = size; Columns = cols }
