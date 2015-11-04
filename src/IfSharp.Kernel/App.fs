@@ -142,34 +142,23 @@ module App =
         // add to the payload
         Kernel.Value.AddPayload(text.ToString())
 
-    /// Installs the ifsharp files if they do not exist, then starts ipython with the ifsharp profile
+    /// Installs the ifsharp files if they do not exist, then starts jupyter with the ifsharp profile
     let InstallAndStart(forceInstall) = 
 
         let thisExecutable = Assembly.GetEntryAssembly().Location
         let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        let appData =  
-              match Environment.OSVersion.Platform with
-                | PlatformID.Win32Windows | PlatformID.Win32NT -> Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                | PlatformID.MacOSX -> Path.Combine(userDir, "Library")
-                | _ -> Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) // PlatformID.Unix
-        let jupyterDir = 
-              match Environment.OSVersion.Platform with 
-                | PlatformID.Unix -> Path.Combine(appData, "jupyter")
-                | _ -> Path.Combine(appData, "Jupyter")
-        let kernelsDir = Path.Combine(jupyterDir, "kernels")
-        let kernelDir = Path.Combine(kernelsDir, "ifsharp")
+        let kernelDir = InternalUtil.KernelDir
         let staticDir = Path.Combine(kernelDir, "static")
+        let tempDir = InternalUtil.KernelDir
         let customDir = Path.Combine(staticDir, "custom")
             
         let createDir(str) =
             if Directory.Exists(str) = false then
                 Directory.CreateDirectory(str) |> ignore
 
-        createDir appData
-        createDir jupyterDir
-        createDir kernelsDir
         createDir kernelDir
         createDir staticDir
+        createDir tempDir
         createDir customDir
 
         let configFile = Path.Combine(kernelDir, "ipython_config.py")
@@ -187,6 +176,7 @@ module App =
                 | _ -> codeTemplate
             let code = code.Replace("%kexe", thisExecutable)
             let code = code.Replace("%kfolder", staticDir)
+            let code = code.Replace("%ktemp", tempDir)
             printfn "Saving custom config file [%s]" configFile
             File.WriteAllText(configFile, code)
 
@@ -260,10 +250,14 @@ module App =
             InstallAndStart(true)
 
         else
+            // Clear the temporary folder
+            try
+              if Directory.Exists(InternalUtil.TempDir) then Directory.Delete(InternalUtil.TempDir, true)
+              Directory.CreateDirectory(InternalUtil.TempDir) |> ignore;
+            with exc -> Console.Out.Write(exc.ToString())
 
             // adds the default display printers
             Printers.addDefaultDisplayPrinters()
-
 
             // get connection information
             let fileName = args.[0]

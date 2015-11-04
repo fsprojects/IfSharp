@@ -49,6 +49,25 @@ type GenericChartsWithSize =
         Columns: int;
     }
 
+module InternalUtil =
+  let KernelDir = 
+    let thisExecutable = System.Reflection.Assembly.GetEntryAssembly().Location
+    let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    let appData =  
+      match Environment.OSVersion.Platform with
+        | PlatformID.Win32Windows | PlatformID.Win32NT -> Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+        | PlatformID.MacOSX -> Path.Combine(userDir, "Library")
+        | _ -> Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) // PlatformID.Unix
+    let jupyterDir = 
+      match Environment.OSVersion.Platform with 
+        | PlatformID.Unix -> Path.Combine(appData, "jupyter")
+        | _ -> Path.Combine(appData, "Jupyter")
+    let kernelsDir = Path.Combine(jupyterDir, "kernels")
+    let kernelDir = Path.Combine(kernelsDir, "ifsharp")
+    kernelDir
+
+  let TempDir = Path.Combine(KernelDir, "temp");
+
 [<AutoOpen>]
 module ExtensionMethods =
 
@@ -152,7 +171,6 @@ type Util =
         stream.CopyTo(mstream)
         { ContentType = res.ContentType; Data =  mstream.ToArray() }
 
-
     /// Wraps a BinaryOutput around image bytes with the specified content-type
     static member Image (bytes:seq<byte>, ?contentType:string) =
         {
@@ -166,3 +184,11 @@ type Util =
 
     static member MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) (cols:int) =
         { Charts = charts; Size = size; Columns = cols }
+
+    static member CreatePublicFile (name:string) (content:byte[]) =
+        try
+            let path = Path.Combine(InternalUtil.TempDir,name)
+            File.WriteAllBytes(path, content)
+            "/static/temp/"+name
+        with exc ->
+            exc.ToString()
