@@ -113,6 +113,12 @@ module ExtensionMethods =
             actualChart.SaveImage(ms, ImageFormat.Png)
             ms.ToArray()
 
+        member self.ToData(?size) =
+            let bytes = match size with Some size -> self.ToPng(size) | _ -> self.ToPng()
+            let base64 = Convert.ToBase64String(bytes)
+            let data = "data:image/png;base64,"+base64
+            data
+
     type FSharp.Charting.Chart with
     
         /// Wraps a GenericChartWithSize around the GenericChart
@@ -178,6 +184,11 @@ type Util =
             Data = bytes;
         }
 
+    static member Base64 (bytes:seq<byte>, contentType:string) =
+        let base64 = Convert.ToBase64String(Array.ofSeq bytes)
+        let data = "data:"+contentType+";base64,"+base64
+        data
+
     /// Loads a local image from disk and wraps a BinaryOutput around the image data.
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
@@ -191,4 +202,4 @@ type Util =
             File.WriteAllBytes(path, content)
             "/static/temp/"+name
         with exc ->
-            exc.ToString()
+            exc.ToString()        
