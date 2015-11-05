@@ -52,25 +52,6 @@ type GenericChartsWithSize =
         Columns: int;
     }
 
-module InternalUtil =
-  let KernelDir = 
-    let thisExecutable = System.Reflection.Assembly.GetEntryAssembly().Location
-    let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-    let appData =  
-      match Environment.OSVersion.Platform with
-        | PlatformID.Win32Windows | PlatformID.Win32NT -> Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-        | PlatformID.MacOSX -> Path.Combine(userDir, "Library")
-        | _ -> Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) // PlatformID.Unix
-    let jupyterDir = 
-      match Environment.OSVersion.Platform with 
-        | PlatformID.Unix -> Path.Combine(appData, "jupyter")
-        | _ -> Path.Combine(appData, "Jupyter")
-    let kernelsDir = Path.Combine(jupyterDir, "kernels")
-    let kernelDir = Path.Combine(kernelsDir, "ifsharp")
-    kernelDir
-  let StaticDir = Path.Combine(KernelDir, "static")
-  let TempDir = Path.Combine(StaticDir, "temp");
-
 [<AutoOpen>]
 module ExtensionMethods =
 
@@ -201,9 +182,9 @@ type Util =
 
     static member CreatePublicFile (name:string) (content:byte[]) =
         try
-            if Directory.Exists(InternalUtil.TempDir) = false then
-                Directory.CreateDirectory(InternalUtil.TempDir) |> ignore;
-            let path = Path.Combine(InternalUtil.TempDir,name)
+            if Directory.Exists(Config.TempDir) = false then
+                Directory.CreateDirectory(Config.TempDir) |> ignore;
+            let path = Path.Combine(Config.TempDir,name)
             File.WriteAllBytes(path, content)
             "/static/temp/"+name
         with exc ->

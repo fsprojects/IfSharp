@@ -147,9 +147,9 @@ module App =
 
         let thisExecutable = Assembly.GetEntryAssembly().Location
         let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        let kernelDir = InternalUtil.KernelDir
-        let staticDir = InternalUtil.StaticDir
-        let tempDir = InternalUtil.TempDir
+        let kernelDir = Config.KernelDir
+        let staticDir = Config.StaticDir
+        let tempDir = Config.TempDir
         let customDir = Path.Combine(staticDir, "custom")
             
         let createDir(str) =
@@ -251,7 +251,7 @@ module App =
         else
             // Clear the temporary folder
             try
-              if Directory.Exists(InternalUtil.TempDir) then Directory.Delete(InternalUtil.TempDir, true)
+              if Directory.Exists(Config.TempDir) then Directory.Delete(Config.TempDir, true)
             with exc -> Console.Out.Write(exc.ToString())
 
             // adds the default display printers

@@ -207,6 +207,22 @@ type NuGetManager (executingDirectory : string) =
 
                         packagesCache.Add(key, { Package = Some pkg; Assemblies = assemblies; FrameworkAssemblies = frameworkAssemblyReferences; Error = ""; })
                     
+                    try
+                        let name = pkg.Id + "." + pkg.Version.ToString()
+                        let folder = Path.Combine(installer.OutputDirectory, name)
+                        let contentDir = Path.Combine(Directory.GetCurrentDirectory(), "content")
+                        let cfiles = pkg.GetContentFiles();
+                        if Directory.Exists(contentDir) = false then Directory.CreateDirectory(contentDir) |> ignore
+                        for f in cfiles do
+                          let fullName = Path.Combine(folder, f.Path)
+                          let targetName = Path.Combine(contentDir, f.EffectivePath)
+                          let targetPath = Path.GetDirectoryName(targetName)
+                          if Directory.Exists(targetPath) = false then Directory.CreateDirectory(targetPath) |> ignore
+                          if File.Exists(targetName) then File.Delete(targetName)
+                          File.Copy(fullName, targetName, true)
+                        done
+                    with exc -> Console.Out.WriteLine(exc.ToString())
+
                     packagesCache.[key]
         )
 
