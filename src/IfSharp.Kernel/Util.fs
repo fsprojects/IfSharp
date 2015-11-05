@@ -7,6 +7,9 @@ open System.Net
 open System.Text
 open System.Drawing.Imaging
 open System.Windows.Forms
+open System.Xml;
+open System.Xml.Linq;
+open System.Xml.XPath;
 open FSharp.Charting
 
 type BinaryOutput =
@@ -65,8 +68,8 @@ module InternalUtil =
     let kernelsDir = Path.Combine(jupyterDir, "kernels")
     let kernelDir = Path.Combine(kernelsDir, "ifsharp")
     kernelDir
-
-  let TempDir = Path.Combine(KernelDir, "temp");
+  let StaticDir = Path.Combine(KernelDir, "static")
+  let TempDir = Path.Combine(StaticDir, "temp");
 
 [<AutoOpen>]
 module ExtensionMethods =
@@ -198,8 +201,45 @@ type Util =
 
     static member CreatePublicFile (name:string) (content:byte[]) =
         try
+            if Directory.Exists(InternalUtil.TempDir) = false then
+                Directory.CreateDirectory(InternalUtil.TempDir) |> ignore;
             let path = Path.Combine(InternalUtil.TempDir,name)
             File.WriteAllBytes(path, content)
             "/static/temp/"+name
         with exc ->
-            exc.ToString()        
+            exc.ToString()
+
+    static member MoveSvg (svg:string) (delta:float*float) =
+        let (dx,dy) = delta
+        let doc = XElement.Parse(svg)
+        let width = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width = Math.Max(width, width + dx)
+        let height = Math.Max(height, height + dy)
+        doc.SetAttributeValue(XName.Get("width"), width)
+        doc.SetAttributeValue(XName.Get("height"), height)
+        let gnode = new XElement(XName.Get("g"))
+        gnode.SetAttributeValue(XName.Get("transform"), "translate("+(string dx)+","+(string dy)+")")
+        let objects = doc.Elements() |> Array.ofSeq;
+        doc.RemoveNodes()
+        gnode.Add(objects)
+        doc.Add(gnode)
+        let svg = doc.ToString()
+        svg
+
+    static member MergeSvg (svg1:string) (svg2:string) =
+        let doc1 = XElement.Parse(svg1)
+        let doc2 = XElement.Parse(svg2)
+        let width1 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc1.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height1 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc1.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width2 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc2.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height2 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc2.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width = Math.Max(width1, width2)
+        let height = Math.Max(height1, height2)
+        doc1.SetAttributeValue(XName.Get("width"), width)
+        doc1.SetAttributeValue(XName.Get("height"), height)
+        let doc2Objects = doc2.Elements() |> Array.ofSeq;
+        doc2.RemoveNodes()
+        doc1.Add(doc2Objects)
+        let svg = doc1.ToString()
+        svg

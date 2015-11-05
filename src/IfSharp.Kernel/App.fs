@@ -148,8 +148,8 @@ module App =
         let thisExecutable = Assembly.GetEntryAssembly().Location
         let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         let kernelDir = InternalUtil.KernelDir
-        let staticDir = Path.Combine(kernelDir, "static")
-        let tempDir = InternalUtil.KernelDir
+        let staticDir = InternalUtil.StaticDir
+        let tempDir = InternalUtil.TempDir
         let customDir = Path.Combine(staticDir, "custom")
             
         let createDir(str) =
@@ -175,8 +175,7 @@ module App =
                 | PlatformID.Win32Windows | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
                 | _ -> codeTemplate
             let code = code.Replace("%kexe", thisExecutable)
-            let code = code.Replace("%kfolder", staticDir)
-            let code = code.Replace("%ktemp", tempDir)
+            let code = code.Replace("%kstatic", staticDir)
             printfn "Saving custom config file [%s]" configFile
             File.WriteAllText(configFile, code)
 
@@ -253,7 +252,6 @@ module App =
             // Clear the temporary folder
             try
               if Directory.Exists(InternalUtil.TempDir) then Directory.Delete(InternalUtil.TempDir, true)
-              Directory.CreateDirectory(InternalUtil.TempDir) |> ignore;
             with exc -> Console.Out.Write(exc.ToString())
 
             // adds the default display printers
