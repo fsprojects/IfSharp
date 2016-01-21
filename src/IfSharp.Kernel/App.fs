@@ -142,30 +142,27 @@ module App =
         // add to the payload
         Kernel.Value.AddPayload(text.ToString())
 
-    /// Installs the ifsharp files if they do not exist, then starts ipython with the ifsharp profile
+    /// Installs the ifsharp files if they do not exist, then starts jupyter with the ifsharp profile
     let InstallAndStart(forceInstall) = 
 
         let thisExecutable = Assembly.GetEntryAssembly().Location
-        let appData = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-        let ipythonDir = Path.Combine(appData, ".ipython")
-        let profileDir = Path.Combine(ipythonDir, "profile_ifsharp")
-        let kernelDir = Path.Combine([| ipythonDir; "kernels" ; "ifsharp" |] )
-        let staticDir = Path.Combine(profileDir, "static")
+        let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        let kernelDir = Config.KernelDir
+        let staticDir = Config.StaticDir
+        let tempDir = Config.TempDir
         let customDir = Path.Combine(staticDir, "custom")
             
         let createDir(str) =
             if Directory.Exists(str) = false then
                 Directory.CreateDirectory(str) |> ignore
 
-        createDir appData
-        createDir ipythonDir
-        createDir profileDir
-        createDir staticDir
-        createDir customDir
         createDir kernelDir
+        createDir staticDir
+        createDir tempDir
+        createDir customDir
 
-        let configFile = Path.Combine(profileDir, "ipython_config.py")
-        let configqtFile = Path.Combine(profileDir, "ipython_qtconsole_config.py")
+        let configFile = Path.Combine(kernelDir, "ipython_config.py")
+        let configqtFile = Path.Combine(kernelDir, "ipython_qtconsole_config.py")
         let kernelFile = Path.Combine(kernelDir, "kernel.json")
         if forceInstall || (File.Exists(configFile) = false) then
             
@@ -175,10 +172,10 @@ module App =
             let codeTemplate = IfSharpResources.ipython_config()
             let code = 
               match Environment.OSVersion.Platform with
-                | PlatformID.Win32Windows -> codeTemplate.Replace("\"mono\",", "")
-                | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
+                | PlatformID.Win32Windows | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
                 | _ -> codeTemplate
-            let code = code.Replace("%s", thisExecutable)
+            let code = code.Replace("%kexe", thisExecutable)
+            let code = code.Replace("%kstatic", staticDir)
             printfn "Saving custom config file [%s]" configFile
             File.WriteAllText(configFile, code)
 
@@ -191,27 +188,27 @@ module App =
             printfn "Saving custom logo [%s]" logoFile
             IfSharpResources.ifsharp_logo().Save(logoFile)
 
-            // write custom css file
-            let cssFile = Path.Combine(customDir, "custom.css")
-            printfn "Saving custom css [%s]" cssFile
-            File.WriteAllText(cssFile, IfSharpResources.custom_css())
+            // write fsharp css file
+            let cssFile = Path.Combine(customDir, "fsharp.css")
+            printfn "Saving fsharp css [%s]" cssFile
+            File.WriteAllText(cssFile, IfSharpResources.fsharp_css())
 
-            // write custom js file
-            let jsFile = Path.Combine(customDir, "custom.js")
-            printfn "Saving custom js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.custom_js())
+            // write kernel js file
+            let jsFile = Path.Combine(kernelDir, "kernel.js")
+            printfn "Saving kernel js [%s]" jsFile
+            File.WriteAllText(jsFile, IfSharpResources.kernel_js())
 
             // write fsharp js file
             let jsFile = Path.Combine(customDir, "fsharp.js")
             printfn "Saving fsharp js [%s]" jsFile
             File.WriteAllText(jsFile, IfSharpResources.fsharp_js())
 
-            // write fsharp js file
+            // write webintellisense js file
             let jsFile = Path.Combine(customDir, "webintellisense.js")
             printfn "Saving webintellisense js [%s]" jsFile
             File.WriteAllText(jsFile, IfSharpResources.webintellisense_js())
 
-            // write fsharp js file
+            // write webintellisense-codemirror js file
             let jsFile = Path.Combine(customDir, "webintellisense-codemirror.js")
             printfn "Saving webintellisense-codemirror js [%s]" jsFile
             File.WriteAllText(jsFile, IfSharpResources.webintellisense_codemirror_js())
@@ -237,12 +234,12 @@ module App =
 
         printfn "Starting ipython..."
         let p = new Process()
-        p.StartInfo.FileName <- "ipython"
-        p.StartInfo.Arguments <- "notebook --profile ifsharp"
-        p.StartInfo.WorkingDirectory <- appData
+        p.StartInfo.FileName <- "jupyter"
+        p.StartInfo.Arguments <- "notebook --config=" + configFile
+        p.StartInfo.WorkingDirectory <- userDir
 
         // tell the user something bad happened
-        if p.Start() = false then printfn "Unable to start ipython, please install ipython first"
+        if p.Start() = false then printfn "Unable to start jupyter, please install jupyter first"
 
     /// First argument must be an ipython connection file, blocks forever
     let Start (args : array<string>) = 
@@ -252,10 +249,13 @@ module App =
             InstallAndStart(true)
 
         else
+            // Clear the temporary folder
+            try
+              if Directory.Exists(Config.TempDir) then Directory.Delete(Config.TempDir, true)
+            with exc -> Console.Out.Write(exc.ToString())
 
             // adds the default display printers
             Printers.addDefaultDisplayPrinters()
-
 
             // get connection information
             let fileName = args.[0]

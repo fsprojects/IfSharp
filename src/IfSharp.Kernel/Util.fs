@@ -7,6 +7,9 @@ open System.Net
 open System.Text
 open System.Drawing.Imaging
 open System.Windows.Forms
+open System.Xml;
+open System.Xml.Linq;
+open System.Xml.XPath;
 open FSharp.Charting
 
 type BinaryOutput =
@@ -40,6 +43,13 @@ type GenericChartWithSize =
     {
         Chart: ChartTypes.GenericChart;
         Size: int * int;
+    }
+
+type GenericChartsWithSize =
+    {
+        Charts: ChartTypes.GenericChart list;
+        Size: int * int;
+        Columns: int;
     }
 
 [<AutoOpen>]
@@ -86,6 +96,12 @@ module ExtensionMethods =
             actualChart.Size <- Size(width, height)
             actualChart.SaveImage(ms, ImageFormat.Png)
             ms.ToArray()
+
+        member self.ToData(?size) =
+            let bytes = match size with Some size -> self.ToPng(size) | _ -> self.ToPng()
+            let base64 = Convert.ToBase64String(bytes)
+            let data = "data:image/png;base64,"+base64
+            data
 
     type FSharp.Charting.Chart with
     
@@ -145,7 +161,6 @@ type Util =
         stream.CopyTo(mstream)
         { ContentType = res.ContentType; Data =  mstream.ToArray() }
 
-
     /// Wraps a BinaryOutput around image bytes with the specified content-type
     static member Image (bytes:seq<byte>, ?contentType:string) =
         {
@@ -153,6 +168,59 @@ type Util =
             Data = bytes;
         }
 
+    static member Base64 (bytes:seq<byte>, contentType:string) =
+        let base64 = Convert.ToBase64String(Array.ofSeq bytes)
+        let data = "data:"+contentType+";base64,"+base64
+        data
+
     /// Loads a local image from disk and wraps a BinaryOutput around the image data.
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
+
+    static member MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) (cols:int) =
+        { Charts = charts; Size = size; Columns = cols }
+
+    static member CreatePublicFile (name:string) (content:byte[]) =
+        try
+            if Directory.Exists(Config.TempDir) = false then
+                Directory.CreateDirectory(Config.TempDir) |> ignore;
+            let path = Path.Combine(Config.TempDir,name)
+            File.WriteAllBytes(path, content)
+            "/static/temp/"+name
+        with exc ->
+            exc.ToString()
+
+    static member MoveSvg (svg:string) (delta:float*float) =
+        let (dx,dy) = delta
+        let doc = XElement.Parse(svg)
+        let width = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width = Math.Max(width, width + dx)
+        let height = Math.Max(height, height + dy)
+        doc.SetAttributeValue(XName.Get("width"), width)
+        doc.SetAttributeValue(XName.Get("height"), height)
+        let gnode = new XElement(XName.Get("g"))
+        gnode.SetAttributeValue(XName.Get("transform"), "translate("+(string dx)+","+(string dy)+")")
+        let objects = doc.Elements() |> Array.ofSeq;
+        doc.RemoveNodes()
+        gnode.Add(objects)
+        doc.Add(gnode)
+        let svg = doc.ToString()
+        svg
+
+    static member MergeSvg (svg1:string) (svg2:string) =
+        let doc1 = XElement.Parse(svg1)
+        let doc2 = XElement.Parse(svg2)
+        let width1 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc1.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height1 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc1.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width2 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc2.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height2 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc2.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width = Math.Max(width1, width2)
+        let height = Math.Max(height1, height2)
+        doc1.SetAttributeValue(XName.Get("width"), width)
+        doc1.SetAttributeValue(XName.Get("height"), height)
+        let doc2Objects = doc2.Elements() |> Array.ofSeq;
+        doc2.RemoveNodes()
+        doc1.Add(doc2Objects)
+        let svg = doc1.ToString()
+        svg
