@@ -6,7 +6,7 @@ For more information view the [documentation](http://fsprojects.github.io/IfShar
 IfSharp works with iPython Notebook 1.x and 2.x 
 
 # Automatic Installation
-See our [release repository](./releases). Also, [installation documentation](http://fsprojects.github.io/IfSharp/installation.html).
+See our [release repository](/releases). Also, [installation documentation](http://fsprojects.github.io/IfSharp/installation.html).
 
 # Manual Installation
 1. Install [Anaconda](http://continuum.io/downloads)
