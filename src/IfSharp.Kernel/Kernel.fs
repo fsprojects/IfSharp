@@ -5,6 +5,9 @@ open System.Collections.Generic
 open System.IO
 open System.Reflection
 open System.Text
+open System.Threading
+open System.Security.Cryptography
+
 
 open Newtonsoft.Json
 open NetMQ
@@ -56,8 +59,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             |> Seq.filter (fun x -> x <> "")
             |> Seq.map (fun x -> String.Format("{0:yyyy-MM-dd HH:mm:ss} - {1}", DateTime.Now, x))
             |> Seq.toArray
-        
-        File.AppendAllLines(fileName, messages)
+        try
+            File.AppendAllLines(fileName, messages)
+        with _ -> ()
 
     /// Logs the exception to the specified file name
     let handleException (ex : exn) = 
@@ -83,8 +87,17 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         ser.Serialize(sw, obj)
         sw.ToString()
 
-    let recvAll (socket: NetMQSocket) = socket.ReceiveMessages()
+    /// Sign a set of strings.
+    let hmac = new HMACSHA256(Encoding.UTF8.GetBytes(connectionInformation.key))
+    let sign (parts:string list) : string =
+        if connectionInformation.key = "" then "" else
+          ignore (hmac.Initialize())
+          List.iter (fun (s:string) -> let bytes = Encoding.UTF8.GetBytes(s) in ignore(hmac.TransformBlock(bytes, 0, bytes.Length, null, 0))) parts
+          ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
+          BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
 
+    let recvAll (socket: NetMQSocket) = socket.ReceiveMessages()
+    
     /// Constructs an 'envelope' from the specified socket
     let recvMessage (socket: NetMQSocket) = 
         
@@ -113,6 +126,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         let parentHeader     = JsonConvert.DeserializeObject<Header>(parentHeaderJson)
         let metaDataDict     = deserializeDict (metadata)
         let content          = ShellMessages.Deserialize (header.msg_type) (contentJson)
+
+        let calculated_signature = sign [headerJson; parentHeaderJson; metadata; contentJson]
+        if calculated_signature <> hmac then failwith("Wrong message signature")
 
         lastMessage <- Some
             {
@@ -144,13 +160,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         for ident in envelope.Identifiers do
             msg.Append(ident)
 
+        let header = serialize header
+        let parent_header = serialize envelope.Header
+        let meta = "{}"
+        let content = serialize content
+        let signature = sign [header; parent_header; meta; content]
+
         msg.Append(encode "<IDS|MSG>")
-        msg.Append(encode "")
-        msg.Append(encode (serialize header))
-        msg.Append(encode (serialize envelope.Header))
+        msg.Append(encode signature)
+        msg.Append(encode header)
+        msg.Append(encode parent_header)
         msg.Append(encode "{}")
-        msg.Append(encode (serialize content))
+        msg.Append(encode content)
         socket.SendMessage(msg)
+
         
     /// Convenience method for sending the state of the kernel
     let sendState (envelope) (state) =
@@ -401,6 +424,12 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // TODO: actually handle this
         ()
 
+    let inspectRequest (msg : KernelMessage) (content : InspectRequest) =
+        // TODO: actually handle this
+        let reply = { status = "ok"; found = false; data = Dictionary<string,obj>(); metadata = Dictionary<string,obj>() }
+        sendMessage shellSocket msg "inspect_reply" reply
+        ()
+
     /// Loops forever receiving messages from the client and processing them
     let doShell() =
 
@@ -426,6 +455,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 | ShutdownRequest(r)     -> shutdownRequest msg r
                 | HistoryRequest(r)      -> historyRequest msg r
                 | ObjectInfoRequest(r)   -> objectInfoRequest msg r
+                | InspectRequest(r)      -> inspectRequest msg r
                 | _                      -> logMessage (String.Format("Unknown content type. msg_type is `{0}`", msg.Header.msg_type))
             with 
             | ex -> handleException ex
