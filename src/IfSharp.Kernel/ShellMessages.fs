@@ -95,6 +95,35 @@ type ObjectInfoRequest =
         detail_level: int;
     }
 
+type InspectRequest =
+    {
+        // # The code context in which introspection is requested
+        // # this may be up to an entire multiline cell.
+        code: string;
+
+        // # The cursor position within 'code' (in unicode characters) where inspection is requested
+        cursor_pos: int;
+        
+        // # The level of detail desired.  In IPython, the default (0) is equivalent to typing
+        // # 'x?' at the prompt, 1 is equivalent to 'x??'.
+        // # The difference is up to kernels, but in IPython level 1 includes the source code
+        // # if available.
+        detail_level: int;
+    }
+
+type InspectReply =
+    {
+        // # 'ok' if the request succeeded or 'error', with error information as in all other replies.
+        status: string;
+
+        // # found should be true if an object was found, false otherwise
+        found: bool;
+
+        // # data can be empty if nothing is found
+        data: Dictionary<string,obj>;
+        metadata: Dictionary<string,obj>;
+    }
+
 type ArgsSpec =
     {
         // # The names of all the arguments
@@ -414,6 +443,8 @@ type ShellMessage =
     | ExecuteReplyError of ExecuteReplyError
 
     // intellisense
+    | InspectRequest of InspectRequest
+    | InspectReply of InspectReply
     | ObjectInfoRequest of ObjectInfoRequest
     | CompleteRequest of CompleteRequest
     | IntellisenseRequest of IntellisenseRequest
@@ -471,6 +502,7 @@ module ShellMessages =
         | "execute_reply_error"  -> ExecuteReplyError (JsonConvert.DeserializeObject<ExecuteReplyError>(messageJson))
 
         | "object_info_request"  -> ObjectInfoRequest (JsonConvert.DeserializeObject<ObjectInfoRequest>(messageJson))
+        | "inspect_request"      -> InspectRequest (JsonConvert.DeserializeObject<InspectRequest>(messageJson))
         | "complete_request"     -> CompleteRequest (JsonConvert.DeserializeObject<CompleteRequest>(messageJson))
         | "complete_reply"       -> CompleteReply (JsonConvert.DeserializeObject<CompleteReply>(messageJson))
 
