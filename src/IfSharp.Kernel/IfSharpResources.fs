@@ -13,8 +13,8 @@ module IfSharpResources =
          Encoding.UTF8.GetString(array)
 
     let ifsharp_logo() = resources.GetObject("ifsharp_logo") :?> System.Drawing.Bitmap
-    let custom_css() = resources.GetString("custom_css")
-    let custom_js() = resources.GetString("custom_js")
+    let fsharp_css() = resources.GetString("fsharp_css")
+    let kernel_js() = resources.GetString("kernel_js")
     let fsharp_js() = resources.GetString("fsharp_js")
     let webintellisense_js() = resources.GetString("webintellisense")
     let webintellisense_codemirror_js() = resources.GetString("webintellisense-codemirror")

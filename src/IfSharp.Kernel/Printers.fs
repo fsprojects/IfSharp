@@ -3,6 +3,9 @@
 open System
 open System.Text
 open System.Web
+open System.Drawing
+open System.Drawing.Imaging
+open System.IO
 open FSharp.Charting
 
 module Printers = 
@@ -45,6 +48,25 @@ module Printers =
             { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) }
         )
         
+        addDisplayPrinter(fun (x:GenericChartsWithSize) ->
+            let count = x.Charts.Length
+            let (width, height) = x.Size
+            let totalWidth = if count = 1 then width else width * x.Columns
+            let numRows = int (Math.Ceiling (float count / float x.Columns))
+            let totalHeight = numRows * height
+            let finalBitmap = new Bitmap(totalWidth, totalHeight)
+            let finalGraphics = Graphics.FromImage(finalBitmap)
+            let copy i (chart:ChartTypes.GenericChart) =
+                let img = chart.ToPng(x.Size)
+                let bitmap = new Bitmap(new MemoryStream(img))
+                finalGraphics.DrawImage(bitmap, i % x.Columns * width, i / x.Columns * height)
+            List.iteri copy x.Charts;
+            finalGraphics.Dispose();
+            let ms = new MemoryStream()
+            finalBitmap.Save(ms, ImageFormat.Png);
+            { ContentType = "image/png"; Data = ms.ToArray() }
+        )
+
         // add table printer
         addDisplayPrinter(fun (x:TableOutput) -> 
             let sb = StringBuilder()
