@@ -45,7 +45,7 @@ let testAssemblies = ["tests/*/bin/Release/IfSharp.*Tests*.dll"]
 
 // Git configuration (used for publishing documentation in gh-pages branch)
 // The profile where the project is posted 
-let gitHome = "https://github.com/BayardRock"
+let gitHome = "https://github.com/fsprojects/"
 // The name of the project on GitHub
 let gitName = "IfSharp"
 
@@ -88,12 +88,10 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    { BaseDirectory = __SOURCE_DIRECTORY__
-      Includes = [ solutionFile +       ".sln"
-                   solutionFile + ".Tests.sln" ]
-      Excludes = [] } 
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
+    [ "src/IfSharp.Kernel/IfSharp.Kernel.fsproj"
+    ; "src/IfSharpConsole/IfSharpConsole.csproj" ] 
+      |> MSBuildRelease "bin" "Rebuild"
+      |> ignore
 )
 
 // --------------------------------------------------------------------------------------
