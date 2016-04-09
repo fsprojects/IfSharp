@@ -101,7 +101,7 @@ Target "Build" (fun _ ->
 
 Target "RunTests" (fun _ ->
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
-    let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
+    let nunitPath = sprintf "packages/NUnit.Runners.%s/tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
     { BaseDirectory = __SOURCE_DIRECTORY__
