@@ -84,11 +84,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include=".\helpers\XPlot.Plotly.fsx">
-      <!-- Copied in a post build event --> 
+      <!-- Copied in a post build event -->
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Include=".\helpers\paket.dependencies">
-      <!-- Copied in a post build event --> 
+      <!-- Copied in a post build event -->
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <!--
@@ -125,8 +125,6 @@
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Helper Include=".\helpers\XPlot.Plotly.fsx" />
