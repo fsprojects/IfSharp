@@ -173,7 +173,7 @@ Target "Release" DoNothing
 Target "All" DoNothing
 
 "Clean"
-  //==> "RestorePackages"
+//  ==> "RestorePackages"
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "RunTests"
