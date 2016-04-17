@@ -97,20 +97,12 @@ Target "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
 
-Target "RunTests" (fun _ ->
-    let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
-    let nunitPath = sprintf "packages/NUnit.Runners.%s/tools" nunitVersion
-    ActivateFinalTarget "CloseTestRunner"
-
-    { BaseDirectory = __SOURCE_DIRECTORY__
-      Includes = testAssemblies
-      Excludes = [] } 
-    |> NUnit (fun p ->
-        { p with
-            ToolPath = nunitPath
-            DisableShadowCopy = true
-            TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
+Target "xUnit" (fun _ ->
+    !! "**/bin/**/*.Tests.dll"
+    |> Fake.Testing.XUnit2.xUnit2 (fun p ->
+        {p with
+            TimeOut = TimeSpan.FromMinutes 5.
+            HtmlOutputPath = Some "xunit.html"})
 )
 
 FinalTarget "CloseTestRunner" (fun _ ->  
@@ -173,10 +165,8 @@ Target "Release" DoNothing
 Target "All" DoNothing
 
 "Clean"
-//  ==> "RestorePackages"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "RunTests"
   ==> "All"
 
 "All" 
@@ -184,6 +174,8 @@ Target "All" DoNothing
   ==> "GenerateDocs"
   ==> "ReleaseDocs"
   ==> "NuGet"
+  ==> "xUnit"
   ==> "Release"
+
 
 RunTargetOrDefault "All"
