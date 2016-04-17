@@ -83,18 +83,6 @@
     <None Include="Include.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include=".\helpers\XPlot.Plotly.fsx">
-      <!-- Copied in a post build event -->
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Include=".\helpers\paket.dependencies">
-      <!-- Copied in a post build event -->
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <!--
-    <None Include=".\helpers\.paket\paket.bootstraper.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>-->
     <None Include="paket.references" />
     <Compile Include="Util.fs" />
     <Compile Include="MainTypes.fs" />
@@ -107,6 +95,13 @@
     <Compile Include="Globals.fs" />
     <None Include="Scratch.fsx" />
     <Content Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyHelpers Include="helpers\*.fsx" />
+    <CopyHelpers Include="helpers\paket.dependencies" />
+    <CopyHelpers Include="helpers\paket.bootstrapper.exe">
+      <Visible>false</Visible>
+    </CopyHelpers>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -126,19 +121,16 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <ItemGroup>
-    <Helper Include=".\helpers\XPlot.Plotly.fsx" />
-    <Helper Include=".\helpers\paket.dependencies" />
-    <PaketBS Include=".\helpers\paket.bootstrapper.exe" />
-  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Helper)" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="@(PaketBS)" DestinationFolder="$(OutDir)/.paket/" />
+    <Copy
+      SourceFiles="@(CopyHelpers)"
+      DestinationFolder="$(OutDir)"
+    />
   </Target>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
