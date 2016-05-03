@@ -5,6 +5,8 @@ For more information view the [documentation](http://fsprojects.github.io/IfShar
 # Compatibility
 IfSharp works with iPython Notebook 1.x and 2.x 
 
+We have an initial version of Jupyter 4.x support on this branch: https://github.com/fsprojects/IfSharp/tree/jupyter more help is welcome.
+
 # Automatic Installation
 See our [release repository](https://github.com/fsprojects/IfSharp/releases). Also, [installation documentation](http://fsprojects.github.io/IfSharp/installation.html).
 
