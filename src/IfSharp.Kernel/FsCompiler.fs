@@ -475,8 +475,11 @@ type FsCompiler (executingDirectory : string) =
             
             (List.empty, items, tcr, x.FilterStartIndex)
 
+
+    /// *** member this.GetToolTipText uses Parser which is internal to the F# Compiler service. Investigate if we need this.
+
     /// Gets tooltip information for the specified information
-    member this.GetToolTipText (source, lineNumber : int, charIndex : int) =
+    (*member this.GetToolTipText (source, lineNumber : int, charIndex : int) =
 
         let fileName = "/home/Test.fsx"
         let tcr = this.TypeCheck(source, fileName)
@@ -487,3 +490,4 @@ type FsCompiler (executingDirectory : string) =
         let toolTip = tcr.Check.GetToolTipTextAlternate(lineNumber, charIndex, line, names, identToken) |> Async.RunSynchronously
 
         (startIndex, endIndex, this.FormatTip(toolTip, None))
+        *)
