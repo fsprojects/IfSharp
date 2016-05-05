@@ -5,7 +5,7 @@
 #r "IfSharp.Kernel.dll"
 #r "System.Data.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
-#r "FSharp.Data.TypeProviders.dll"
+//#r "FSharp.Data.TypeProviders.dll"
 #r "FSharp.Charting.dll"
 #r "NetMQ.dll"
 

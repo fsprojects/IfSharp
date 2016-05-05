@@ -235,7 +235,7 @@ module App =
         printfn "Starting ipython..."
         let p = new Process()
         p.StartInfo.FileName <- "jupyter"
-        p.StartInfo.Arguments <- "notebook --config=" + configFile
+        p.StartInfo.Arguments <- "notebook --debug --config=" + configFile
         p.StartInfo.WorkingDirectory <- userDir
 
         // tell the user something bad happened

@@ -16,26 +16,30 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
     // startup 0mq stuff
     let context = NetMQContext.Create()
-
     // heartbeat
-    let hbSocket = context.CreateRequestSocket()
-    do hbSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
-        
-    // shell
-    let shellSocket = context.CreateRouterSocket()
-    do shellSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
+    let hbSocket = context.CreateRouterSocket()
+    let hbSocketURL =String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port) 
+    do hbSocket.Bind(hbSocketURL)
         
     // control
     let controlSocket = context.CreateRouterSocket()
-    do controlSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
+    let controlSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port)
+    do controlSocket.Bind(controlSocketURL)
 
     // stdin
     let stdinSocket = context.CreateRouterSocket()
-    do stdinSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
+    let stdinSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port)
+    do stdinSocket.Bind(stdinSocketURL)
 
     // iopub
     let ioSocket = context.CreatePublisherSocket()
-    do ioSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
+    let ioSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port)
+    do ioSocket.Bind(ioSocketURL)
+
+    // shell
+    let shellSocket = context.CreateRouterSocket()
+    let shellSocketURL =String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port)
+    do shellSocket.Bind(shellSocketURL)
 
     let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
@@ -96,21 +100,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
           ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
           BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
 
-    let recvAll (socket: NetMQSocket) = socket.ReceiveMessages()
+    let recvAll (socket: NetMQSocket) = socket.ReceiveMultipartBytes()
     
     /// Constructs an 'envelope' from the specified socket
     let recvMessage (socket: NetMQSocket) = 
         
         // receive all parts of the message
-        let message =
-            recvAll (socket)
-            |> Seq.map decode
-            |> Seq.toArray
+        let message = (recvAll (socket)) |> Array.ofSeq
+        let asStrings = message |> Array.map decode
 
         // find the delimiter between IDS and MSG
-        let idx = Array.IndexOf(message, "<IDS|MSG>")
+        let idx = Array.IndexOf(asStrings, "<IDS|MSG>")
+
         let idents = message.[0..idx - 1]
-        let messageList = message.[idx + 1..message.Length - 1]
+        let messageList = asStrings.[idx + 1..message.Length - 1]
 
         // detect a malformed message
         if messageList.Length < 4 then failwith ("Malformed message")
@@ -172,7 +175,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         msg.Append(encode parent_header)
         msg.Append(encode "{}")
         msg.Append(encode content)
-        socket.SendMessage(msg)
+        socket.SendMultipartMessage(msg)
 
         
     /// Convenience method for sending the state of the kernel
@@ -191,12 +194,25 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let kernelInfoRequest(msg : KernelMessage) (content : KernelRequest) = 
         let content = 
             {
-                protocol_version = [| 4; 0 |]; 
-                ipython_version = Some [| 1; 0; 0 |];
-                language_version = [| 1; 0; 0 |];
+                protocol_version = "4.0.0";
+                implementation = "ifsharp";
+                implementation_version = "4.0.0";
+                banner = "";
+                help_links = [||];
                 language = "fsharp";
+                language_info =
+                {
+                    name = "fsharp";
+                    version = "4.3.1.0";
+                    mimetype = "text/x-fsharp";
+                    file_extension = ".fs";
+                    pygments_lexer = "";
+                    codemirror_mode = "";
+                    nbconvert_exporter = "";
+                };
             }
 
+        sendStateBusy msg
         sendMessage shellSocket msg "kernel_info_reply" content
 
     /// Sends display data information immediately
@@ -407,11 +423,12 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
     /// Handles a 'shutdown_request' message
     let shutdownRequest (msg : KernelMessage) (content : ShutdownRequest) =
-
+        logMessage "shutdown request"
         // TODO: actually shutdown        
         let reply = { restart = true; }
 
-        sendMessage shellSocket msg "shutdown_reply" reply
+        sendMessage shellSocket msg "shutdown_reply" reply;
+        System.Environment.Exit(0)
 
     /// Handles a 'history_request' message
     let historyRequest (msg : KernelMessage) (content : HistoryRequest) =
@@ -442,7 +459,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         logMessage (sbOut.ToString())
 
         while true do
-
             let msg = recvMessage (shellSocket)
 
             try
@@ -456,16 +472,27 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 | HistoryRequest(r)      -> historyRequest msg r
                 | ObjectInfoRequest(r)   -> objectInfoRequest msg r
                 | InspectRequest(r)      -> inspectRequest msg r
-                | _                      -> logMessage (String.Format("Unknown content type. msg_type is `{0}`", msg.Header.msg_type))
+                | _                      -> logMessage (String.Format("Unknown content type on shell. msg_type is `{0}`", msg.Header.msg_type))
             with 
             | ex -> handleException ex
    
+    let doControl() =
+        while true do
+            let msg = recvMessage (controlSocket)
+            try
+                match msg.Content with
+                | ShutdownRequest(r)     -> shutdownRequest msg r
+                | _                      -> logMessage (String.Format("Unexpected content type on control. msg_type is `{0}`", msg.Header.msg_type))
+            with 
+            | ex -> handleException ex
+
     /// Loops repeating message from the client
     let doHeartbeat() =
 
         try
             while true do
-                hbSocket.Send(hbSocket.Receive())
+                let hb = hbSocket.ReceiveMultipartBytes() in
+                hbSocket.SendMultipartBytes(hb)
         with
         | ex -> handleException ex
 
@@ -485,5 +512,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Starts the kernel asynchronously
     member __.StartAsync() = 
         
-        Async.Start (async { doHeartbeat() } )
+        //Async.Start (async { doHeartbeat() } )
         Async.Start (async { doShell() } )
+        Async.Start (async { doControl() } )
