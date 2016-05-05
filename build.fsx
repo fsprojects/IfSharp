@@ -86,10 +86,10 @@ Target "CleanDocs" (fun _ ->
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
-
 Target "Build" (fun _ ->
-    [ "src/IfSharp.Kernel/IfSharp.Kernel.fsproj"
-    ; "src/IfSharpConsole/IfSharpConsole.csproj" ] 
+    [ "src/IfSharpConsole/IfSharpConsole.csproj"
+    //; "src/IfSharp.Kernel/IfSharp.Kernel.fsproj"
+    ] 
       |> MSBuildRelease "bin" "Rebuild"
       |> ignore
 )
