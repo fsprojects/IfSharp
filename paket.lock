@@ -2,7 +2,6 @@ NUGET
   remote: https://www.nuget.org/api/v2
   specs:
     FAKE (4.23.6)
-    FSharp.Charting (0.90.5) - framework: >= net45
     FSharp.Compiler.Service (0.0.81) - framework: >= net451
     FSharp.Core.Microsoft.Signed (3.1.1.1) - framework: >= net45
     NetMQ (3.3.0.11)

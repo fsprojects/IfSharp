@@ -6,10 +6,8 @@
 #r "System.Data.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
 //#r "FSharp.Data.TypeProviders.dll" //Can be accessed by #N "FSharp.Data.TypeProviders" instead
-#r "FSharp.Charting.dll"
 #r "NetMQ.dll"
 
 // open the global functions and methods
-open FSharp.Charting
 open IfSharp.Kernel
 open IfSharp.Kernel.Globals
