@@ -112,7 +112,6 @@
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(CopyHelpers)" DestinationFolder="$(OutDir)" />
   </Target>
-  -->
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v3.5'">
