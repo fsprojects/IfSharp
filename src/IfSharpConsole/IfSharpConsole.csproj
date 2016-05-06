@@ -76,7 +76,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="FSharp.Core.optdata">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -94,12 +96,21 @@
   <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyHelpers Include="..\IfSharp.Kernel\helpers\*.fsx" />
+    <CopyHelpers Include="..\IfSharp.Kernel\helpers\paket.dependencies" />
+    <CopyHelpers Include="..\IfSharp.Kernel\helpers\paket.bootstrapper.exe">
+      <Visible>false</Visible>
+    </CopyHelpers>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
+  -->
   <Target Name="AfterBuild">
+    <Copy SourceFiles="@(CopyHelpers)" DestinationFolder="$(OutDir)" />
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
