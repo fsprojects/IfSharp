@@ -334,30 +334,68 @@ type CommOpen = obj
 
 type KernelRequest = obj
 
+type KernelReply_LanguageInfo =
+    {
+        // # Name of the programming language that the kernel implements.
+        // # Kernel included in IPython returns 'python'.
+        name: string;
+
+        // # Language version number.
+        // # It is Python version number (e.g., '2.7.3') for the kernel
+        // # included in IPython.
+        version: string;
+
+        // # mimetype for script files in this language
+        mimetype: string;
+
+        // # Extension including the dot, e.g. '.py'
+        file_extension: string;
+
+        // # Pygments lexer, for highlighting
+        // # Only needed if it differs from the 'name' field.
+        pygments_lexer: string;
+
+        // # Codemirror mode, for for highlighting in the notebook.
+        // # Only needed if it differs from the 'name' field.
+        codemirror_mode: string;
+
+        // # Nbconvert exporter, if notebooks written with this kernel should
+        // # be exported with something other than the general 'script'
+        // # exporter.
+        nbconvert_exporter: string;
+    }
+
+type KernelReply_HelpLink = { text: string; url: string; }
+
 type KernelReply =
     {
-        // # Version of messaging protocol (mandatory).
+        // # Version of messaging protocol.
         // # The first integer indicates major version.  It is incremented when
         // # there is any backward incompatible change.
         // # The second integer indicates minor version.  It is incremented when
         // # there is any backward compatible change.
-        protocol_version: array<int>;
-
-        // # IPython version number (optional).
-        // # Non-python kernel backend may not have this version number.
-        // # The last component is an extra field, which may be 'dev' or
-        // # 'rc1' in development version.  It is an empty string for
-        // # released version.
-        ipython_version: Option<array<obj>>;
-
-        // # Language version number (mandatory).
-        // # It is Python version number (e.g., [2, 7, 3]) for the kernel
-        // # included in IPython.
-        language_version: array<int>;
-
-        // # Programming language in which kernel is implemented (mandatory).
-        // # Kernel included in IPython returns 'python'.
-        language: string
+        protocol_version: string;
+   
+        // # The kernel implementation name
+        // # (e.g. 'ipython' for the IPython kernel)
+        implementation: string;
+   
+        // # Implementation version number.
+        // # The version number of the kernel's implementation
+        // # (e.g. IPython.__version__ for the IPython kernel)
+        implementation_version: string;
+   
+        // # Information about the language of code for the kernel
+        language_info: KernelReply_LanguageInfo;
+        language: string;
+   
+        // # A banner of information about the kernel,
+        // # which may be desplayed in console environments.
+        banner : string;
+   
+        // # Optional: A list of dictionaries, each with keys 'text' and 'url'.
+        // # These will be displayed in the help menu in the notebook UI.
+        help_links: KernelReply_HelpLink array;
     }
 
 type KernelStatus = 
@@ -483,7 +521,7 @@ type Header =
 
 type KernelMessage = 
     {
-        Identifiers: list<string>;
+        Identifiers: list<byte[]>;
         HmacSignature: string;
         Header: Header;
         ParentHeader: Header;
