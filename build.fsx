@@ -88,12 +88,11 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    { BaseDirectory = __SOURCE_DIRECTORY__
-      Includes = [ solutionFile +       ".sln"
-                   solutionFile + ".Tests.sln" ]
-      Excludes = [] } 
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
+    [ "src/IfSharpConsole/IfSharpConsole.csproj"
+    //; "src/IfSharp.Kernel/IfSharp.Kernel.fsproj"
+    ] 
+      |> MSBuildRelease "bin" "Rebuild"
+      |> ignore
 )
 
 // --------------------------------------------------------------------------------------
@@ -178,7 +177,7 @@ Target "All" DoNothing
   ==> "RestorePackages"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "RunTests"
+//  ==> "RunTests"
   ==> "All"
 
 "All" 
