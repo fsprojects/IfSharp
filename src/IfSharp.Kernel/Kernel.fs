@@ -236,6 +236,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         let results = compiler.NuGetManager.Preprocess(code)
         let newCode = String.Join("\n", results.FilteredLines)
 
+        if not (Seq.isEmpty results.HelpLines) then
+            fsiEval.EvalInteraction("#help")
+            let ifsharpHelp =
+                """  IF# notebook directives:
+
+    #fsioutput ["on"|"off"];;   Toggle output display on/off
+    """
+            let fsiHelp = sbOut.ToString()
+            pyout (ifsharpHelp + fsiHelp)
+            sbOut.Clear() |> ignore
+
+        if not (Seq.isEmpty results.FsiOutputLines) then
+            fsiout := true
+
         // do nuget stuff
         for package in results.Packages do
             if not (String.IsNullOrWhiteSpace(package.Error)) then
@@ -256,6 +270,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         if not <| String.IsNullOrEmpty(newCode) then
             fsiEval.EvalInteraction(newCode)
+
+        if fsiout.Value then
+            pyout (sbOut.ToString())
     
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 

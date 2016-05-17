@@ -59,6 +59,8 @@ type CustomErrorInfo =
 type PreprocessResults =
     {
         OriginalLines : string[];
+        HelpLines : string[];
+        FsiOutputLines : string[];
         NuGetLines : string[];
         FilteredLines : string[];
         Packages : NuGetPackage[];
@@ -89,17 +91,25 @@ type CustomInstallCommand() =
 
 module NuGetManagerInternals =
 
-    /// Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines
-    let partitionLines(directive) (lines : string[]) =
+    type Line =
+    | HelpDirective
+    | FSIOutputDirective
+    | NugetDirective
+    | Other
+
+    let determineLineType (idx, (line:string)) =
+        match line.ToLower() with
+        | line when line.StartsWith "#n" -> NugetDirective
+        | line when line.StartsWith "#help" -> HelpDirective
+        | line when line.StartsWith "#fsioutput" -> FSIOutputDirective
+        | _ -> Other
+
+    /// Separates into map of directive types
+    let partitionLines(lines : string[]) =
         lines
         |> Seq.mapi (fun (idx) (line) -> (idx, line))
-        |> Seq.toList
-        |> List.partition (fun (idx, line) -> line.StartsWith(directive))
-
-    /// Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines
-    let partitionSource(directive) (source : string) =
-        let delimiters = [|"\r\n"; "\n"; "\r";|]
-        partitionLines directive (source.Split(delimiters, StringSplitOptions.None))
+        |> Seq.groupBy determineLineType
+        |> Map.ofSeq
 
     /// Parses a directive line. Example: #N "Deedle"
     let parseDirectiveLine (prefix : string) (line : string) = 
@@ -246,7 +256,15 @@ type NuGetManager (executingDirectory : string) =
         
         // split the source code into lines, then get the nuget lines
         let lines = source.Split('\n')
-        let (nugetLines, otherLines) = NuGetManagerInternals.partitionLines "#N" lines
+        let linesSplit = NuGetManagerInternals.partitionLines lines
+
+        let orEmpty key = let opt = Map.tryFind key linesSplit
+                          if opt.IsSome then opt.Value else Seq.empty
+
+        let helpLines = NuGetManagerInternals.Line.HelpDirective |> orEmpty
+        let fsiOutputLines = NuGetManagerInternals.Line.FSIOutputDirective |> orEmpty
+        let nugetLines = NuGetManagerInternals.Line.NugetDirective |> orEmpty
+        let otherLines = NuGetManagerInternals.Line.Other |> orEmpty
 
         // parse the nuget lines and then download the packages
         let nugetPackages =
@@ -264,7 +282,10 @@ type NuGetManager (executingDirectory : string) =
 
         {
             OriginalLines = lines;
+            HelpLines = helpLines |> Seq.map(fun (idx, line) -> line) |> Seq.toArray;
+            FsiOutputLines = fsiOutputLines |> Seq.map(fun (idx, line) -> line) |> Seq.toArray;
             NuGetLines = nugetLines |> Seq.map(fun (idx, line) -> line) |> Seq.toArray;
+            
             FilteredLines = otherLines |> Seq.map(fun (idx, line) -> line) |> Seq.toArray;
             Packages = nugetPackages |> Seq.map(fun (idx, package) -> package) |> Seq.toArray;
             Errors = errors;
