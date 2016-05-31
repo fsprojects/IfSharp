@@ -20,8 +20,7 @@ Run it with:
 
 `docker run -d -v your_local_notebooks_dir:/notebooks -p your_port:8888 ifsharp:3.0.0-alpha`
 
-The container exposes a volume called `notebooks` where the files get saved. On Linux, connect to the notebook on 'http://localhost:your_port' and, on Windows, use `http://your_docker_machine:your_port`.
-
+The container exposes a volume called `notebooks` where the files get saved. On Linux, connect to the notebook on `http://localhost:your_port` and, on Windows, use `http://your_docker_machine:your_port`.
 
 # Manual Installation
 1. Install [Anaconda](http://continuum.io/downloads)
