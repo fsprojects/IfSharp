@@ -37,7 +37,7 @@ The workaround is for IPython/Jupyter changes will be fixed in a future release.
 4. Unzip the release to a safe place such as `~/opt/ifsharp`.
 5. Run `mono ~/opt/ifsharp/IfSharp.exe` to set up the jupyter config files in `~/.jupyter/` and `~/.local/share/jupyter/kernels/ifsharp/`.
   1. (For XPlot) From the install directory `~/opt/` run `mono paket.bootstrapper.exe` then `mono paket.exe install` 
-5. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
+6. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
 
 
 TODO
