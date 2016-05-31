@@ -27,7 +27,7 @@ Jupyter with IfSharp can be run via "jupyter notebook" in future
 5. (workaround: Copy ~/.local/share/jupyter/kernels/ifsharp to /usr/local/share/jupyter/kernels/ifsharp)
 6. Run `jupyter notebook`
 
-Steps 5 & 6 will be fixed in a future release.
+Steps 5 & 6 are a workaround for IPython/Jupyter changes will be fixed in a future release.
 
 # Manual Installation (Ubuntu)
 TODO
