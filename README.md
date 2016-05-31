@@ -14,14 +14,20 @@ Automatic installs for Jupyter will be provided in the future.
 # Manual Installation (Windows)
 1. Install [Anaconda](http://continuum.io/downloads)
 2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
-3. Checkout the repository
-4. Open the IfSharp solution file, restore nuget packages, and compile it
-5. Run the IfSharpConsole project, this will register IfSharp and launch Jupyter
+3. Download current zip release (https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip)
+4. Run IfSharp.exe
 
 Jupyter with IfSharp can be run via "jupyter notebook" in future
 
 # Manual Installation (Mac)
-TODO
+1. Install [Anaconda](http://continuum.io/downloads)
+2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
+3. Download current zip release (https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip)
+4. Unzip the release then run `mono IfSharp.exe`
+5. (workaround: Copy ~/.local/share/jupyter/kernels/ifsharp to /usr/local/share/jupyter/kernels/ifsharp)
+6. Run `jupyter notebook`
+
+Steps 5 & 6 will be fixed in a future release.
 
 # Manual Installation (Ubuntu)
 TODO
