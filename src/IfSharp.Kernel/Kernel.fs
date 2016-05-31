@@ -41,7 +41,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let shellSocketURL =String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port)
     do shellSocket.Bind(shellSocketURL)
 
-    let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
     let compiler = FsCompiler(FileInfo(".").FullName)
     let mutable executionCount = 0
@@ -216,9 +215,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         sendMessage shellSocket msg "kernel_info_reply" content
 
     /// Sends display data information immediately
-    let sendDisplayData (contentType) (displayItem) (messageType) =
-        data.Add( { ContentType = contentType; Data = displayItem } )
-        
+    let sendDisplayData (contentType) (displayItem) (messageType) =        
         if lastMessage.IsSome then
 
             let d = Dictionary<string,obj>()
@@ -266,7 +263,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // clear some state
         sbOut.Clear() |> ignore
         sbErr.Clear() |> ignore
-        data.Clear()
         payload.Clear()
 
         // only increment if we are not silent
@@ -314,17 +310,16 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
             // send all the data
             if not <| content.silent then
-                if data.Count = 0 then
-                    let lastExpression = GetLastExpression()
-                    match lastExpression with
-                    | Some(it) -> 
+                let lastExpression = GetLastExpression()
+                match lastExpression with
+                | Some(it) -> 
                         
-                        let printer = Printers.findDisplayPrinter(it.ReflectionType)
-                        let (_, callback) = printer
-                        let callbackValue = callback(it.ReflectionValue)
-                        sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
+                    let printer = Printers.findDisplayPrinter(it.ReflectionType)
+                    let (_, callback) = printer
+                    let callbackValue = callback(it.ReflectionValue)
+                    sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
 
-                    | None -> ()
+                | None -> ()
 
         // we are now idle
         sendStateIdle msg
