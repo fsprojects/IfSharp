@@ -14,7 +14,7 @@ Automatic installs for Jupyter will be provided in the future.
 # Manual Installation (Windows)
 1. Install [Anaconda](http://continuum.io/downloads)
 2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
-3. Download current zip release (https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip)
+3. Download current zip release [v3.0.0-alpha1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip)
 4. Run IfSharp.exe
 
 Jupyter with IfSharp can be run via "jupyter notebook" in future
@@ -39,8 +39,6 @@ The workaround is for IPython/Jupyter changes will be fixed in a future release.
   1. (For XPlot) From the install directory `~/opt/` run `mono paket.bootstrapper.exe` then `mono paket.exe install` 
 6. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
 
-
-TODO
 
 # Screens
 ## Intellisense
