@@ -30,7 +30,16 @@ Jupyter with IfSharp can be run via "jupyter notebook" in future
 
 The workaround is for IPython/Jupyter changes will be fixed in a future release.
 
-# Manual Installation (Ubuntu)
+# Manual Installation (Linux)
+1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
+2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (tested 4.2.4) and F# (tested 4.0).
+3. Download the current IfSharp zip release [v3.0.0-alpha1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip)
+4. Unzip the release to a safe place such as `~/opt/ifsharp`.
+5. Run `mono ~/opt/ifsharp/IfSharp.exe` to set up the jupyter config files in `~/.jupyter/` and `~/.local/share/jupyter/kernels/ifsharp/`.
+  1. (For XPlot) From the install directory `~/opt/` run `mono paket.bootstrapper.exe` then `mono paket.exe install` 
+6. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
+
+
 TODO
 
 # Screens
