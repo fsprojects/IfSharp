@@ -99,7 +99,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
           ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
           BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
 
-    let recvAll (socket: NetMQSocket) = socket.ReceiveMultipartBytes()
+    let recvAll (socket: NetMQSocket) = socket.ReceiveMessages()
     
     /// Constructs an 'envelope' from the specified socket
     let recvMessage (socket: NetMQSocket) = 
@@ -174,7 +174,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         msg.Append(encode parent_header)
         msg.Append(encode "{}")
         msg.Append(encode content)
-        socket.SendMultipartMessage(msg)
+        socket.SendMessage(msg)
 
         
     /// Convenience method for sending the state of the kernel
@@ -486,8 +486,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         try
             while true do
-                let hb = hbSocket.ReceiveMultipartBytes() in
-                hbSocket.SendMultipartBytes(hb)
+                let hb = hbSocket.Receive() in
+                hbSocket.Send hb
         with
         | ex -> handleException ex
 
