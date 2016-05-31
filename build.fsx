@@ -88,12 +88,11 @@ Target "CleanDocs" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    { BaseDirectory = __SOURCE_DIRECTORY__
-      Includes = [ solutionFile +       ".sln"
-                   solutionFile + ".Tests.sln" ]
-      Excludes = [] } 
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
+    [ "src/IfSharpConsole/IfSharpConsole.csproj"
+    //; "src/IfSharp.Kernel/IfSharp.Kernel.fsproj"
+    ] 
+      |> MSBuildRelease "bin" "Rebuild"
+      |> ignore
 )
 
 // --------------------------------------------------------------------------------------
@@ -101,7 +100,7 @@ Target "Build" (fun _ ->
 
 Target "RunTests" (fun _ ->
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
-    let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
+    let nunitPath = sprintf "packages/NUnit.Runners.%s/tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
     { BaseDirectory = __SOURCE_DIRECTORY__
@@ -178,7 +177,7 @@ Target "All" DoNothing
   ==> "RestorePackages"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "RunTests"
+//  ==> "RunTests"
   ==> "All"
 
 "All" 
