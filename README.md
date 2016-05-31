@@ -22,12 +22,13 @@ Jupyter with IfSharp can be run via "jupyter notebook" in future
 # Manual Installation (Mac)
 1. Install [Anaconda](http://continuum.io/downloads)
 2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
-3. Download current zip release (https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip)
+3. Install [Mono](http://www.mono-project.com/download/) (tested 4.2.4)
+3. Download current zip release [v3.0.0-alpha1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip)
 4. Unzip the release then run `mono IfSharp.exe`
 5. (workaround: Copy ~/.local/share/jupyter/kernels/ifsharp to /usr/local/share/jupyter/kernels/ifsharp)
 6. Run `jupyter notebook`
 
-Steps 5 & 6 are a workaround for IPython/Jupyter changes will be fixed in a future release.
+The workaround is for IPython/Jupyter changes will be fixed in a future release.
 
 # Manual Installation (Ubuntu)
 TODO
