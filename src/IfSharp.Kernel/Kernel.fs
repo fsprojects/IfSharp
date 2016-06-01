@@ -247,8 +247,15 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             pyout (ifsharpHelp + fsiHelp)
             sbOut.Clear() |> ignore
 
+        //This is a persistent toggle, just respect the last one
         if not (Seq.isEmpty results.FsiOutputLines) then
-            fsiout := true
+            let lastFsiOutput = Seq.last results.FsiOutputLines
+            if lastFsiOutput.ToLower().Contains("on") then
+                fsiout := true
+            else if lastFsiOutput.ToLower().Contains("off") then
+                fsiout := false
+            else
+                pyout (sprintf "Unreocognised fsioutput setting: %s" lastFsiOutput)
 
         // do nuget stuff
         for package in results.Packages do
