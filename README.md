@@ -11,6 +11,18 @@ IfSharp works with Jupyter 4.0 and 4.1 and works with both Python 2.X and Python
 Previous releases for the IPython notebook are here: [release repository](https://github.com/fsprojects/IfSharp/releases).
 Automatic installs for Jupyter will be provided in the future.
 
+# Running inside a Docker container
+The `jupyter` branch has a Docker file for running the F# kernel v. 3.0.0-alpha in a container.
+Build the container with: 
+
+`docker build -t ifsharp:3.0.0-alpha .`
+
+Run it with:
+
+`docker run -d -v your_local_notebooks_dir:/notebooks -p your_port:8888 ifsharp:3.0.0-alpha`
+
+The container exposes a volume called `notebooks` where the files get saved. On Linux, connect to the notebook on `http://localhost:your_port` and, on Windows, use `http://your_docker_machine:your_port`.
+
 # Manual Installation (Windows)
 1. Install [Anaconda](http://continuum.io/downloads)
 2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
