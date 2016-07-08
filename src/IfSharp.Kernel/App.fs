@@ -232,7 +232,7 @@ module App =
             printfn "Saving kernel icon [%s]" logo32File
             IfSharpResources.ifsharp_32logo().Save(logo32File)
 
-        printfn "Starting ipython..."
+        printfn "Starting Jupyter notebook..."
         let p = new Process()
         p.StartInfo.FileName <- "jupyter"
         p.StartInfo.Arguments <- "notebook --config=" + configFile
