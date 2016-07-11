@@ -161,12 +161,22 @@ module App =
         createDir tempDir
         createDir customDir
 
-        let configFile = Path.Combine(kernelDir, "ipython_config.py")
-        let configqtFile = Path.Combine(kernelDir, "ipython_qtconsole_config.py")
-        let kernelFile = Path.Combine(kernelDir, "kernel.json")
-        if forceInstall || (File.Exists(configFile) = false) then
+        let allFiles = new System.Collections.Generic.List<string>()
+        let addFile fn = allFiles.Add(fn); fn
+        let configFile = Path.Combine(kernelDir, "ipython_config.py") |> addFile
+        let configqtFile = Path.Combine(kernelDir, "ipython_qtconsole_config.py") |> addFile
+        let kernelFile = Path.Combine(kernelDir, "kernel.json") |> addFile
+        let logoFile = Path.Combine(customDir, "ifsharp_logo.png") |> addFile
+        let kjsFile = Path.Combine(kernelDir, "kernel.js") |> addFile
+        let fjsFile = Path.Combine(customDir, "fsharp.js") |> addFile
+        let wjsFile = Path.Combine(customDir, "webintellisense.js") |> addFile
+        let wcjsFile = Path.Combine(customDir, "webintellisense-codemirror.js") |> addFile
+        let logo64File = Path.Combine(kernelDir, "logo-64x64.png") |> addFile
+        let logo32File = Path.Combine(kernelDir, "logo-32x32.png") |> addFile
+        let missingFiles = Seq.exists (fun fn -> File.Exists(fn) = false) allFiles
+        if forceInstall || missingFiles then
             
-            printfn "Config file does not exist, performing install..."
+            printfn "One or more files do not exist, performing install..."
 
             // write the startup script
             let codeTemplate = IfSharpResources.ipython_config()
@@ -184,7 +194,6 @@ module App =
             File.WriteAllText(configqtFile, codeqt)
 
             // write custom logo file
-            let logoFile = Path.Combine(customDir, "ifsharp_logo.png")
             printfn "Saving custom logo [%s]" logoFile
             IfSharpResources.ifsharp_logo().Save(logoFile)
 
@@ -194,24 +203,20 @@ module App =
             File.WriteAllText(cssFile, IfSharpResources.fsharp_css())
 
             // write kernel js file
-            let jsFile = Path.Combine(kernelDir, "kernel.js")
-            printfn "Saving kernel js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.kernel_js())
+            printfn "Saving kernel js [%s]" kjsFile
+            File.WriteAllText(kjsFile, IfSharpResources.kernel_js())
 
             // write fsharp js file
-            let jsFile = Path.Combine(customDir, "fsharp.js")
-            printfn "Saving fsharp js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.fsharp_js())
+            printfn "Saving fsharp js [%s]" fjsFile
+            File.WriteAllText(fjsFile, IfSharpResources.fsharp_js())
 
             // write webintellisense js file
-            let jsFile = Path.Combine(customDir, "webintellisense.js")
-            printfn "Saving webintellisense js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.webintellisense_js())
+            printfn "Saving webintellisense js [%s]" wjsFile
+            File.WriteAllText(wjsFile, IfSharpResources.webintellisense_js())
 
             // write webintellisense-codemirror js file
-            let jsFile = Path.Combine(customDir, "webintellisense-codemirror.js")
-            printfn "Saving webintellisense-codemirror js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.webintellisense_codemirror_js())
+            printfn "Saving webintellisense-codemirror js [%s]" wcjsFile
+            File.WriteAllText(wcjsFile, IfSharpResources.webintellisense_codemirror_js())
 
             // Make the Kernel info folder 
             let jsonTemplate = IfSharpResources.ifsharp_kernel_json()
@@ -224,11 +229,9 @@ module App =
             printfn "Saving custom kernel.json file [%s]" kernelFile
             File.WriteAllText(kernelFile, code)
             
-            let logo64File = Path.Combine(kernelDir, "logo-64x64.png")
             printfn "Saving kernel icon [%s]" logo64File
             IfSharpResources.ifsharp_64logo().Save(logo64File)
             
-            let logo32File = Path.Combine(kernelDir, "logo-32x32.png")
             printfn "Saving kernel icon [%s]" logo32File
             IfSharpResources.ifsharp_32logo().Save(logo32File)
 
