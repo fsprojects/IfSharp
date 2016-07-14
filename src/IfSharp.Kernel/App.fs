@@ -235,7 +235,7 @@ module App =
         printfn "Starting Jupyter notebook..."
         let p = new Process()
         p.StartInfo.FileName <- "jupyter"
-        p.StartInfo.Arguments <- "notebook --config=" + configFile
+        p.StartInfo.Arguments <- "notebook"
         p.StartInfo.WorkingDirectory <- userDir
 
         // tell the user something bad happened
