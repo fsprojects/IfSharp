@@ -44,4 +44,6 @@ let KernelDir =
   let kernelDir = Path.Combine(kernelsDir, "ifsharp")
   kernelDir
 let StaticDir = Path.Combine(KernelDir, "static")
-let TempDir = Path.Combine(StaticDir, "temp");
+let TempDir = Path.Combine(StaticDir, "temp")
+
+let Version = "1"

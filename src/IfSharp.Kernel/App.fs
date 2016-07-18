@@ -143,7 +143,7 @@ module App =
         Kernel.Value.AddPayload(text.ToString())
 
     /// Installs the ifsharp files if they do not exist, then starts jupyter with the ifsharp profile
-    let InstallAndStart(forceInstall) = 
+    let InstallAndStart(forceInstall, start) = 
 
         let thisExecutable = Assembly.GetEntryAssembly().Location
         let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -173,10 +173,19 @@ module App =
         let wcjsFile = Path.Combine(customDir, "webintellisense-codemirror.js") |> addFile
         let logo64File = Path.Combine(kernelDir, "logo-64x64.png") |> addFile
         let logo32File = Path.Combine(kernelDir, "logo-32x32.png") |> addFile
+        let versionFile = Path.Combine(kernelDir, "version.txt") |> addFile
         let missingFiles = Seq.exists (fun fn -> File.Exists(fn) = false) allFiles
-        if forceInstall || missingFiles then
+        
+        let differentVersion = File.Exists(versionFile) && File.ReadAllText(versionFile) <> Config.Version
+
+        if forceInstall then printfn "Force install required, performing install..."
+        else if missingFiles then printfn "One or more files are missing, performing install..."
+        else if differentVersion then printfn "Different version found, performing install..."
+
+        if forceInstall || missingFiles || differentVersion then
             
-            printfn "One or more files do not exist, performing install..."
+            // write the version file
+            File.WriteAllText(versionFile, Config.Version);
 
             // write the startup script
             let codeTemplate = IfSharpResources.ipython_config()
@@ -235,23 +244,29 @@ module App =
             printfn "Saving kernel icon [%s]" logo32File
             IfSharpResources.ifsharp_32logo().Save(logo32File)
 
-        printfn "Starting ipython..."
-        let p = new Process()
-        p.StartInfo.FileName <- "jupyter"
-        p.StartInfo.Arguments <- "notebook --config=" + configFile
-        p.StartInfo.WorkingDirectory <- userDir
+        if start then
+          (
+          printfn "Starting ipython..."
+          let p = new Process()
+          p.StartInfo.FileName <- "jupyter"
+          p.StartInfo.Arguments <- "notebook --config=" + configFile
+          p.StartInfo.WorkingDirectory <- userDir
 
-        // tell the user something bad happened
-        if p.Start() = false then printfn "Unable to start jupyter, please install jupyter first"
+          // tell the user something bad happened
+          if p.Start() = false then printfn "Unable to start jupyter, please install jupyter first"
+          )
 
     /// First argument must be an ipython connection file, blocks forever
     let Start (args : array<string>) = 
 
         if args.Length = 0 then
         
-            InstallAndStart(true)
+            InstallAndStart(true, true)
 
         else
+            // Verify kernel installation status
+            InstallAndStart(false, false)
+
             // Clear the temporary folder
             try
               if Directory.Exists(Config.TempDir) then Directory.Delete(Config.TempDir, true)
