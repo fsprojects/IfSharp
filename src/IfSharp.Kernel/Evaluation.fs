@@ -8,6 +8,7 @@ open Microsoft.FSharp.Compiler.Interactive.Shell
 [<AutoOpen>]
 module Evaluation = 
 
+    let internal fsiout = ref false
     let internal sbOut = new StringBuilder()
     let internal sbErr = new StringBuilder()
     let internal inStream = new StringReader("")

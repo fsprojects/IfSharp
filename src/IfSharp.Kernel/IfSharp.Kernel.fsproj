@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="Config.fs" />
     <Compile Include="IfSharpResources.fs" />
+    <Compile Include="DirectivePreprocessor.fs" />
     <Compile Include="NuGetManager.fs" />
     <Compile Include="FsCompiler.fs" />
     <None Include="Include.fsx">
