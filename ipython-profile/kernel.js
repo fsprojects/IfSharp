@@ -1,9 +1,11 @@
 define(function () {
 
+    var staticFolder = "/kernelspecs/ifsharp/static/";
+
     var link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
-    link.href = "/kernelspecs/ifsharp/static/custom/fsharp.css";
+    link.href = staticFolder + "custom/fsharp.css";
     document.getElementsByTagName("head")[0].appendChild(link);
 
     require(['codemirror/addon/mode/loadmode']);
@@ -19,7 +21,7 @@ define(function () {
             console.log('add metadata hint that language is fsharp...');
         }
 
-        require(['/kernelspecs/ifsharp/static/custom/fsharp.js']);
+        require([staticFolder + 'custom/fsharp.js']);
 
         IPython.CodeCell.options_default.cm_config.mode = 'fsharp';
 
@@ -62,7 +64,7 @@ define(function () {
             return results;
         }
 
-        require(['/kernelspecs/ifsharp/static/custom/webintellisense.js', '/kernelspecs/ifsharp/static/custom/webintellisense-codemirror.js'], function () {
+        require([staticFolder + 'custom/webintellisense.js', staticFolder + 'custom/webintellisense-codemirror.js'], function () {
             // applies intellisense hooks onto a cell
             function applyIntellisense(cell) {
                 if (cell.cell_type !== 'code') { return; }
@@ -156,7 +158,7 @@ define(function () {
 
         // replace the image
         var img = $('.container img')[0];
-        img.src = "/kernelspecs/ifsharp/static/custom/ifsharp_logo.png";
+        img.src = staticFolder + "custom/ifsharp_logo.png";
 
     }
 

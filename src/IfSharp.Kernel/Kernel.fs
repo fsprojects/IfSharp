@@ -511,7 +511,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         try
             while true do
                 let hb = hbSocket.ReceiveMultipartBytes() in
-                hbSocket.SendMultipartBytes(hb)
+                hbSocket.SendMultipartBytes hb
         with
         | ex -> handleException ex
 
