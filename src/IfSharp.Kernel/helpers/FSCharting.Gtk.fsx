@@ -1,6 +1,10 @@
+#nowarn "211"
 
 namespace IfSharp
-#nowarn "211"
+
+#load "paket-download.fsx"
+#load "paket-install.fsx"
+
 #I "../../../bin/packages/FSharp.Charting.Gtk/lib/net40" //dev
 #I "packages/FSharp.Charting.Gtk/lib/net40"  //deploy
 #I "../../../bin/" //dev

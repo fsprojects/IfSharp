@@ -7,3 +7,4 @@ nuget Newtonsoft.Json 5.0.8 framework: >= net45
 nuget FAKE
 nuget xUnit >= 2.1 framework: >= net451
 nuget xunit.runner.console >= 2.1 framework: >= net451
+nuget Paket.Core >= 3.17.2

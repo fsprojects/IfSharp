@@ -244,6 +244,10 @@ module App =
             printfn "Saving kernel icon [%s]" logo32File
             IfSharpResources.ifsharp_32logo().Save(logo32File)
 
+            printfn "Installing dependencies via Paket"
+            let dependencies = Paket.Dependencies.Locate()
+            dependencies.Install(false)
+
         if start then
           (
           printfn "Starting ipython..."
