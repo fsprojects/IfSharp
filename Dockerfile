@@ -41,9 +41,9 @@ RUN apt-get install unzip
 # Get and install the IfSharp kernel
 RUN mkdir -p /usr/local/opt/ifsharp 
 WORKDIR /usr/local/opt/ifsharp
-RUN wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha1/IfSharp.v3.0.0-alpha1.zip
-RUN unzip IfSharp.v3.0.0-alpha1.zip
-RUN rm IfSharp.v3.0.0-alpha1.zip
+RUN wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha2/IfSharp.v3.0.0-alpha2.zip
+RUN unzip IfSharp.v3.0.0-alpha2.zip
+RUN rm IfSharp.v3.0.0-alpha2.zip
 RUN mono ifsharp.exe
 
 # How we communicate with the IfSharp kernel
