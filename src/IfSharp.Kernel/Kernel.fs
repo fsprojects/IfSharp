@@ -41,7 +41,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let shellSocketURL =String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port)
     do shellSocket.Bind(shellSocketURL)
 
-    let data = new List<BinaryOutput>()
     let payload = new List<Payload>()
     let compiler = FsCompiler(FileInfo(".").FullName)
     let mutable executionCount = 0
@@ -216,9 +215,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         sendMessage shellSocket msg "kernel_info_reply" content
 
     /// Sends display data information immediately
-    let sendDisplayData (contentType) (displayItem) (messageType) =
-        data.Add( { ContentType = contentType; Data = displayItem } )
-        
+    let sendDisplayData (contentType) (displayItem) (messageType) =        
         if lastMessage.IsSome then
 
             let d = Dictionary<string,obj>()
@@ -238,6 +235,27 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // preprocess
         let results = compiler.NuGetManager.Preprocess(code)
         let newCode = String.Join("\n", results.FilteredLines)
+
+        if not (Seq.isEmpty results.HelpLines) then
+            fsiEval.EvalInteraction("#help")
+            let ifsharpHelp =
+                """  IF# notebook directives:
+
+    #fsioutput ["on"|"off"];;   Toggle output display on/off
+    """
+            let fsiHelp = sbOut.ToString()
+            pyout (ifsharpHelp + fsiHelp)
+            sbOut.Clear() |> ignore
+
+        //This is a persistent toggle, just respect the last one
+        if not (Seq.isEmpty results.FsiOutputLines) then
+            let lastFsiOutput = Seq.last results.FsiOutputLines
+            if lastFsiOutput.ToLower().Contains("on") then
+                fsiout := true
+            else if lastFsiOutput.ToLower().Contains("off") then
+                fsiout := false
+            else
+                pyout (sprintf "Unreocognised fsioutput setting: %s" lastFsiOutput)
 
         // do nuget stuff
         for package in results.Packages do
@@ -259,6 +277,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         if not <| String.IsNullOrEmpty(newCode) then
             fsiEval.EvalInteraction(newCode)
+
+        if fsiout.Value then
+            pyout (sbOut.ToString())
     
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
@@ -266,7 +287,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // clear some state
         sbOut.Clear() |> ignore
         sbErr.Clear() |> ignore
-        data.Clear()
         payload.Clear()
 
         // only increment if we are not silent
@@ -314,17 +334,16 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
             // send all the data
             if not <| content.silent then
-                if data.Count = 0 then
-                    let lastExpression = GetLastExpression()
-                    match lastExpression with
-                    | Some(it) -> 
+                let lastExpression = GetLastExpression()
+                match lastExpression with
+                | Some(it) -> 
                         
-                        let printer = Printers.findDisplayPrinter(it.ReflectionType)
-                        let (_, callback) = printer
-                        let callbackValue = callback(it.ReflectionValue)
-                        sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
+                    let printer = Printers.findDisplayPrinter(it.ReflectionType)
+                    let (_, callback) = printer
+                    let callbackValue = callback(it.ReflectionValue)
+                    sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
 
-                    | None -> ()
+                | None -> ()
 
         // we are now idle
         sendStateIdle msg
@@ -492,7 +511,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         try
             while true do
                 let hb = hbSocket.ReceiveMultipartBytes() in
-                hbSocket.SendMultipartBytes(hb)
+                hbSocket.SendMultipartBytes hb
         with
         | ex -> handleException ex
 
