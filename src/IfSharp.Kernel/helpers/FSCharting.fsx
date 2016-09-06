@@ -1,9 +1,10 @@
+#nowarn "211"
 
 namespace IfSharp
 
-#I "../../../bin/packages/FSharp.Charting/lib/net40"
+//#I "../../../bin/packages/FSharp.Charting/lib/net40"
 #I "packages/FSharp.Charting/lib/net40"
-#I "../../../bin/"
+//#I "../../../bin/"
 #I __SOURCE_DIRECTORY__
 
 #r "System.Windows.Forms.DataVisualization.dll"

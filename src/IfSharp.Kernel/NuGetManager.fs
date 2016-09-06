@@ -59,6 +59,8 @@ type CustomErrorInfo =
 type PreprocessResults =
     {
         OriginalLines : string[];
+        HelpLines : string[];
+        FsiOutputLines : string[];
         NuGetLines : string[];
         FilteredLines : string[];
         Packages : NuGetPackage[];
@@ -86,24 +88,6 @@ type CustomInstallCommand() =
         else
             let semanticVersion = SemanticVersion(version)
             packageManager.LocalRepository.FindPackage(packageId, semanticVersion)
-
-module NuGetManagerInternals =
-
-    /// Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines
-    let partitionLines(directive) (lines : string[]) =
-        lines
-        |> Seq.mapi (fun (idx) (line) -> (idx, line))
-        |> Seq.toList
-        |> List.partition (fun (idx, line) -> line.StartsWith(directive))
-
-    /// Separates a list of lines between into two partitions, the first list are the directive lines, second list is the other lines
-    let partitionSource(directive) (source : string) =
-        let delimiters = [|"\r\n"; "\n"; "\r";|]
-        partitionLines directive (source.Split(delimiters, StringSplitOptions.None))
-
-    /// Parses a directive line. Example: #N "Deedle"
-    let parseDirectiveLine (prefix : string) (line : string) = 
-        line.Substring(prefix.Length + 1).Trim().Trim('"')
 
 /// The NuGetManager class contains methods for downloading nuget packages and such
 type NuGetManager (executingDirectory : string) =
@@ -231,7 +215,7 @@ type NuGetManager (executingDirectory : string) =
     /// prerelease should be used or not.
     member this.ParseNugetLine (line : string) = 
         
-        let contents = NuGetManagerInternals.parseDirectiveLine "#N" line
+        let contents = DirectivePreprocessor.parseDirectiveLine "#N" line
         if contents.Contains("/") then
             let splits = contents.Split([| '/' |])
             if splits.Length > 2 then
@@ -246,7 +230,15 @@ type NuGetManager (executingDirectory : string) =
         
         // split the source code into lines, then get the nuget lines
         let lines = source.Split('\n')
-        let (nugetLines, otherLines) = NuGetManagerInternals.partitionLines "#N" lines
+        let linesSplit = DirectivePreprocessor.partitionLines lines
+
+        let orEmpty key = let opt = Map.tryFind key linesSplit
+                          if opt.IsSome then opt.Value else Seq.empty
+
+        let helpLines = DirectivePreprocessor.Line.HelpDirective |> orEmpty
+        let fsiOutputLines = DirectivePreprocessor.Line.FSIOutputDirective |> orEmpty
+        let nugetLines = DirectivePreprocessor.Line.NugetDirective |> orEmpty
+        let otherLines = DirectivePreprocessor.Line.Other |> orEmpty
 
         // parse the nuget lines and then download the packages
         let nugetPackages =
@@ -258,14 +250,17 @@ type NuGetManager (executingDirectory : string) =
         // gather errors
         let errors =
             nugetPackages
-            |> Seq.filter (fun (idx, package) -> String.IsNullOrEmpty(package.Error) = false)
+            |> Seq.filter (fun (_, package) -> String.IsNullOrEmpty(package.Error) = false)
             |> Seq.map (fun (idx, package) -> CustomErrorInfo.From("", idx, 0, idx, lines.[idx].Length, package.Error, "Error", "preprocess"))
             |> Seq.toArray
 
         {
             OriginalLines = lines;
-            NuGetLines = nugetLines |> Seq.map(fun (idx, line) -> line) |> Seq.toArray;
-            FilteredLines = otherLines |> Seq.map(fun (idx, line) -> line) |> Seq.toArray;
-            Packages = nugetPackages |> Seq.map(fun (idx, package) -> package) |> Seq.toArray;
+            HelpLines = helpLines |> Seq.map(fun (_, line) -> line) |> Seq.toArray;
+            FsiOutputLines = fsiOutputLines |> Seq.map(fun (_, line) -> line) |> Seq.toArray;
+            NuGetLines = nugetLines |> Seq.map(fun (_, line) -> line) |> Seq.toArray;
+            
+            FilteredLines = otherLines |> Seq.map(fun (_, line) -> line) |> Seq.toArray;
+            Packages = nugetPackages |> Seq.map(fun (_, package) -> package) |> Seq.toArray;
             Errors = errors;
         }
