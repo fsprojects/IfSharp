@@ -76,6 +76,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <CopyHelpers Include="..\IfSharp.Kernel\helpers\paket.lock">
+      <Link>paket.lock</Link>
+    </CopyHelpers>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
