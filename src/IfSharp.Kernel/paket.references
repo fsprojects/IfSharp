@@ -1,4 +1,4 @@
 FSharp.Compiler.Service
 NetMQ
 Newtonsoft.Json
-FSharp.Charting
+Paket.Core

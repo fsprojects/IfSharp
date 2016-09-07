@@ -7,10 +7,9 @@ open System.Net
 open System.Text
 open System.Drawing.Imaging
 open System.Windows.Forms
-open System.Xml;
-open System.Xml.Linq;
-open System.Xml.XPath;
-open FSharp.Charting
+open System.Xml
+open System.Xml.Linq
+open System.Xml.XPath
 
 type BinaryOutput =
     { 
@@ -39,18 +38,7 @@ type SvgOutput =
         Svg: string;
     }
 
-type GenericChartWithSize = 
-    {
-        Chart: ChartTypes.GenericChart;
-        Size: int * int;
-    }
 
-type GenericChartsWithSize =
-    {
-        Charts: ChartTypes.GenericChart list;
-        Size: int * int;
-        Columns: int;
-    }
 
 [<AutoOpen>]
 module ExtensionMethods =
@@ -71,45 +59,7 @@ module ExtensionMethods =
 
             sb.ToString()
 
-    type ChartTypes.GenericChart with 
 
-        /// Wraps a GenericChartWithSize around the GenericChart
-        member self.WithSize(x:int, y:int) =
-            {
-                Chart = self;
-                Size = (x, y);
-            }
-
-        /// Converts the GenericChart to a PNG, in order to do this, we must show a form with ChartControl on it, save the bmp, then write the png to memory
-        member self.ToPng(?size) =
-
-            // get the size
-            let (width, height) = if size.IsNone then (320, 240) else size.Value
-
-            // create a new ChartControl in order to get the underlying Chart
-            let ctl = new ChartTypes.ChartControl(self)
-
-            // save
-            use ms = new MemoryStream()
-            let actualChart = ctl.Controls.[0] :?> System.Windows.Forms.DataVisualization.Charting.Chart
-            actualChart.Dock <- DockStyle.None
-            actualChart.Size <- Size(width, height)
-            actualChart.SaveImage(ms, ImageFormat.Png)
-            ms.ToArray()
-
-        member self.ToData(?size) =
-            let bytes = match size with Some size -> self.ToPng(size) | _ -> self.ToPng()
-            let base64 = Convert.ToBase64String(bytes)
-            let data = "data:image/png;base64,"+base64
-            data
-
-    type FSharp.Charting.Chart with
-    
-        /// Wraps a GenericChartWithSize around the GenericChart
-        static member WithSize(x:int, y:int) = 
-
-            fun (ch : #ChartTypes.GenericChart) ->
-                ch.WithSize(x, y)
 
 type Util = 
 
@@ -177,8 +127,6 @@ type Util =
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
 
-    static member MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) (cols:int) =
-        { Charts = charts; Size = size; Columns = cols }
 
     static member CreatePublicFile (name:string) (content:byte[]) =
         try

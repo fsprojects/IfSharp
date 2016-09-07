@@ -1,7 +1,6 @@
 ﻿namespace IfSharp.Kernel
 
 open System.Collections.Generic
-open FSharp.Charting
 
 type ConnectionInformation = 
     {

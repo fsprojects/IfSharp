@@ -4,7 +4,7 @@ nuget FSharp.Compiler.Service 3.0.0 framework: >= net451
 nuget FSharp.Core.Microsoft.Signed 3.1.1.1 framework: >= net45
 nuget NetMQ 3.3.3.1
 nuget Newtonsoft.Json 5.0.8 framework: >= net45
-nuget FSharp.Charting 0.90.5 framework: >= net45
 nuget FAKE
 nuget xUnit >= 2.1 framework: >= net451
 nuget xunit.runner.console >= 2.1 framework: >= net451
+nuget Paket.Core >= 3.17.2
