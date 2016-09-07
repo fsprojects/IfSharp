@@ -1,6 +1,6 @@
 # IfSharp
 
-F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](http://nbviewer.jupyter.org/github/fsprojects/IfSharp/blob/master/Feature%20Notebook.ipynb) for some of the features that are included.
+F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](Feature%20Notebook%20format%204_0.ipynb) for some of the features that are included.
 
 For more information view the [documentation](http://fsprojects.github.io/IfSharp/). IfSharp is 64-bit *ONLY*.
 
