@@ -3,8 +3,7 @@
 
 // load base dlls
 #r "IfSharp.Kernel.dll"
-#r "System.Data.dll"
-#r "System.Windows.Forms.DataVisualization.dll"
+//#r "System.Data.dll"
 //#r "FSharp.Data.TypeProviders.dll" //Can be accessed by #N "FSharp.Data.TypeProviders" instead
 #r "NetMQ.dll"
 
