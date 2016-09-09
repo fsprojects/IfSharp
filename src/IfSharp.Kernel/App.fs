@@ -245,7 +245,7 @@ module App =
             IfSharpResources.ifsharp_32logo().Save(logo32File)
 
             printfn "Installing dependencies via Paket"
-            let dependencies = Paket.Dependencies.Locate()
+            let dependencies = Paket.Dependencies.Locate(System.IO.Path.GetDirectoryName(thisExecutable))
             dependencies.Install(false)
 
         if start then
