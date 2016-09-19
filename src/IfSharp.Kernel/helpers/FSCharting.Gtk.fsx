@@ -1,6 +1,7 @@
-#nowarn "211"
+[<AutoOpen>]
+module FSCharting
 
-namespace IfSharp
+#nowarn "211"
 
 #load "paket-download.fsx"
 #load "paket-install.fsx"
@@ -44,141 +45,134 @@ open OxyPlot.Series
 //open GTKSharp
 open FSharp.Charting
 
-// TODO: this does not work yet.
-// It needs a way to expose
+type GenericChartWithSize =
+    {
+        Chart: ChartTypes.GenericChart;
+        Size: int * int;
+    }
+type GenericChartsWithSize =
+    {
+        Charts: ChartTypes.GenericChart list;
+        Size: int * int;
+        Columns: int;
+    }
 
-module FSCharting =
+//static member
+let MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) (cols:int) =
+    { Charts = charts; Size = size; Columns = cols }
 
-    type GenericChartWithSize =
+
+type ChartTypes.GenericChart with
+    /// Wraps a GenericChartWithSize around the GenericChart
+    member self.WithSize(x:int, y:int) =
         {
-            Chart: ChartTypes.GenericChart;
-            Size: int * int;
-        }
-    type GenericChartsWithSize =
-        {
-            Charts: ChartTypes.GenericChart list;
-            Size: int * int;
-            Columns: int;
+            Chart = self;
+            Size = (x, y);
         }
 
-    //static member
-    let MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) (cols:int) =
-        { Charts = charts; Size = size; Columns = cols }
+    /// Converts the GenericChart to a PNG, in order to do this, we must show a form with ChartControl on it, save the bmp, then write the png to memory
+    member self.ToPng(?size) =
+        // get the size
+        let (width, height) = if size.IsNone then (320, 240) else size.Value
 
+        // create a new ChartControl in order to get the underlying Chart
+        //let ctl = new ChartTypes.ChartControl(self)
 
-    type ChartTypes.GenericChart with
-        /// Wraps a GenericChartWithSize around the GenericChart
-        member self.WithSize(x:int, y:int) =
-            {
-              Chart = self;
-              Size = (x, y);
-            }
+        // save
+        use ms = new MemoryStream()
+        //let plot = new OxyPlot.GtkSharp.PlotView(Model = self.Model )
+        //let bm = self.CopyAsBitmap()
+        let pngExporter = new OxyPlot.GtkSharp.PngExporter()
+        pngExporter.Width <- width
+        pngExporter.Height <- height
+        pngExporter.Background <- OxyPlot.OxyColors.White
+        // write to a temporary file
+        //let tmp = sprintf "%s.png" (System.Guid.NewGuid().ToString())
+        pngExporter.Export(self.Model, ms) //tmp, width, height, OxyPlot.OxyColors.White)
+        //let bytes = File.ReadAllBytes(tmp);
+        // write to the stream
+        //stream.Write(bytes, 0, bytes.Length);
+        // delete the temporary file
+        //File.Delete(tmp);
 
-        /// Converts the GenericChart to a PNG, in order to do this, we must show a form with ChartControl on it, save the bmp, then write the png to memory
-        member self.ToPng(?size) =
-            // get the size
-            let (width, height) = if size.IsNone then (320, 240) else size.Value
+        //Export(self.Model, ms, width, height, e, 96)
 
-            // create a new ChartControl in order to get the underlying Chart
-            //let ctl = new ChartTypes.ChartControl(self)
+        //self.Chart.SaveImage(ms, ChartImageFormat.Png |> int |> enum)
 
-            // save
-            use ms = new MemoryStream()
-            //let plot = new OxyPlot.GtkSharp.PlotView(Model = self.Model )
-            //let bm = self.CopyAsBitmap()
-            let pngExporter = new OxyPlot.GtkSharp.PngExporter()
-            pngExporter.Width <- width
-            pngExporter.Height <- height
-            pngExporter.Background <- OxyPlot.OxyColors.White
-            // write to a temporary file
-            //let tmp = sprintf "%s.png" (System.Guid.NewGuid().ToString())
-            pngExporter.Export(self.Model, ms) //tmp, width, height, OxyPlot.OxyColors.White)
-            //let bytes = File.ReadAllBytes(tmp);
-            // write to the stream
-            //stream.Write(bytes, 0, bytes.Length);
-            // delete the temporary file
-            //File.Delete(tmp);
+        ms.Seek(0L, System.IO.SeekOrigin.Begin) |> ignore
+        ms.ToArray()
+        //Bitmap.FromStream ms
+        //let actualChart = ctl.Controls.[0] :?> System.Windows.Forms.DataVisualization.Charting.Chart
+        //actualChart.Dock <- DockStyle.None
+        //actualChart.Size <- Size(width, height)
+        //actualChart.SaveImage(ms, ImageFormat.Png)
+        //ms.ToArray()
 
-            //Export(self.Model, ms, width, height, e, 96)
+    member self.ToData(?size) =
+        let bytes = match size with Some size -> self.ToPng(size) | _ -> self.ToPng()
+        let base64 = System.Convert.ToBase64String(bytes)
+        let data = "data:image/png;base64,"+base64
+        data
 
-            //self.Chart.SaveImage(ms, ChartImageFormat.Png |> int |> enum)
+type FSharp.Charting.Chart with
 
-            ms.Seek(0L, System.IO.SeekOrigin.Begin) |> ignore
-            ms.ToArray()
-            //Bitmap.FromStream ms
-            //let actualChart = ctl.Controls.[0] :?> System.Windows.Forms.DataVisualization.Charting.Chart
-            //actualChart.Dock <- DockStyle.None
-            //actualChart.Size <- Size(width, height)
-            //actualChart.SaveImage(ms, ImageFormat.Png)
-            //ms.ToArray()
+    /// Wraps a GenericChartWithSize around the GenericChart
+    static member WithSize(x:int, y:int) =
 
-        member self.ToData(?size) =
-            let bytes = match size with Some size -> self.ToPng(size) | _ -> self.ToPng()
-            let base64 = System.Convert.ToBase64String(bytes)
-            let data = "data:image/png;base64,"+base64
-            data
+        fun (ch : #ChartTypes.GenericChart) ->
+            ch.WithSize(x, y)
 
-    type FSharp.Charting.Chart with
+do
+    Printers.addDisplayPrinter(fun (x:ChartTypes.GenericChart) ->
+        { ContentType = "image/png"; Data = x.ToPng() })
 
-        /// Wraps a GenericChartWithSize around the GenericChart
-        static member WithSize(x:int, y:int) =
-
-            fun (ch : #ChartTypes.GenericChart) ->
-                ch.WithSize(x, y)
+    // add chart printer
+    Printers.addDisplayPrinter(fun (x:GenericChartWithSize) ->
+        { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) })
 
     // add generic chart printer
-    let Initialize () =
-        Printers.addDisplayPrinter(fun (x:ChartTypes.GenericChart) ->
-            { ContentType = "image/png"; Data = x.ToPng() })
+    Printers.addDisplayPrinter(fun (x:ChartTypes.GenericChart) ->
+        { ContentType = "image/png"; Data = x.ToPng() })
 
-        // add chart printer
-        Printers.addDisplayPrinter(fun (x:GenericChartWithSize) ->
-            { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) })
-
-        // add generic chart printer
-        Printers.addDisplayPrinter(fun (x:ChartTypes.GenericChart) ->
-            { ContentType = "image/png"; Data = x.ToPng() })
-
-        // add chart printer
-        Printers.addDisplayPrinter(fun (x:GenericChartWithSize) ->
-                    { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) })
+    // add chart printer
+    Printers.addDisplayPrinter(fun (x:GenericChartWithSize) ->
+                { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) })
 
 
-        Printers.addDisplayPrinter(fun (x:GenericChartsWithSize) ->
-            let count = x.Charts.Length
-            let (width, height) = x.Size
-            let totalWidth = if count = 1 then width else width * x.Columns
-            let numRows = int (System.Math.Ceiling (float count / float x.Columns))
-            let totalHeight = numRows * height
-            let finalBitmap = new Bitmap(totalWidth, totalHeight)
-            let finalGraphics = Graphics.FromImage(finalBitmap)
-            let copy i (chart:ChartTypes.GenericChart) =
-                let img = chart.ToPng(x.Size)
-                let bitmap = new Bitmap(new MemoryStream(img))
-                finalGraphics.DrawImage(bitmap, i % x.Columns * width, i / x.Columns * height)
-            List.iteri copy x.Charts;
-            finalGraphics.Dispose();
-            let ms = new MemoryStream()
-            //TODO finalBitmap.Save(ms, ImageFormat.Png);
-            { ContentType = "image/png"; Data = ms.ToArray() }
-        )
+    Printers.addDisplayPrinter(fun (x:GenericChartsWithSize) ->
+        let count = x.Charts.Length
+        let (width, height) = x.Size
+        let totalWidth = if count = 1 then width else width * x.Columns
+        let numRows = int (System.Math.Ceiling (float count / float x.Columns))
+        let totalHeight = numRows * height
+        let finalBitmap = new Bitmap(totalWidth, totalHeight)
+        let finalGraphics = Graphics.FromImage(finalBitmap)
+        let copy i (chart:ChartTypes.GenericChart) =
+            let img = chart.ToPng(x.Size)
+            let bitmap = new Bitmap(new MemoryStream(img))
+            finalGraphics.DrawImage(bitmap, i % x.Columns * width, i / x.Columns * height)
+        List.iteri copy x.Charts;
+        finalGraphics.Dispose();
+        let ms = new MemoryStream()
+        //TODO finalBitmap.Save(ms, ImageFormat.Png);
+        { ContentType = "image/png"; Data = ms.ToArray() }
+    )
 
-        Printers.addDisplayPrinter(fun (x:GenericChartsWithSize) ->
-                  let count = x.Charts.Length
-                  let (width, height) = x.Size
-                  let totalWidth = if count = 1 then width else width * x.Columns
-                  let numRows = int (System.Math.Ceiling (float count / float x.Columns))
-                  let totalHeight = numRows * height
-                  let finalBitmap = new Bitmap(totalWidth, totalHeight)
-                  let finalGraphics = Graphics.FromImage(finalBitmap)
-                  let copy i (chart:ChartTypes.GenericChart) =
-                      let img = chart.ToPng(x.Size)
-                      let bitmap = new Bitmap(new MemoryStream(img))
-                      finalGraphics.DrawImage(bitmap, i % x.Columns * width, i / x.Columns * height)
-                  List.iteri copy x.Charts;
-                  finalGraphics.Dispose();
-                  let ms = new MemoryStream()
-                  //TODO finalBitmap.Save(ms, ImageFormat.Png);
-                  { ContentType = "image/png"; Data = ms.ToArray() }
-              )
-    ()
+    Printers.addDisplayPrinter(fun (x:GenericChartsWithSize) ->
+                let count = x.Charts.Length
+                let (width, height) = x.Size
+                let totalWidth = if count = 1 then width else width * x.Columns
+                let numRows = int (System.Math.Ceiling (float count / float x.Columns))
+                let totalHeight = numRows * height
+                let finalBitmap = new Bitmap(totalWidth, totalHeight)
+                let finalGraphics = Graphics.FromImage(finalBitmap)
+                let copy i (chart:ChartTypes.GenericChart) =
+                    let img = chart.ToPng(x.Size)
+                    let bitmap = new Bitmap(new MemoryStream(img))
+                    finalGraphics.DrawImage(bitmap, i % x.Columns * width, i / x.Columns * height)
+                List.iteri copy x.Charts;
+                finalGraphics.Dispose();
+                let ms = new MemoryStream()
+                //TODO finalBitmap.Save(ms, ImageFormat.Png);
+                { ContentType = "image/png"; Data = ms.ToArray() }
+            )

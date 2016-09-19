@@ -1,38 +1,61 @@
 #nowarn "211"
-namespace IfSharp
 
 #r "IfSharp.Kernel.dll"
 #I "./packages/XPlot.Plotly/lib/net45/"
 #r "XPlot.Plotly.dll"
 
 open XPlot.Plotly
-
-open System.IO
 open IfSharp.Kernel
 open IfSharp.Kernel.Globals
 
-module Plotly =
-    let plotly_url = "https://cdn.plot.ly/plotly-latest.min.js"
-    let plotly_reference = """<script src="[URL]"></script>""".Replace("[URL]", plotly_url)
+do
+    Printers.addDisplayPrinter(fun (plot: PlotlyChart) ->
+        { ContentType = "text/html"; Data = plot.GetInlineHtml() })
 
-    let react_save = """var require_save = require; var requirejs_save = requirejs; var define_save = define; require=requirejs=define=undefined; """
-    let react_restore = """require = require_save; requirejs = requirejs_save; define = define_save;"""
-
-    let plotly_include = """
+    use wc = new System.Net.WebClient()
+    sprintf
+        """
 <script type="text/javascript">
-    [PLOTLY_JS]
-</script>"""
+var require_save = require;
+var requirejs_save = requirejs;
+var define_save = define;
+require = requirejs = define = undefined;
+%s
+require = require_save;
+requirejs = requirejs_save;
+define = define_save;
+function ifsharpMakeImage(gd) {
+    var fmt =
+        (document.documentMode || /Edge/.test(navigator.userAgent)) ?
+            'svg' : 'png'
+    return Plotly.toImage(gd, {format: fmt})
+        .then(function(url) {
+            var img = document.createElement('img');
+            img.setAttribute('src', url);
+            var div = document.createElement('div');
+            div.appendChild(img);
+            gd.parentNode.replaceChild(div, gd);
+        });
+}
+</script>
+"""
+        (wc.DownloadString("https://cdn.plot.ly/plotly-latest.min.js"))
+        |> Util.Html
+        |> Display
 
-    let script_template =
-        """Plotly.plot("[ID]", [DATA], [LAYOUT], [CONFIG]).then(function() {
-    $(".[ID].loading").remove()
-})"""
+type XPlot.Plotly.PlotlyChart with
 
-    let InitialiseNotebook () =
-        let wc = new System.Net.WebClient()
-        let plotlyjs = react_save + wc.DownloadString(plotly_url) + react_restore
-        plotly_include.Replace("[PLOTLY_JS]", plotlyjs) |> Util.Html
+    member __.GetPngHtml() =
+        let html = __.GetInlineHtml()
+        html
+            .Replace("Plotly.newPlot(", "Plotly.plot(")
+            .Replace(
+                "data, layout);",
+                "data, layout).then(ifsharpMakeImage);")
 
-    let Show (plot:XPlot.Plotly.PlotlyChart) = 
-        plot.GetInlineHtml () |> Util.Html
-      
+type XPlot.Plotly.Chart with
+
+    static member Image (chart: PlotlyChart) =
+        { ContentType = "text/html"
+          Data = chart.GetPngHtml()
+        }
