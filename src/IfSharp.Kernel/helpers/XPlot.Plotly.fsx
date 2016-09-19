@@ -24,6 +24,19 @@ require = requirejs = define = undefined;
 require = require_save;
 requirejs = requirejs_save;
 define = define_save;
+function ifsharpMakeImage(gd) {
+    var fmt =
+        (document.documentMode || /Edge/.test(navigator.userAgent)) ?
+            'svg' : 'png'
+    return Plotly.toImage(gd, {format: fmt})
+        .then(function(url) {
+            var img = document.createElement('img');
+            img.setAttribute('src', url);
+            var div = document.createElement('div');
+            div.appendChild(img);
+            gd.parentNode.replaceChild(div, gd);
+        });
+}
 </script>
 """
         (wc.DownloadString("https://cdn.plot.ly/plotly-latest.min.js"))
@@ -38,14 +51,7 @@ type XPlot.Plotly.PlotlyChart with
             .Replace("Plotly.newPlot(", "Plotly.plot(")
             .Replace(
                 "data, layout);",
-                """data, layout)
-                .then(function(gd) {
-                    return Plotly.toImage(gd, {format: 'png'})
-                        .then(function(url) {
-                            gd.innerHTML = '<img src=' + url + ' />'
-                        });
-                });
-                """)
+                "data, layout).then(ifsharpMakeImage);")
 
 type XPlot.Plotly.Chart with
 
