@@ -21,7 +21,6 @@ NUGET
       System.Threading.Tasks.Parallel (>= 4.0.1) - framework: >= net463, >= netstandard16
       System.Threading.Thread (>= 4.0) - framework: >= net463, >= netstandard16
       System.Threading.ThreadPool (>= 4.0.10) - framework: >= net463, >= netstandard16
-    FSharp.Core.Microsoft.Signed (3.1.1.1) - framework: >= net45
     Microsoft.NETCore.Platforms (1.0.1) - framework: >= net463, >= netstandard16
     Microsoft.NETCore.Targets (1.0.1) - framework: >= netstandard16
     Microsoft.Win32.Primitives (4.0.1) - framework: >= net463, >= netstandard16

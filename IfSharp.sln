@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel", "src\IfSharp.Kernel\IfSharp.Kernel.fsproj", "{2FE619B3-4756-4285-B31F-232607F62D78}"
 EndProject
@@ -92,14 +92,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{8BA6BD71-43AD-4532-AF2C-DA3E4E0EC136}"
 	ProjectSection(SolutionItems) = preProject
-		lib\FSharp.Compiler.dll = lib\FSharp.Compiler.dll
-		lib\FSharp.Compiler.Interactive.Settings.dll = lib\FSharp.Compiler.Interactive.Settings.dll
-		lib\FSharp.Compiler.Server.Shared.dll = lib\FSharp.Compiler.Server.Shared.dll
-		lib\FSharp.Core.dll = lib\FSharp.Core.dll
-		lib\FSharp.Core.optdata = lib\FSharp.Core.optdata
-		lib\FSharp.Core.sigdata = lib\FSharp.Core.sigdata
-		lib\FSharp.Data.TypeProviders.dll = lib\FSharp.Data.TypeProviders.dll
-		lib\fsiAnyCpu.exe = lib\fsiAnyCpu.exe
 		lib\NuGet.dll = lib\NuGet.dll
 		lib\README.md = lib\README.md
 	EndProjectSection
