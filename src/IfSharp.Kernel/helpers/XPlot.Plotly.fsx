@@ -24,10 +24,7 @@ require = requirejs = define = undefined;
 require = require_save;
 requirejs = requirejs_save;
 define = define_save;
-function ifsharpMakeImage(gd) {
-    var fmt =
-        (document.documentMode || /Edge/.test(navigator.userAgent)) ?
-            'svg' : 'png'
+function ifsharpMakeImage(gd, fmt) {
     return Plotly.toImage(gd, {format: fmt})
         .then(function(url) {
             var img = document.createElement('img');
@@ -36,6 +33,15 @@ function ifsharpMakeImage(gd) {
             div.appendChild(img);
             gd.parentNode.replaceChild(div, gd);
         });
+}
+function ifsharpMakePng(gd) {
+    var fmt =
+        (document.documentMode || /Edge/.test(navigator.userAgent)) ?
+            'svg' : 'png';
+    return ifsharpMakeImage(gd, fmt);
+}
+function ifsharpMakeSvg(gd) {
+    return ifsharpMakeImage(gd, 'svg');
 }
 </script>
 """
@@ -51,11 +57,24 @@ type XPlot.Plotly.PlotlyChart with
             .Replace("Plotly.newPlot(", "Plotly.plot(")
             .Replace(
                 "data, layout);",
-                "data, layout).then(ifsharpMakeImage);")
+                "data, layout).then(ifsharpMakePng);")
+
+    member __.GetSvgHtml() =
+        let html = __.GetInlineHtml()
+        html
+            .Replace("Plotly.newPlot(", "Plotly.plot(")
+            .Replace(
+                "data, layout);",
+                "data, layout).then(ifsharpMakeSvg);")
 
 type XPlot.Plotly.Chart with
 
-    static member Image (chart: PlotlyChart) =
+    static member Png (chart: PlotlyChart) =
         { ContentType = "text/html"
           Data = chart.GetPngHtml()
+        }
+
+    static member Svg (chart: PlotlyChart) =
+        { ContentType = "text/html"
+          Data = chart.GetSvgHtml()
         }
