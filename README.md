@@ -2,7 +2,7 @@
 
 F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](Feature%20Notebook%20format%204_0.ipynb) for some of the features that are included.
 
-For more information view the [documentation](http://fsprojects.github.io/IfSharp/). IfSharp is 64-bit *ONLY*.
+There is documentation for the existing release version: [documentation](http://fsprojects.github.io/IfSharp/) we're updating this for the Jupyter branch.
 
 # Compatibility
 IfSharp supports Jupyter 4.0 and 4.1 and works with both Python 2.X and Python 3.X
