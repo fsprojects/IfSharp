@@ -1,5 +1,4 @@
-#nowarn "211"
-
+#r "IfSharp.Kernel.dll"
 #r "Chessie.dll"
 #r "Paket.Core.dll"
 
@@ -9,8 +8,14 @@ let private dir =
     Reflection.Assembly.GetEntryAssembly().Location
     |> IO.Path.GetDirectoryName
 
-Paket.Dependencies.Init(dir)
-let deps = Paket.Dependencies.Locate(dir)
+let deps = 
+    try
+        let d = Paket.Dependencies.Locate(dir)
+        d.Install(false)
+        d
+    with _ ->
+        Paket.Dependencies.Init(dir)
+        Paket.Dependencies.Locate(dir)
 
 let Package list =
     for package in list do

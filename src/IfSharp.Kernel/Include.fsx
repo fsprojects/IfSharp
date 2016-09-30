@@ -3,9 +3,6 @@
 
 // load base dlls
 #r "IfSharp.Kernel.dll"
-//#r "System.Data.dll"
-//#r "System.Windows.Forms.DataVisualization.dll" //FSCharting can be loaded with helper script FSCharting.fsx or FSCharting.Gtk.fsx
-//#r "FSharp.Data.TypeProviders.dll" //Can be accessed by #N "FSharp.Data.TypeProviders" instead
 #r "NetMQ.dll"
 
 // open the global functions and methods

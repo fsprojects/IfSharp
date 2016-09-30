@@ -1,47 +1,18 @@
-[<AutoOpen>]
-module FSCharting
+#I "packages/FSharp.Charting/lib/net40"
 
-#nowarn "211"
-
-#load "Paket.fsx"
-
-Paket.Package ["FSharp.Charting.Gtk"]
-
-#I "packages/FSharp.Charting.Gtk/lib/net40"
-
-#r "FSharp.Compiler.Service.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
-#r "/usr/lib/cli/gtk-sharp-3.0/gtk-sharp.dll"
-#r "/usr/lib/cli/gdk-sharp-3.0/gdk-sharp.dll"
-#r "/usr/lib/cli/atk-sharp-3.0/atk-sharp.dll"
-#r "/usr/lib/cli/glib-sharp-3.0/glib-sharp.dll"
-#r "/usr/lib/mono/4.0/Mono.Cairo.dll"
-#r "OxyPlot.dll"
-#r "OxyPlot.GtkSharp.dll"
-#r "FSharp.Charting.Gtk.dll"
 #r "IfSharp.Kernel.dll"
+#r "FSharp.Charting.dll"
+#r "FSharp.Compiler.Service.dll"
 
-// Current status
-// Modified FSCharting so that it exposes "CopyAsBitmap"
-// Build FSCharting in my home dir
-// Then install it in Ifsharp
-// FSharp.Charting$ cp bin/FSharp.Charting.Gtk.* ../ifsharp/IfSharp_git/bin/packages/FSharp.Charting.Gtk/lib/net40/
-// however, testing in feature notebook 4.
-//#I "/home/nmurphy/coding/ifsharp/IfSharp_git/bin" //?why need this?
-//#load "FSCharting.Gtk.fsx"
-//IfSharp.FSCharting.Initialize()
-// FSharp.Charting.Chart.Bar(data) //|> Display
-// We get a broken image.
-
+open FSharp.Charting
 open System.IO
 
 open IfSharp.Kernel
 open System.Drawing
 open System.Drawing.Imaging
-open OxyPlot
-open OxyPlot.Series
-//open GTKSharp
-open FSharp.Charting
+open System.Windows.Forms
+
 
 type GenericChartWithSize =
     {
@@ -74,37 +45,15 @@ type ChartTypes.GenericChart with
         let (width, height) = if size.IsNone then (320, 240) else size.Value
 
         // create a new ChartControl in order to get the underlying Chart
-        //let ctl = new ChartTypes.ChartControl(self)
+        let ctl = new ChartTypes.ChartControl(self)
 
         // save
         use ms = new MemoryStream()
-        //let plot = new OxyPlot.GtkSharp.PlotView(Model = self.Model )
-        //let bm = self.CopyAsBitmap()
-        let pngExporter = new OxyPlot.GtkSharp.PngExporter()
-        pngExporter.Width <- width
-        pngExporter.Height <- height
-        pngExporter.Background <- OxyPlot.OxyColors.White
-        // write to a temporary file
-        //let tmp = sprintf "%s.png" (System.Guid.NewGuid().ToString())
-        pngExporter.Export(self.Model, ms) //tmp, width, height, OxyPlot.OxyColors.White)
-        //let bytes = File.ReadAllBytes(tmp);
-        // write to the stream
-        //stream.Write(bytes, 0, bytes.Length);
-        // delete the temporary file
-        //File.Delete(tmp);
-
-        //Export(self.Model, ms, width, height, e, 96)
-
-        //self.Chart.SaveImage(ms, ChartImageFormat.Png |> int |> enum)
-
-        ms.Seek(0L, System.IO.SeekOrigin.Begin) |> ignore
+        let actualChart = ctl.Controls.[0] :?> System.Windows.Forms.DataVisualization.Charting.Chart
+        actualChart.Dock <- DockStyle.None
+        actualChart.Size <- Size(width, height)
+        actualChart.SaveImage(ms, ImageFormat.Png)
         ms.ToArray()
-        //Bitmap.FromStream ms
-        //let actualChart = ctl.Controls.[0] :?> System.Windows.Forms.DataVisualization.Charting.Chart
-        //actualChart.Dock <- DockStyle.None
-        //actualChart.Size <- Size(width, height)
-        //actualChart.SaveImage(ms, ImageFormat.Png)
-        //ms.ToArray()
 
     member self.ToData(?size) =
         let bytes = match size with Some size -> self.ToPng(size) | _ -> self.ToPng()
@@ -152,7 +101,7 @@ do
         List.iteri copy x.Charts;
         finalGraphics.Dispose();
         let ms = new MemoryStream()
-        //TODO finalBitmap.Save(ms, ImageFormat.Png);
+        finalBitmap.Save(ms, ImageFormat.Png);
         { ContentType = "image/png"; Data = ms.ToArray() }
     )
 
@@ -171,6 +120,6 @@ do
                 List.iteri copy x.Charts;
                 finalGraphics.Dispose();
                 let ms = new MemoryStream()
-                //TODO finalBitmap.Save(ms, ImageFormat.Png);
+                finalBitmap.Save(ms, ImageFormat.Png);
                 { ContentType = "image/png"; Data = ms.ToArray() }
             )

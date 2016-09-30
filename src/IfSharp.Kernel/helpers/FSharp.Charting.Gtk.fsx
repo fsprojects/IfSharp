@@ -1,11 +1,5 @@
 [<AutoOpen>]
-module FSCharting
-
-#nowarn "211"
-
-#load "Paket.fsx"
-
-Paket.Package ["FSharp.Charting.Gtk"]
+module FSharp.Charting
 
 #I "packages/FSharp.Charting.Gtk/lib/net40"
 
