@@ -1,15 +1,7 @@
 [<AutoOpen>]
-module FSCharting
+module FSharp.Charting
 
-#nowarn "211"
-
-#load "paket-download.fsx"
-#load "paket-install.fsx"
-
-#I "../../../bin/packages/FSharp.Charting.Gtk/lib/net40" //dev
-#I "packages/FSharp.Charting.Gtk/lib/net40"  //deploy
-#I "../../../bin/" //dev
-#I __SOURCE_DIRECTORY__ //deploy
+#I "packages/FSharp.Charting.Gtk/lib/net40"
 
 #r "FSharp.Compiler.Service.dll"
 #r "System.Windows.Forms.DataVisualization.dll"

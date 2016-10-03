@@ -1,6 +1,1 @@
 source https://www.nuget.org/api/v2
-
-nuget FSharp.Data.TypeProviders ~> 5.0.0.2
-nuget XPlot.Plotly ~> 1.4.1
-nuget FSharp.Charting ~> 0.90.14
-nuget FSharp.Charting.Gtk ~> 0.90.14

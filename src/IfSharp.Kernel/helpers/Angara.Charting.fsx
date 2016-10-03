@@ -1,17 +1,3 @@
-#nowarn "211"
-
-#load "Paket.fsx"
-
-Paket.Package
-  [ "Angara.Base"
-    "Angara.Html"
-    "Angara.Chart"
-    "Angara.Reinstate"
-    "Angara.Serialization"
-    "Angara.Serialization.Json"
-    "Suave"
-  ]
-
 #r "IfSharp.Kernel.dll"
 #r "packages/Angara.Base/lib/net452/Angara.Base.dll"
 #r "packages/Angara.Html/lib/net452/Angara.Html.dll"
@@ -22,11 +8,11 @@ Paket.Package
 #r "packages/Angara.Serialization.Json/lib/net452/Angara.Serialization.Json.dll"
 #r "packages/Suave/lib/net40/Suave.dll"
 
-Angara.Base.Init()
-
 open IfSharp.Kernel
 open IfSharp.Kernel.Globals
 open Angara.Charting
+
+Angara.Base.Init()
 
 Printers.addDisplayPrinter(fun (chart: Chart) ->
   { ContentType = "text/html"

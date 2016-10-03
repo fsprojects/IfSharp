@@ -1,21 +1,9 @@
-[<AutoOpen>]
-module FSCharting
-
-#nowarn "211"
-
-//#I "../../../bin/packages/FSharp.Charting/lib/net40"
 #I "packages/FSharp.Charting/lib/net40"
-//#I "../../../bin/"
-#I __SOURCE_DIRECTORY__
 
 #r "System.Windows.Forms.DataVisualization.dll"
 #r "IfSharp.Kernel.dll"
 #r "FSharp.Charting.dll"
 #r "FSharp.Compiler.Service.dll"
-
-//module FsiAutoShow =
-//    fsi.AddPrinter(fun (ch:FSharp.Charting.ChartTypes.GenericChart) -> ch.ShowChart() |> ignore; "(Chart)")
-
 
 open FSharp.Charting
 open System.IO

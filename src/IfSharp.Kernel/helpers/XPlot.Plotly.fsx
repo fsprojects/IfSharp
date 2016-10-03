@@ -1,7 +1,5 @@
-#nowarn "211"
-
 #r "IfSharp.Kernel.dll"
-#I "./packages/XPlot.Plotly/lib/net45/"
+#I "packages/XPlot.Plotly/lib/net45/"
 #r "XPlot.Plotly.dll"
 
 open XPlot.Plotly

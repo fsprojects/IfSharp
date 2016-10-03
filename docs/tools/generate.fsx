@@ -12,22 +12,28 @@ let website = "/IfSharp"
 let info =
   [ "project-name", "IfSharp"
     "project-author", "Bayard Rock (Peter Rosconi)"
-    "project-summary", "F# implementation of iPython"
-    "project-github", "http://github.com/BayardRock/IfSharp/"
+    "project-summary", "F# kernel for Jupyter"
+    "project-github", "http://github.com/fsprojects/IfSharp/"
     "project-nuget", "http://nuget.com/packages/IfSharp/" ]
 
 // --------------------------------------------------------------------------------------
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Formatting.2.1.6/lib/net40"
-#I "../../packages/RazorEngine.3.3.0/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
+#r "../../packages/docs/FSharp.Compiler.Service/lib/net45/FSharp.Compiler.Service.dll"
+#r "../../packages/docs/FSharpVSPowerTools.Core/lib/net45/FSharpVSPowerTools.Core.dll"
+
+#I "../../packages/docs/FSharp.Formatting/lib/net40/"
+
+#r "System.Web.Razor.dll"
 #r "RazorEngine.dll"
-#r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
+#r "FSharp.Markdown.dll"
+#r "FSharp.Formatting.Common.dll"
+#r "FSharp.Literate.dll"
 #r "FSharp.MetadataFormat.dll"
+
 open Fake
 open System.IO
 open Fake.FileHelper
@@ -48,7 +54,7 @@ let content    = __SOURCE_DIRECTORY__ @@ "../content"
 let output     = __SOURCE_DIRECTORY__ @@ "../output"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.1.6/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/docs/FSharp.Formatting/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.csproj templates (in this order)
@@ -60,7 +66,7 @@ let layoutRoots =
 let copyFiles () =
   CopyRecursive files output true |> Log "Copying file: "
   ensureDirectory (output @@ "content")
-  CopyRecursive (formatting @@ "content") (output @@ "content") true 
+  CopyRecursive (formatting @@ "styles") (output @@ "content") true 
     |> Log "Copying styles and scripts: "
 
 // Build API reference from XML comments
