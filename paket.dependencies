@@ -1,10 +1,18 @@
+framework: >= net451
 source https://www.nuget.org/api/v2
 
-nuget FSharp.Compiler.Service 6.0.2 framework: >= net451
-nuget NetMQ 3.3.3.1
-nuget Newtonsoft.Json ~> 9.0.1 framework: >= net45
+nuget FSharp.Compiler.Service
+nuget NetMQ
+nuget Newtonsoft.Json
 nuget FAKE
-nuget xUnit >= 2.1 framework: >= net451
-nuget xunit.runner.console >= 2.1 framework: >= net451
-nuget Paket.Core >= 3.17.2
-nuget Chessie ~> 0.6
+nuget xUnit
+nuget xunit.runner.console
+nuget Paket.Core
+
+group Docs
+
+	framework: >= net451
+	source https://www.nuget.org/api/v2
+
+	nuget FSharp.Formatting
+

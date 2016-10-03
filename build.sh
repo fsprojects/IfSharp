@@ -20,7 +20,7 @@ if [ ! -f packages/FAKE/tools/FAKE.exe ]; then
         exit $exit_code
     fi
 fi
-${EXE} ${PREFIX}/.paket/paket.exe restore
+${EXE} ${PREFIX}/.paket/paket.exe install
 exit_code=$?
 if [ $exit_code -ne 0 ]; then
 	exit $exit_code

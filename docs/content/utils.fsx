@@ -5,11 +5,8 @@
 #r "IFSharp.Kernel"
 #r "System.Data.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
-#r "FSharp.Data.TypeProviders.dll"
-#r "FSharp.Charting.dll"
 #r "NetMQ.dll"
 
-open FSharp.Charting
 open IfSharp.Kernel
 open IfSharp.Kernel.Globals
 
