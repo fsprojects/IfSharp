@@ -130,7 +130,7 @@ module FsCompilerInternals =
     /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
     let extractNames (line, charIndex) =
         
-        let sourceTok = SourceTokenizer([], "/home/test.fsx")
+        let sourceTok = SourceTokenizer([], Some "/home/test.fsx")
         let tokenizer = sourceTok.CreateLineTokenizer(line)
         let rec gatherTokens (tokenizer:FSharpLineTokenizer) state =
             seq {
@@ -325,7 +325,7 @@ type FsCompiler (executingDirectory : string) =
     /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
     member this.ExtractNames (line, charIndex) =
         
-        let sourceTok = SourceTokenizer([], "/home/test.fsx")
+        let sourceTok = SourceTokenizer([], Some "/home/test.fsx")
         let tokenizer = sourceTok.CreateLineTokenizer(line)
         let rec gatherTokens (tokenizer:FSharpLineTokenizer) state =
             seq {

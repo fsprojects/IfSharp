@@ -2,6 +2,7 @@ framework: >= net451
 source https://www.nuget.org/api/v2
 
 nuget FSharp.Compiler.Service
+nuget AsyncIO = 0.1.20.0
 nuget NetMQ
 nuget Newtonsoft.Json
 nuget FAKE
