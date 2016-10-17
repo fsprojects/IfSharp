@@ -10,5 +10,8 @@ open System.Reflection
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] Version = "2.0.2"
-    let [<Literal>] InformationalVersion = "2.0.2"
+    let [<Literal>] AssemblyTitle = "IfSharp.Kernel"
+    let [<Literal>] AssemblyProduct = "IfSharp.Kernel"
+    let [<Literal>] AssemblyDescription = "A short summary of your project."
+    let [<Literal>] AssemblyVersion = "2.0.2"
+    let [<Literal>] AssemblyFileVersion = "2.0.2"

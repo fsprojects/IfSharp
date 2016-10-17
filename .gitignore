@@ -175,5 +175,4 @@ temp/
 # Test results produced by build
 TestResults.xml
 .paket/paket.exe
-paket.lock
 
