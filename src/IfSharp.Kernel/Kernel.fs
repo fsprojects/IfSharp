@@ -11,33 +11,32 @@ open System.Security.Cryptography
 
 open Newtonsoft.Json
 open NetMQ
+open NetMQ.Sockets
 
 type IfSharpKernel(connectionInformation : ConnectionInformation) = 
 
-    // startup 0mq stuff
-    let context = NetMQContext.Create()
     // heartbeat
-    let hbSocket = context.CreateRouterSocket()
-    let hbSocketURL =String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port) 
+    let hbSocket = new RouterSocket()
+    let hbSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port) 
     do hbSocket.Bind(hbSocketURL)
         
     // control
-    let controlSocket = context.CreateRouterSocket()
+    let controlSocket = new RouterSocket()
     let controlSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port)
     do controlSocket.Bind(controlSocketURL)
 
     // stdin
-    let stdinSocket = context.CreateRouterSocket()
+    let stdinSocket = new RouterSocket()
     let stdinSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port)
     do stdinSocket.Bind(stdinSocketURL)
 
     // iopub
-    let ioSocket = context.CreatePublisherSocket()
+    let ioSocket = new PublisherSocket()
     let ioSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port)
     do ioSocket.Bind(ioSocketURL)
 
     // shell
-    let shellSocket = context.CreateRouterSocket()
+    let shellSocket = new RouterSocket()
     let shellSocketURL =String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port)
     do shellSocket.Bind(shellSocketURL)
 

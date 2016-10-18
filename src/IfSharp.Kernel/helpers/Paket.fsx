@@ -3,24 +3,38 @@
 #r "Paket.Core.dll"
 
 open System
+open Paket
 
-let private dir =
-    Reflection.Assembly.GetEntryAssembly().Location
-    |> IO.Path.GetDirectoryName
+let deps =
+    let dir =
+        Reflection.Assembly.GetEntryAssembly().Location
+        |> IO.Path.GetDirectoryName
 
-let deps = 
-    try
-        let d = Paket.Dependencies.Locate(dir)
-        d.Install(false)
-        d
-    with _ ->
-        Paket.Dependencies.Init(dir)
-        Paket.Dependencies.Locate(dir)
+    let d =
+        try
+            Dependencies.Locate(dir)
+        with _ ->
+            Dependencies.Init(dir)
+            Dependencies.Locate(dir)
+
+    d.Restore(false)
+    d
+
+let private add package version =
+    deps.Add(None, package, version, force = false,
+        withBindingRedirects = false, cleanBindingRedirects = false,
+        createNewBindingFiles = false, interactive = false,
+        installAfter = false, semVerUpdateMode = SemVerUpdateMode.NoRestriction,
+        touchAffectedRefs = false)
 
 let Package list =
     for package in list do
-        deps.Add(package)
+        add package ""
+
+    deps.Install(false)
 
 let Version list =
     for package, version in list do
-        deps.Add(None, package, version)
+        add package version
+
+    deps.Install(false)
