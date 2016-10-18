@@ -1,3 +1,3 @@
 #load "Paket.fsx"
 
-Paket.Package ["XPlot.Plotly"]
+Paket.Version ["XPlot.Plotly", "1.4.1"]
