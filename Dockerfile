@@ -1,58 +1,38 @@
-FROM mono:4.2.3.4
+FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install -y wget git 
+RUN apt-key adv \
+        --keyserver hkp://keyserver.ubuntu.com:80 \
+        --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
+    && echo "deb http://download.mono-project.com/repo/debian wheezy main" | \
+        tee /etc/apt/sources.list.d/mono-xamarin.list \
+    && apt-get update \
+    && apt-get install -y \
+        mono-complete \
+        fsharp \
+        python3-pip \
+        git \
+    && rm -rf /var/lib/apt/lists/*
 
-# We now remove all python traces; this uninstalls the mono packages...
-RUN apt-get purge -y python \
-	python2.7 \
-	python2.7-minimal
-# purge does not remove everything
-RUN find / -name python* | xargs rm -rf
+RUN pip3 install --upgrade pip && pip3 install jupyter
 
-# Python 3.4 dependencies 
-RUN apt-get install -y build-essential \
-	libncurses5-dev libncursesw5-dev libreadline6-dev \
-	libdb5.1-dev libgdbm-dev libsqlite3-dev libssl-dev \
-	libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
+WORKDIR /
+RUN git clone https://github.com/fsprojects/IfSharp.git
 
-# Install Python and pip from binaries, then Jupyter via pip
-WORKDIR /tmp
-RUN wget https://www.python.org/ftp/python/3.4.4/Python-3.4.4.tgz
-RUN tar -zxf Python-3.4.4.tgz
-WORKDIR Python-3.4.4
-RUN ./configure --prefix=/usr/local/opt/python-3.4.4
-RUN make
-RUN make install
-WORKDIR /tmp
-RUN rm -rf Python-3.4.4
-RUN rm Python-3.4.4.tgz
-
-# We make this Python installation visible in the system
-env PATH /usr/local/opt/python-3.4.4/bin:$PATH
-
-RUN pip3 install jupyter
-
-
-# reinstall mono (this will pull down again some Python 2.7 dependencies, but won't break the install)
-RUN apt-get install -y mono-devel ca-certificates-mono fsharp mono-vbnc nuget
-
-RUN apt-get install unzip
-
-# Get and install the IfSharp kernel
-RUN mkdir -p /usr/local/opt/ifsharp 
-WORKDIR /usr/local/opt/ifsharp
-RUN wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-alpha2/IfSharp.v3.0.0-alpha2.zip
-RUN unzip IfSharp.v3.0.0-alpha2.zip
-RUN rm IfSharp.v3.0.0-alpha2.zip
-RUN mono ifsharp.exe
-
-# How we communicate with the IfSharp kernel
-EXPOSE 8888
+WORKDIR /IfSharp
+RUN git checkout jupyter
+RUN ./build.sh
+RUN mono bin/ifsharp.exe --install
 
 WORKDIR /
 RUN mkdir notebooks
 VOLUME notebooks
 
+EXPOSE 8888
 
-ENTRYPOINT ["jupyter-notebook", "--no-browser", "--ip='*'", "--notebook-dir=/notebooks", "--config=/root/.local/share/jupyter/kernels/ifsharp/ipython_config.py"]
-
+ENTRYPOINT ["jupyter", \
+            "notebook", \
+            "--no-browser", \
+            "--ip='*'", \
+            "--port=8888", \
+            "--notebook-dir=/notebooks" \
+            ]
