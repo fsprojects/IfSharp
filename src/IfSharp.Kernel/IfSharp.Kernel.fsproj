@@ -98,6 +98,9 @@
     <Content Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Compiler.Interactive.Settings">
+      <HintPath>..\..\packages\FSharp.Compiler.Tools\tools\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NuGet">
       <HintPath>..\..\lib\NuGet.dll</HintPath>
