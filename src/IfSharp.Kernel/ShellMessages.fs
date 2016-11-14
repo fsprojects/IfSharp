@@ -500,6 +500,7 @@ type ShellMessage =
 
     // comm open?
     | CommOpen of CommOpen
+    | CommInfoRequest of CommInfoRequest
 
     // kernel info
     | KernelRequest of KernelRequest
