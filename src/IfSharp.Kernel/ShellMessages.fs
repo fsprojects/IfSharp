@@ -332,6 +332,8 @@ type ConnectReply =
 
 type CommOpen = obj
 
+type CommInfoRequest = obj
+
 type KernelRequest = obj
 
 type KernelReply_LanguageInfo =
@@ -498,6 +500,7 @@ type ShellMessage =
 
     // comm open?
     | CommOpen of CommOpen
+    | CommInfoRequest of CommInfoRequest
 
     // kernel info
     | KernelRequest of KernelRequest
@@ -560,5 +563,7 @@ module ShellMessages =
 
         //Jupyter 4.x support, do we need to do anything with this?
         | "comm_open"            -> CommOpen (JsonConvert.DeserializeObject<CommOpen>(messageJson))
+
+        | "comm_info_request"    -> CommInfoRequest (JsonConvert.DeserializeObject<CommInfoRequest>(messageJson))
 
         | _                      -> failwith ("Unsupported messageType: " + messageType)
