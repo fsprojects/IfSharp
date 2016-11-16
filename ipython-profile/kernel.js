@@ -1,6 +1,6 @@
 define(function () {
 
-    var kernelSpecs = requirejs.s.contexts._.config.paths.kernelspecs
+    var kernelSpecs = requirejs.s.contexts._.config.paths.kernelspecs;
     var staticFolder = kernelSpecs + "/ifsharp/static/";
 
     var link = document.createElement("link");
