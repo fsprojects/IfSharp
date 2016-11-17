@@ -157,10 +157,6 @@ define(function () {
             });
         });
 
-        // replace the image
-        var img = $('.container img')[0];
-        img.src = staticFolder + "custom/ifsharp_logo.png";
-
     }
 
     return { onload: onload }
