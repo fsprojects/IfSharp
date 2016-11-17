@@ -1,6 +1,7 @@
 define(function () {
 
-    var staticFolder = "/kernelspecs/ifsharp/static/";
+    var kernelSpecs = requirejs.s.contexts._.config.paths.kernelspecs;
+    var staticFolder = kernelSpecs + "/ifsharp/static/";
 
     var link = document.createElement("link");
     link.type = "text/css";
@@ -155,10 +156,6 @@ define(function () {
                 applyIntellisense(data.cell);
             });
         });
-
-        // replace the image
-        var img = $('.container img')[0];
-        img.src = staticFolder + "custom/ifsharp_logo.png";
 
     }
 
