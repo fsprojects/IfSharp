@@ -3,9 +3,11 @@
 open System
 open System.Text
 open System.Web
-open FSharp.Charting
+//open System.Drawing
+//open System.Drawing.Imaging
+//open System.IO
 
-module Printers = 
+module Printers =
 
     let mutable internal displayPrinters : list<Type * (obj -> BinaryOutput)> = []
 
@@ -13,17 +15,26 @@ module Printers =
     let internal htmlEncode(str) = HttpUtility.HtmlEncode(str)
 
     /// Adds a custom display printer for extensibility
-    let internal addDisplayPrinter(printer : 'T -> BinaryOutput) =
+    let addDisplayPrinter(printer : 'T -> BinaryOutput) =
         displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
 
     /// Default display printer
-    let internal defaultDisplayPrinter(x) =
+    let defaultDisplayPrinter(x) =
         { ContentType = "text/plain"; Data = sprintf "%A" x }
 
     /// Finds a display printer based off of the type
-    let internal findDisplayPrinter(findType) = 
-        let printers = 
-            displayPrinters
+    let findDisplayPrinter(findType) =
+        // Get printers that were registered using `fsi.AddHtmlPrinter` and turn them 
+        // into printers expected here (just contactenate all <script> tags with HTML)
+        let extraPrinters = 
+            Evaluation.extraPrinters
+            |> Seq.map (fun (t, p) -> t, fun o -> 
+                let extras, html = p o
+                let extras = extras |> Seq.map snd |> String.concat ""
+                { ContentType = "text/html"; Data = extras + html })
+
+        let printers =
+            Seq.append displayPrinters extraPrinters
             |> Seq.filter (fun (t, _) -> t.IsAssignableFrom(findType))
             |> Seq.toList
 
@@ -33,20 +44,10 @@ module Printers =
             (typeof<obj>, defaultDisplayPrinter)
 
     /// Adds default display printers
-    let internal addDefaultDisplayPrinters() = 
-        
-        // add generic chart printer
-        addDisplayPrinter(fun (x:ChartTypes.GenericChart) ->
-            { ContentType = "image/png"; Data = x.ToPng() }
-        )
+    let addDefaultDisplayPrinters() =
 
-        // add chart printer
-        addDisplayPrinter(fun (x:GenericChartWithSize) ->
-            { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) }
-        )
-        
         // add table printer
-        addDisplayPrinter(fun (x:TableOutput) -> 
+        addDisplayPrinter(fun (x:TableOutput) ->
             let sb = StringBuilder()
             sb.Append("<table>") |> ignore
 
@@ -68,13 +69,13 @@ module Printers =
                     sb.Append("<td>") |> ignore
                     sb.Append(htmlEncode cell) |> ignore
                     sb.Append("</td>") |> ignore
-                    
+
                 sb.Append("</tr>") |> ignore
             sb.Append("<tbody>") |> ignore
             sb.Append("</tbody>") |> ignore
             sb.Append("</table>") |> ignore
 
-            { ContentType = "text/html"; Data = sb.ToString() } 
+            { ContentType = "text/html"; Data = sb.ToString() }
         )
 
         // add svg printer
@@ -86,7 +87,7 @@ module Printers =
         addDisplayPrinter(fun (x:HtmlOutput) ->
             { ContentType = "text/html"; Data = x.Html }
         )
-        
+
         // add latex printer
         addDisplayPrinter(fun (x:LatexOutput) ->
             { ContentType = "text/latex"; Data = x.Latex }

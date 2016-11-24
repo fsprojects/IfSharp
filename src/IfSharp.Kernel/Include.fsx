@@ -3,13 +3,8 @@
 
 // load base dlls
 #r "IfSharp.Kernel.dll"
-#r "System.Data.dll"
-#r "System.Windows.Forms.DataVisualization.dll"
-#r "FSharp.Data.TypeProviders.dll"
-#r "FSharp.Charting.dll"
 #r "NetMQ.dll"
 
 // open the global functions and methods
-open FSharp.Charting
 open IfSharp.Kernel
 open IfSharp.Kernel.Globals

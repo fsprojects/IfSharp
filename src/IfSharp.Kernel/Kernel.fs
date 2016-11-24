@@ -5,36 +5,41 @@ open System.Collections.Generic
 open System.IO
 open System.Reflection
 open System.Text
+open System.Threading
+open System.Security.Cryptography
+
 
 open Newtonsoft.Json
 open NetMQ
+open NetMQ.Sockets
 
 type IfSharpKernel(connectionInformation : ConnectionInformation) = 
 
-    // startup 0mq stuff
-    let context = NetMQContext.Create()
-
     // heartbeat
-    let hbSocket = context.CreateRequestSocket()
-    do hbSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
-        
-    // shell
-    let shellSocket = context.CreateRouterSocket()
-    do shellSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
+    let hbSocket = new RouterSocket()
+    let hbSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port) 
+    do hbSocket.Bind(hbSocketURL)
         
     // control
-    let controlSocket = context.CreateRouterSocket()
-    do controlSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
+    let controlSocket = new RouterSocket()
+    let controlSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port)
+    do controlSocket.Bind(controlSocketURL)
 
     // stdin
-    let stdinSocket = context.CreateRouterSocket()
-    do stdinSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
+    let stdinSocket = new RouterSocket()
+    let stdinSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port)
+    do stdinSocket.Bind(stdinSocketURL)
 
     // iopub
-    let ioSocket = context.CreatePublisherSocket()
-    do ioSocket.Bind(String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
+    let ioSocket = new PublisherSocket()
+    let ioSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port)
+    do ioSocket.Bind(ioSocketURL)
 
-    let data = new List<BinaryOutput>()
+    // shell
+    let shellSocket = new RouterSocket()
+    let shellSocketURL =String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port)
+    do shellSocket.Bind(shellSocketURL)
+
     let payload = new List<Payload>()
     let compiler = FsCompiler(FileInfo(".").FullName)
     let mutable executionCount = 0
@@ -56,8 +61,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             |> Seq.filter (fun x -> x <> "")
             |> Seq.map (fun x -> String.Format("{0:yyyy-MM-dd HH:mm:ss} - {1}", DateTime.Now, x))
             |> Seq.toArray
-        
-        File.AppendAllLines(fileName, messages)
+        try
+            File.AppendAllLines(fileName, messages)
+        with _ -> ()
 
     /// Logs the exception to the specified file name
     let handleException (ex : exn) = 
@@ -83,21 +89,29 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         ser.Serialize(sw, obj)
         sw.ToString()
 
-    let recvAll (socket: NetMQSocket) = socket.ReceiveMessages()
+    /// Sign a set of strings.
+    let hmac = new HMACSHA256(Encoding.UTF8.GetBytes(connectionInformation.key))
+    let sign (parts:string list) : string =
+        if connectionInformation.key = "" then "" else
+          ignore (hmac.Initialize())
+          List.iter (fun (s:string) -> let bytes = Encoding.UTF8.GetBytes(s) in ignore(hmac.TransformBlock(bytes, 0, bytes.Length, null, 0))) parts
+          ignore (hmac.TransformFinalBlock(Array.zeroCreate 0, 0, 0))
+          BitConverter.ToString(hmac.Hash).Replace("-", "").ToLower()
 
+    let recvAll (socket: NetMQSocket) = socket.ReceiveMultipartBytes()
+    
     /// Constructs an 'envelope' from the specified socket
     let recvMessage (socket: NetMQSocket) = 
         
         // receive all parts of the message
-        let message =
-            recvAll (socket)
-            |> Seq.map decode
-            |> Seq.toArray
+        let message = (recvAll (socket)) |> Array.ofSeq
+        let asStrings = message |> Array.map decode
 
         // find the delimiter between IDS and MSG
-        let idx = Array.IndexOf(message, "<IDS|MSG>")
+        let idx = Array.IndexOf(asStrings, "<IDS|MSG>")
+
         let idents = message.[0..idx - 1]
-        let messageList = message.[idx + 1..message.Length - 1]
+        let messageList = asStrings.[idx + 1..message.Length - 1]
 
         // detect a malformed message
         if messageList.Length < 4 then failwith ("Malformed message")
@@ -113,6 +127,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         let parentHeader     = JsonConvert.DeserializeObject<Header>(parentHeaderJson)
         let metaDataDict     = deserializeDict (metadata)
         let content          = ShellMessages.Deserialize (header.msg_type) (contentJson)
+
+        let calculated_signature = sign [headerJson; parentHeaderJson; metadata; contentJson]
+        if calculated_signature <> hmac then failwith("Wrong message signature")
 
         lastMessage <- Some
             {
@@ -144,13 +161,20 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         for ident in envelope.Identifiers do
             msg.Append(ident)
 
+        let header = serialize header
+        let parent_header = serialize envelope.Header
+        let meta = "{}"
+        let content = serialize content
+        let signature = sign [header; parent_header; meta; content]
+
         msg.Append(encode "<IDS|MSG>")
-        msg.Append(encode "")
-        msg.Append(encode (serialize header))
-        msg.Append(encode (serialize envelope.Header))
+        msg.Append(encode signature)
+        msg.Append(encode header)
+        msg.Append(encode parent_header)
         msg.Append(encode "{}")
-        msg.Append(encode (serialize content))
-        socket.SendMessage(msg)
+        msg.Append(encode content)
+        socket.SendMultipartMessage(msg)
+
         
     /// Convenience method for sending the state of the kernel
     let sendState (envelope) (state) =
@@ -168,18 +192,29 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let kernelInfoRequest(msg : KernelMessage) (content : KernelRequest) = 
         let content = 
             {
-                protocol_version = [| 4; 0 |]; 
-                ipython_version = Some [| 1; 0; 0 |];
-                language_version = [| 1; 0; 0 |];
+                protocol_version = "4.0.0";
+                implementation = "ifsharp";
+                implementation_version = "4.0.0";
+                banner = "";
+                help_links = [||];
                 language = "fsharp";
+                language_info =
+                {
+                    name = "fsharp";
+                    version = "4.3.1.0";
+                    mimetype = "text/x-fsharp";
+                    file_extension = ".fs";
+                    pygments_lexer = "";
+                    codemirror_mode = "";
+                    nbconvert_exporter = "";
+                };
             }
 
+        sendStateBusy msg
         sendMessage shellSocket msg "kernel_info_reply" content
 
     /// Sends display data information immediately
-    let sendDisplayData (contentType) (displayItem) (messageType) =
-        data.Add( { ContentType = contentType; Data = displayItem } )
-        
+    let sendDisplayData (contentType) (displayItem) (messageType) =        
         if lastMessage.IsSome then
 
             let d = Dictionary<string,obj>()
@@ -199,6 +234,27 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // preprocess
         let results = compiler.NuGetManager.Preprocess(code)
         let newCode = String.Join("\n", results.FilteredLines)
+
+        if not (Seq.isEmpty results.HelpLines) then
+            fsiEval.EvalInteraction("#help")
+            let ifsharpHelp =
+                """  IF# notebook directives:
+
+    #fsioutput ["on"|"off"];;   Toggle output display on/off
+    """
+            let fsiHelp = sbOut.ToString()
+            pyout (ifsharpHelp + fsiHelp)
+            sbOut.Clear() |> ignore
+
+        //This is a persistent toggle, just respect the last one
+        if not (Seq.isEmpty results.FsiOutputLines) then
+            let lastFsiOutput = Seq.last results.FsiOutputLines
+            if lastFsiOutput.ToLower().Contains("on") then
+                fsiout := true
+            else if lastFsiOutput.ToLower().Contains("off") then
+                fsiout := false
+            else
+                pyout (sprintf "Unreocognised fsioutput setting: %s" lastFsiOutput)
 
         // do nuget stuff
         for package in results.Packages do
@@ -220,6 +276,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         if not <| String.IsNullOrEmpty(newCode) then
             fsiEval.EvalInteraction(newCode)
+
+        if fsiout.Value then
+            pyout (sbOut.ToString())
     
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
@@ -227,7 +286,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // clear some state
         sbOut.Clear() |> ignore
         sbErr.Clear() |> ignore
-        data.Clear()
         payload.Clear()
 
         // only increment if we are not silent
@@ -275,17 +333,16 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
             // send all the data
             if not <| content.silent then
-                if data.Count = 0 then
-                    let lastExpression = GetLastExpression()
-                    match lastExpression with
-                    | Some(it) -> 
+                let lastExpression = GetLastExpression()
+                match lastExpression with
+                | Some(it) -> 
                         
-                        let printer = Printers.findDisplayPrinter(it.ReflectionType)
-                        let (_, callback) = printer
-                        let callbackValue = callback(it.ReflectionValue)
-                        sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
+                    let printer = Printers.findDisplayPrinter(it.ReflectionType)
+                    let (_, callback) = printer
+                    let callbackValue = callback(it.ReflectionValue)
+                    sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
 
-                    | None -> ()
+                | None -> ()
 
         // we are now idle
         sendStateIdle msg
@@ -384,11 +441,12 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
     /// Handles a 'shutdown_request' message
     let shutdownRequest (msg : KernelMessage) (content : ShutdownRequest) =
-
+        logMessage "shutdown request"
         // TODO: actually shutdown        
         let reply = { restart = true; }
 
-        sendMessage shellSocket msg "shutdown_reply" reply
+        sendMessage shellSocket msg "shutdown_reply" reply;
+        System.Environment.Exit(0)
 
     /// Handles a 'history_request' message
     let historyRequest (msg : KernelMessage) (content : HistoryRequest) =
@@ -399,6 +457,12 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Handles a 'object_info_request' message
     let objectInfoRequest (msg : KernelMessage) (content : ObjectInfoRequest) =
         // TODO: actually handle this
+        ()
+
+    let inspectRequest (msg : KernelMessage) (content : InspectRequest) =
+        // TODO: actually handle this
+        let reply = { status = "ok"; found = false; data = Dictionary<string,obj>(); metadata = Dictionary<string,obj>() }
+        sendMessage shellSocket msg "inspect_reply" reply
         ()
 
     /// Loops forever receiving messages from the client and processing them
@@ -413,7 +477,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         logMessage (sbOut.ToString())
 
         while true do
-
             let msg = recvMessage (shellSocket)
 
             try
@@ -426,16 +489,28 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 | ShutdownRequest(r)     -> shutdownRequest msg r
                 | HistoryRequest(r)      -> historyRequest msg r
                 | ObjectInfoRequest(r)   -> objectInfoRequest msg r
-                | _                      -> logMessage (String.Format("Unknown content type. msg_type is `{0}`", msg.Header.msg_type))
+                | InspectRequest(r)      -> inspectRequest msg r
+                | _                      -> logMessage (String.Format("Unknown content type on shell. msg_type is `{0}`", msg.Header.msg_type))
             with 
             | ex -> handleException ex
    
+    let doControl() =
+        while true do
+            let msg = recvMessage (controlSocket)
+            try
+                match msg.Content with
+                | ShutdownRequest(r)     -> shutdownRequest msg r
+                | _                      -> logMessage (String.Format("Unexpected content type on control. msg_type is `{0}`", msg.Header.msg_type))
+            with 
+            | ex -> handleException ex
+
     /// Loops repeating message from the client
     let doHeartbeat() =
 
         try
             while true do
-                hbSocket.Send(hbSocket.Receive())
+                let hb = hbSocket.ReceiveMultipartBytes() in
+                hbSocket.SendMultipartBytes hb
         with
         | ex -> handleException ex
 
@@ -455,5 +530,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Starts the kernel asynchronously
     member __.StartAsync() = 
         
-        Async.Start (async { doHeartbeat() } )
+        //Async.Start (async { doHeartbeat() } )
         Async.Start (async { doShell() } )
+        Async.Start (async { doControl() } )

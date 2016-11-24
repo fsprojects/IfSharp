@@ -38,25 +38,49 @@ Startup script
 is executed on startup. The script automatically references the following assemblies:
 
 * IfSharp.Kernel.dll
-* System.Data.dll
-* System.Windows.Forms.DataVisualization.dll
-* FSharp.Data.TypeProviders.dll
-* FSharp.Charting.dll
 * NetMQ.dll
 
 And automatically opens the following namespaces:
 
-* FSharp.Charting
 * IfSharp.Kernel
 * IfSharp.Kernel.Global
 
-Integrated NuGet support
+Paket support
 ------------------------
-To automatically download NuGet package, use the #N directive: `#N "Newtonsoft.Json"`.
-This will download the package and automatically reference assemblies within the package.
-[More NuGet integration documentation](nuget.html).
+To download [Paket](https://fsprojects.github.io/Paket/) packages, start with:
+*)
 
-![NuGet Example](img/NuGet-1.png "NuGet example")
+#load "Paket.fsx"
+
+(**
+This will allow you to specify Paket dependencies with a declarative syntax.
+*)
+
+Paket.Package ["Newtonsoft.Json"]
+
+(**
+You will need to load any assemblies you require from those packages using `#r` directives.
+
+If you need to specify a version, you can use an alternate form:
+*)
+
+Paket.Version ["Newtonsoft.Json", "~> 9.0.1"]
+
+(**
+Some helper scripts are provided to handle Paket package installation, assembly dependency, and custom `Display` printers for commonly used packages. Each helper script is divided into a script that installs Paket dependencies, and another that loads assemblies and sets up extension functions and `Display` printers.
+*)
+
+#load "Angara.Charting.Paket.fsx"
+#load "Angara.Charting.fsx"
+
+#load "XPlot.Plotly.Paket.fsx"
+#load "XPlot.Plotly.fsx"
+
+#load "FSharp.Charting.Paket.fsx"
+#load "FSharp.Charting.fsx"
+
+(**
+[`Angara.Charting`](http://predictionmachines.github.io/Angara.Chart/) and [`XPlot.Plotly`](https://tahahachana.github.io/XPlot/plotly.html) are both feature-rich, cross-platform charting packages. [`FSharp.Charting`](https://fslab.org/FSharp.Charting/) is a Windows-only charting package.
 
 Sin chart wave example
 ----------------------

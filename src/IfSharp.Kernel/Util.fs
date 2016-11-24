@@ -7,7 +7,9 @@ open System.Net
 open System.Text
 open System.Drawing.Imaging
 open System.Windows.Forms
-open FSharp.Charting
+open System.Xml
+open System.Xml.Linq
+open System.Xml.XPath
 
 type BinaryOutput =
     { 
@@ -36,11 +38,7 @@ type SvgOutput =
         Svg: string;
     }
 
-type GenericChartWithSize = 
-    {
-        Chart: ChartTypes.GenericChart;
-        Size: int * int;
-    }
+
 
 [<AutoOpen>]
 module ExtensionMethods =
@@ -61,39 +59,7 @@ module ExtensionMethods =
 
             sb.ToString()
 
-    type ChartTypes.GenericChart with 
 
-        /// Wraps a GenericChartWithSize around the GenericChart
-        member self.WithSize(x:int, y:int) =
-            {
-                Chart = self;
-                Size = (x, y);
-            }
-
-        /// Converts the GenericChart to a PNG, in order to do this, we must show a form with ChartControl on it, save the bmp, then write the png to memory
-        member self.ToPng(?size) =
-
-            // get the size
-            let (width, height) = if size.IsNone then (320, 240) else size.Value
-
-            // create a new ChartControl in order to get the underlying Chart
-            let ctl = new ChartTypes.ChartControl(self)
-
-            // save
-            use ms = new MemoryStream()
-            let actualChart = ctl.Controls.[0] :?> System.Windows.Forms.DataVisualization.Charting.Chart
-            actualChart.Dock <- DockStyle.None
-            actualChart.Size <- Size(width, height)
-            actualChart.SaveImage(ms, ImageFormat.Png)
-            ms.ToArray()
-
-    type FSharp.Charting.Chart with
-    
-        /// Wraps a GenericChartWithSize around the GenericChart
-        static member WithSize(x:int, y:int) = 
-
-            fun (ch : #ChartTypes.GenericChart) ->
-                ch.WithSize(x, y)
 
 type Util = 
 
@@ -145,7 +111,6 @@ type Util =
         stream.CopyTo(mstream)
         { ContentType = res.ContentType; Data =  mstream.ToArray() }
 
-
     /// Wraps a BinaryOutput around image bytes with the specified content-type
     static member Image (bytes:seq<byte>, ?contentType:string) =
         {
@@ -153,6 +118,57 @@ type Util =
             Data = bytes;
         }
 
+    static member Base64 (bytes:seq<byte>, contentType:string) =
+        let base64 = Convert.ToBase64String(Array.ofSeq bytes)
+        let data = "data:"+contentType+";base64,"+base64
+        data
+
     /// Loads a local image from disk and wraps a BinaryOutput around the image data.
     static member Image (fileName:string) =
         Util.Image (File.ReadAllBytes(fileName))
+
+
+    static member CreatePublicFile (name:string) (content:byte[]) =
+        try
+            if Directory.Exists(Config.TempDir) = false then
+                Directory.CreateDirectory(Config.TempDir) |> ignore;
+            let path = Path.Combine(Config.TempDir,name)
+            File.WriteAllBytes(path, content)
+            "/static/temp/"+name
+        with exc ->
+            exc.ToString()
+
+    static member MoveSvg (svg:string) (delta:float*float) =
+        let (dx,dy) = delta
+        let doc = XElement.Parse(svg)
+        let width = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width = Math.Max(width, width + dx)
+        let height = Math.Max(height, height + dy)
+        doc.SetAttributeValue(XName.Get("width"), width)
+        doc.SetAttributeValue(XName.Get("height"), height)
+        let gnode = new XElement(XName.Get("g"))
+        gnode.SetAttributeValue(XName.Get("transform"), "translate("+(string dx)+","+(string dy)+")")
+        let objects = doc.Elements() |> Array.ofSeq;
+        doc.RemoveNodes()
+        gnode.Add(objects)
+        doc.Add(gnode)
+        let svg = doc.ToString()
+        svg
+
+    static member MergeSvg (svg1:string) (svg2:string) =
+        let doc1 = XElement.Parse(svg1)
+        let doc2 = XElement.Parse(svg2)
+        let width1 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc1.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height1 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc1.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width2 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="width") (doc2.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let height2 = match Seq.tryFind (fun (xa:XAttribute) -> xa.Name.LocalName="height") (doc2.Attributes()) with None -> 0. | Some xa -> float xa.Value
+        let width = Math.Max(width1, width2)
+        let height = Math.Max(height1, height2)
+        doc1.SetAttributeValue(XName.Get("width"), width)
+        doc1.SetAttributeValue(XName.Get("height"), height)
+        let doc2Objects = doc2.Elements() |> Array.ofSeq;
+        doc2.RemoveNodes()
+        doc1.Add(doc2Objects)
+        let svg = doc1.ToString()
+        svg

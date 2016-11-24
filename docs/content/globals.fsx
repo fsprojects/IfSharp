@@ -3,8 +3,6 @@
 // it to define helpers that you do not want to show in the documentation.
 #I "../../bin"
 #r "IFSharp.Kernel"
-#r "System.Data.dll"
-#r "System.Windows.Forms.DataVisualization.dll"
 #r "FSharp.Data.TypeProviders.dll"
 #r "FSharp.Charting.dll"
 #r "NetMQ.dll"
@@ -16,21 +14,25 @@ open IfSharp.Kernel.Globals
 (**
 The Display global
 ==================
-The `Display` function is a 'global' function that can be accessed anywhere throughout
+The `Display` function is a global function that can be accessed anywhere throughout
 the notebook. It will take any object and attempt to display it to the user. Built-in
 supported types are:
 
-* `FSharp.Charting.ChartTypes.GenericChart`
 * `IfSharp.Kernel.GenericChartWithSize`
 * `IfSharp.Kernel.TableOutput`
 * `IfSharp.Kernel.HtmlOutput`
 * `IfSharp.Kernel.BinaryOutput`
+
+Additional `Display` printers are provided via helper scripts.
 
 <hr />
 
 FSharp.Charting.ChartTypes.GenericChart
 ---------------------------------------
 *)
+
+#load "FSharp.Charting.Paket.fsx"
+#load "FSharp.Charting.fsx"
 
 let fruitData = [| ("Cherries", 100); ("Apples", 200); ("Bananas", 150); ("Peaches", 10) |]
 Chart.Bar(fruitData) |> Display

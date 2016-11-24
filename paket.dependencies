@@ -1,0 +1,19 @@
+framework: >= net451
+source https://www.nuget.org/api/v2
+
+nuget FSharp.Compiler.Service
+nuget FSharp.Compiler.Tools
+nuget AsyncIO = 0.1.20.0
+nuget NetMQ
+nuget Newtonsoft.Json
+nuget FAKE
+nuget xUnit
+nuget xunit.runner.console
+nuget Paket.Core
+
+group Docs
+
+	framework: >= net451
+	source https://www.nuget.org/api/v2
+
+	nuget FSharp.Formatting
