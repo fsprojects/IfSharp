@@ -22,6 +22,7 @@ NUGET
     System.Collections.Immutable (1.2)
     System.Reflection.Metadata (1.4.1-beta-24430-01)
       System.Collections.Immutable (>= 1.2)
+    Trinet.Core.IO.Ntfs (4.0)
     xunit (2.1)
       xunit.assert (2.1)
       xunit.core (2.1)

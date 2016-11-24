@@ -10,6 +10,7 @@ nuget FAKE
 nuget xUnit
 nuget xunit.runner.console
 nuget Paket.Core
+nuget Trinet.Core.IO.Ntfs
 
 group Docs
 
