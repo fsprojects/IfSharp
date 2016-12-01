@@ -252,14 +252,17 @@ module App =
 
         let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-        printfn "Starting ipython..."
+        printfn "Starting Jupyter..."
         let p = new Process()
         p.StartInfo.FileName <- "jupyter"
         p.StartInfo.Arguments <- "notebook"
         p.StartInfo.WorkingDirectory <- userDir
 
         // tell the user something bad happened
-        if p.Start() = false then printfn "Unable to start jupyter, please install jupyter first"
+
+        try
+            if p.Start() = false then failwith "Unable to start Jupyter, please install Jupyter first"
+        with _ -> failwith "Unable to start Jupyter, please install Jupyter first"
 
     /// First argument must be an ipython connection file, blocks forever
     let Start (args : array<string>) = 
