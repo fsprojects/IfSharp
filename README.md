@@ -1,6 +1,8 @@
-# IfSharp
+# IfSharp, Jupyter and F# Azure Notebooks
 
-F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](Feature%20Notebook%20format%204_0.ipynb) for some of the features that are included.
+This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](Feature%20Notebook%20format%204_0.ipynb) for some of the features that are included.
+
+You can use Jupyter F# Notebooks for free (With free server-side execution) at [Azure Notebooks](https://notebooks.azure.com/).  An [Introduction to F# in Azure Notebooks](https://notebooks.azure.com/#sample-redirect) guides you through the language and its use in Jupyter.
 
 There is documentation for the existing release version: [documentation](http://fsprojects.github.io/IfSharp/) we're updating this for the Jupyter branch.
 
