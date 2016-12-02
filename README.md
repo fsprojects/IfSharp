@@ -74,7 +74,7 @@ The workaround is for IPython/Jupyter changes will be fixed in a future release.
 ***
 
 ## Integrated NuGet
-![NuGet Example](docs/files/img/NuGet-1.png?raw=true "NuGet example")
+![NuGet Example](docs/files/img/integratedNuget.png?raw=true "NuGet example")
 
 ## Inline Error Messages
 ![Inline Error Message](docs/files/img/errors-1.png?raw=true "Inline error message")
