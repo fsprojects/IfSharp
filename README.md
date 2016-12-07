@@ -1,6 +1,6 @@
 # IfSharp, Jupyter and F# Azure Notebooks
 
-This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](Feature%20Notebook%20format%204_0.ipynb) for some of the features that are included.
+This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](FSharp_Jupyter_Notebooks.ipynb) for some of the features that are included.
 
 You can use Jupyter F# Notebooks for free (with free server-side execution) at [Azure Notebooks](https://notebooks.azure.com/). If you select "Show me some samples", then there is an "Introduction to F#" which guides you through the language and its use in Jupyter.
 
@@ -62,9 +62,6 @@ The workaround is for IPython/Jupyter changes will be fixed in a future release.
 ***
 
 ![Intellisense Example #2](docs/files/img/intellisense-2.png?raw=true "Intellisense Example #2")
-***
-
-![Intellisense Example #3 With Chart](docs/files/img/intellisense-3.png?raw=true "Intellisense Example #3 With Chart")
 ***
 
 ![Intellisense Example #4 #r Directive](docs/files/img/intellisense-reference.gif?raw=true "Intellisense Example #3 #r Directive")
