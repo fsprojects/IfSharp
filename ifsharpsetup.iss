@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "IFSharp"
-#define MyAppVersion "1.0"
-#define MyAppPublisher "Bayard Rock"
-#define MyAppURL "http://www.bayardrock.com/"
+#define MyAppVersion "3.0"
+#define MyAppPublisher "F# Community"
+#define MyAppURL "https://github.com/fsprojects/IfSharp"
 #define MyAppExeName "ifsharp.exe"
 #define BaseDirectory "."
 
@@ -37,18 +37,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#BaseDirectory}\bin\ifsharp.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\ifsharp.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Charting.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Compiler.Service.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Core.optdata"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\FSharp.Core.sigdata"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\fszmq.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\IfSharp.Kernel.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\libzmq.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#BaseDirectory}\bin\Include.fsx"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDirectory}\bin\*"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

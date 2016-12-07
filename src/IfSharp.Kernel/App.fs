@@ -1,17 +1,14 @@
 ﻿namespace IfSharp.Kernel
 
 open System
-open System.Collections.Generic
 open System.Diagnostics
 open System.IO
 open System.Reflection
 open System.Text
 open System.Threading
 
-open FSharp.Charting
 open Newtonsoft.Json
-open fszmq
-open fszmq.Socket
+open NetMQ
 
 open Microsoft.FSharp.Reflection
 
@@ -35,102 +32,27 @@ module App =
     let internal White        = "\u001B[1;37m"
     let internal Reset        = "\u001B[0m"
 
-    let mutable internal kernel : Option<IfSharpKernel> = None
-    let mutable internal displayPrinters : list<Type * (obj -> BinaryOutput)> = []
+    let mutable Kernel : Option<IfSharpKernel> = None
 
-    (** Convenience method for encoding a string within HTML *)
-    let internal htmlEncode(str) =
-        System.Web.HttpUtility.HtmlEncode(str)
+    /// Public API for addDisplayPrinter
+    let AddDisplayPrinter = Printers.addDisplayPrinter
 
-    (** Adds a custom display printer for extensibility *)
-    let internal addDisplayPrinter(printer : 'T -> BinaryOutput) =
-        displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
+    /// Convenience method for adding an fsi printer
+    let AddFsiPrinter = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi.AddPrinter
 
-    (** Default display printer *)
-    let internal defaultDisplayPrinter(x) =
-        { ContentType = "text/plain"; Data = sprintf "%A" x }
+    /// Global clear display function
+    let Clear () = Kernel.Value.ClearDisplay()
 
-    (** Finds a display printer based off of the type *)
-    let internal findDisplayPrinter(findType) = 
-        let printers = 
-            displayPrinters
-            |> Seq.filter (fun (t, _) -> t.IsAssignableFrom(findType))
-            |> Seq.toList
-
-        if printers.Length > 0 then
-            printers.Head
-        else
-            (typeof<obj>, defaultDisplayPrinter)
-
-    (** Adds default display printers *)
-    let internal addDefaultDisplayPrinters() = 
-        
-        // add generic chart printer
-        addDisplayPrinter(fun (x:ChartTypes.GenericChart) ->
-            { ContentType = "image/png"; Data = x.ToPng() }
-        )
-
-        // add chart printer
-        addDisplayPrinter(fun (x:GenericChartWithSize) ->
-            { ContentType = "image/png"; Data = x.Chart.ToPng(x.Size) }
-        )
-        
-        // add table printer
-        addDisplayPrinter(fun (x:TableOutput) -> 
-            let sb = StringBuilder()
-            sb.Append("<table>") |> ignore
-
-            // output header
-            sb.Append("<thead>") |> ignore
-            sb.Append("<tr>") |> ignore
-            for col in x.Columns do
-                sb.Append("<th>") |> ignore
-                sb.Append(htmlEncode col) |> ignore
-                sb.Append("</th>") |> ignore
-            sb.Append("</tr>") |> ignore
-            sb.Append("</thead>") |> ignore
-
-            // output body
-            sb.Append("<tbody>") |> ignore
-            for row in x.Rows do
-                sb.Append("<tr>") |> ignore
-                for cell in row do
-                    sb.Append("<td>") |> ignore
-                    sb.Append(htmlEncode cell) |> ignore
-                    sb.Append("</td>") |> ignore
-                    
-                sb.Append("</tr>") |> ignore
-            sb.Append("<tbody>") |> ignore
-            sb.Append("</tbody>") |> ignore
-            sb.Append("</table>") |> ignore
-
-            { ContentType = "text/html"; Data = sb.ToString() } 
-        )
-
-        // add html printer
-        addDisplayPrinter(fun (x:HtmlOutput) ->
-            { ContentType = "text/html"; Data = x.Html }
-        )
-        
-        // add latex printer
-        addDisplayPrinter(fun (x:LatexOutput) ->
-            { ContentType = "text/latex"; Data = x.Latex }
-        )
-
-    (** Global clear display function *)
-    let Clear () = 
-        kernel.Value.ClearDisplay()
-
-    (** Global display function *)
+    /// Global display function
     let Display (value : obj) =
 
         if value <> null then
-            let printer = findDisplayPrinter(value.GetType())
+            let printer = Printers.findDisplayPrinter(value.GetType())
             let (_, callback) = printer
             let callbackValue = callback(value)
-            kernel.Value.SendDisplayData(callbackValue.ContentType, callbackValue.Data)
+            Kernel.Value.SendDisplayData(callbackValue.ContentType, callbackValue.Data)
 
-    (** Global help function *)
+    /// Global help function
     let Help (value : obj) = 
 
         let text = StringBuilder()
@@ -218,119 +140,160 @@ module App =
         meths |> Seq.iter (fun x -> text.AppendLine(getMethodText(x)) |> ignore)
 
         // add to the payload
-        kernel.Value.AddPayload(text.ToString())
+        Kernel.Value.AddPayload(text.ToString())
 
-    (** Installs the ifsharp files if they do not exist, then starts ipython with the ifsharp profile *)
-    let InstallAndStart(forceInstall) = 
+    /// Installs the ifsharp files if they do not exist
+    let Install forceInstall = 
 
         let thisExecutable = Assembly.GetEntryAssembly().Location
-        let appData = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-        let ipythonDir = Path.Combine(appData, ".ipython")
-        let profileDir = Path.Combine(ipythonDir, "profile_ifsharp")
-        let staticDir = Path.Combine(profileDir, "static")
+        let kernelDir = Config.KernelDir
+        let staticDir = Config.StaticDir
+        let tempDir = Config.TempDir
         let customDir = Path.Combine(staticDir, "custom")
             
         let createDir(str) =
             if Directory.Exists(str) = false then
                 Directory.CreateDirectory(str) |> ignore
 
-        createDir appData
-        createDir ipythonDir
-        createDir profileDir
+        createDir kernelDir
         createDir staticDir
+        createDir tempDir
         createDir customDir
 
-        let configFile = Path.Combine(profileDir, "ipython_config.py")
-        if forceInstall || (File.Exists(configFile) = false) then
+        let allFiles = new System.Collections.Generic.List<string>()
+        let addFile fn = allFiles.Add(fn); fn
+        let configFile = Path.Combine(kernelDir, "ipython_config.py") |> addFile
+        let configqtFile = Path.Combine(kernelDir, "ipython_qtconsole_config.py") |> addFile
+        let kernelFile = Path.Combine(kernelDir, "kernel.json") |> addFile
+        let logoFile = Path.Combine(customDir, "ifsharp_logo.png") |> addFile
+        let kjsFile = Path.Combine(kernelDir, "kernel.js") |> addFile
+        let fjsFile = Path.Combine(customDir, "fsharp.js") |> addFile
+        let wjsFile = Path.Combine(customDir, "webintellisense.js") |> addFile
+        let wcjsFile = Path.Combine(customDir, "webintellisense-codemirror.js") |> addFile
+        let logo64File = Path.Combine(kernelDir, "logo-64x64.png") |> addFile
+        let logo32File = Path.Combine(kernelDir, "logo-32x32.png") |> addFile
+        let versionFile = Path.Combine(kernelDir, "version.txt") |> addFile
+        let missingFiles = Seq.exists (fun fn -> File.Exists(fn) = false) allFiles
+        
+        let differentVersion = File.Exists(versionFile) && File.ReadAllText(versionFile) <> Config.Version
+
+        if forceInstall then printfn "Force install required, performing install..."
+        else if missingFiles then printfn "One or more files are missing, performing install..."
+        else if differentVersion then printfn "Different version found, performing install..."
+
+        if forceInstall || missingFiles || differentVersion then
             
-            printfn "Config file does not exist, performing install..."
+            // write the version file
+            File.WriteAllText(versionFile, Config.Version);
 
             // write the startup script
             let codeTemplate = IfSharpResources.ipython_config()
-            let code = codeTemplate.Replace("%s", thisExecutable)
+            let code = 
+              match Environment.OSVersion.Platform with
+                | PlatformID.Win32Windows | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
+                | _ -> codeTemplate
+            let code = code.Replace("%kexe", thisExecutable)
+            let code = code.Replace("%kstatic", staticDir)
             printfn "Saving custom config file [%s]" configFile
             File.WriteAllText(configFile, code)
 
+            let codeqt = IfSharpResources.ipython_qt_config()
+            printfn "Saving custom qt config file [%s]" codeqt
+            File.WriteAllText(configqtFile, codeqt)
+
             // write custom logo file
-            let logoFile = Path.Combine(customDir, "ifsharp_logo.png")
             printfn "Saving custom logo [%s]" logoFile
             IfSharpResources.ifsharp_logo().Save(logoFile)
 
-            // write custom css file
-            let cssFile = Path.Combine(customDir, "custom.css")
-            printfn "Saving custom css [%s]" cssFile
-            File.WriteAllText(cssFile, IfSharpResources.custom_css())
+            // write fsharp css file
+            let cssFile = Path.Combine(customDir, "fsharp.css")
+            printfn "Saving fsharp css [%s]" cssFile
+            File.WriteAllText(cssFile, IfSharpResources.fsharp_css())
 
-            // write custom js file
-            let jsFile = Path.Combine(customDir, "custom.js")
-            printfn "Saving custom js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.custom_js())
-
-            // write fsharp js file
-            let jsFile = Path.Combine(customDir, "fsharp.js")
-            printfn "Saving fsharp js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.fsharp_js())
+            // write kernel js file
+            printfn "Saving kernel js [%s]" kjsFile
+            File.WriteAllText(kjsFile, IfSharpResources.kernel_js())
 
             // write fsharp js file
-            let jsFile = Path.Combine(customDir, "codemirror-intellisense.js")
-            printfn "Saving codemirror-intellisense js [%s]" jsFile
-            File.WriteAllText(jsFile, IfSharpResources.codemirror_intellisense_js())
+            printfn "Saving fsharp js [%s]" fjsFile
+            File.WriteAllText(fjsFile, IfSharpResources.fsharp_js())
 
-        printfn "Starting ipython..."
+            // write webintellisense js file
+            printfn "Saving webintellisense js [%s]" wjsFile
+            File.WriteAllText(wjsFile, IfSharpResources.webintellisense_js())
+
+            // write webintellisense-codemirror js file
+            printfn "Saving webintellisense-codemirror js [%s]" wcjsFile
+            File.WriteAllText(wcjsFile, IfSharpResources.webintellisense_codemirror_js())
+
+            // Make the Kernel info folder 
+            let jsonTemplate = IfSharpResources.ifsharp_kernel_json()
+            let code = 
+              match Environment.OSVersion.Platform with
+                | PlatformID.Win32Windows -> jsonTemplate.Replace("\"mono\",", "")
+                | PlatformID.Win32NT -> jsonTemplate.Replace("\"mono\",", "")
+                | _ -> jsonTemplate
+            let code = code.Replace("%s", thisExecutable.Replace("\\","\/"))
+            printfn "Saving custom kernel.json file [%s]" kernelFile
+            File.WriteAllText(kernelFile, code)
+            
+            printfn "Saving kernel icon [%s]" logo64File
+            IfSharpResources.ifsharp_64logo().Save(logo64File)
+            
+            printfn "Saving kernel icon [%s]" logo32File
+            IfSharpResources.ifsharp_32logo().Save(logo32File)
+
+            printfn "Installing dependencies via Paket"
+            let dependencies = Paket.Dependencies.Locate(System.IO.Path.GetDirectoryName(thisExecutable))
+            dependencies.Install(false)
+
+    /// Starts jupyter in the user's home directory
+    let StartJupyter () =
+
+        let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+        printfn "Starting Jupyter..."
         let p = new Process()
-        p.StartInfo.FileName <- "ipython"
-        p.StartInfo.Arguments <- "notebook --profile ifsharp"
-        p.StartInfo.WorkingDirectory <- appData
+        p.StartInfo.FileName <- "jupyter"
+        p.StartInfo.Arguments <- "notebook"
+        p.StartInfo.WorkingDirectory <- userDir
 
         // tell the user something bad happened
-        if p.Start() = false then printfn "Unable to start ipython, please install ipython first"
 
-    (** First argument must be an ipython connection file, blocks forever *)
+        try
+            if p.Start() = false then failwith "Unable to start Jupyter, please install Jupyter first"
+        with _ -> failwith "Unable to start Jupyter, please install Jupyter first"
+
+    /// First argument must be an ipython connection file, blocks forever
     let Start (args : array<string>) = 
 
-        let install = args.Length = 0
-        let forceInstall = if args.Length = 0 then false else args.[0] = "--install"
+        if args.Length = 0 then
+            Install true
+            StartJupyter()
 
-        if install || forceInstall then
-        
-            InstallAndStart(forceInstall)
+        else if args.[0] = "--install" then
+            Install true
 
         else
+            // Verify kernel installation status
+            Install false
+
+            // Clear the temporary folder
+            try
+              if Directory.Exists(Config.TempDir) then Directory.Delete(Config.TempDir, true)
+            with exc -> Console.Out.Write(exc.ToString())
 
             // adds the default display printers
-            addDefaultDisplayPrinters()
+            Printers.addDefaultDisplayPrinters()
 
             // get connection information
             let fileName = args.[0]
             let json = File.ReadAllText(fileName)
             let connectionInformation = JsonConvert.DeserializeObject<ConnectionInformation>(json)
 
-            // startup 0mq stuff
-            use context = new Context()
-
-            // heartbeat
-            use hbSocket = Context.rep context
-            Socket.bind (hbSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port))
-        
-            // shell
-            use shellSocket = Context.route context
-            Socket.bind (shellSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.shell_port))
-        
-            // control
-            use controlSocket = Context.route context
-            Socket.bind (controlSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.control_port))
-
-            // stdin
-            use stdinSocket = Context.route context
-            Socket.bind (stdinSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.stdin_port))
-
-            // iopub
-            use iopubSocket = Context.pub context
-            Socket.bind (iopubSocket) (String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.iopub_port))
-
             // start the kernel
-            kernel <- Some (IfSharpKernel(connectionInformation, iopubSocket, shellSocket, hbSocket, controlSocket, stdinSocket))
-            kernel.Value.StartAsync()
+            Kernel <- Some (IfSharpKernel(connectionInformation))
+            Kernel.Value.StartAsync()
 
             // block forever
             Thread.Sleep(Timeout.Infinite)

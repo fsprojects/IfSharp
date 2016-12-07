@@ -131,10 +131,6 @@ CodeMirror.defineMode('fsharp', function ()
                 state.tokenize = tokenComment;
                 return state.tokenize(stream, state);
             }
-            else
-            {
-                stream.start++;
-            }
         }
         if (ch === '~')
         {

@@ -1,6 +1,7 @@
 ﻿namespace IfSharp.Kernel
 
 open System
+open System.Collections.Generic
 open Newtonsoft.Json
 
 type ExecuteRequest =
@@ -31,7 +32,7 @@ type ExecuteRequest =
 
         // # Similarly, a dict mapping names to expressions to be evaluated in the
         // # user's dict.
-        user_expressions: dict;
+        user_expressions: Dictionary<string,obj>;
 
         // # Some frontends (e.g. the Notebook) do not support stdin requests. If
         // # raw_input is called from code executed from such a frontend, a
@@ -60,8 +61,8 @@ type ExecuteReplyOk =
         payload: list<Payload>;
 
         // # Results for the user_variables and user_expressions.
-        user_variables: dict;
-        user_expressions: dict;
+        user_variables: Dictionary<string,obj>;
+        user_expressions: Dictionary<string,obj>;
     }
 
 type ExecuteReplyError =
@@ -92,6 +93,35 @@ type ObjectInfoRequest =
         // # The level of detail desired.  The default (0) is equivalent to typing
         // # 'x?' at the prompt, 1 is equivalent to 'x??'.
         detail_level: int;
+    }
+
+type InspectRequest =
+    {
+        // # The code context in which introspection is requested
+        // # this may be up to an entire multiline cell.
+        code: string;
+
+        // # The cursor position within 'code' (in unicode characters) where inspection is requested
+        cursor_pos: int;
+        
+        // # The level of detail desired.  In IPython, the default (0) is equivalent to typing
+        // # 'x?' at the prompt, 1 is equivalent to 'x??'.
+        // # The difference is up to kernels, but in IPython level 1 includes the source code
+        // # if available.
+        detail_level: int;
+    }
+
+type InspectReply =
+    {
+        // # 'ok' if the request succeeded or 'error', with error information as in all other replies.
+        status: string;
+
+        // # found should be true if an object was found, false otherwise
+        found: bool;
+
+        // # data can be empty if nothing is found
+        data: Dictionary<string,obj>;
+        metadata: Dictionary<string,obj>;
     }
 
 type ArgsSpec =
@@ -208,6 +238,14 @@ type CompleteRequest =
         cursor_pos: int;
     }
 
+/// Custom message used only by the web front end.
+type IntellisenseRequest = {
+    text: string
+    line: string
+    block: string
+    cursor_pos: int
+}
+
 type BlockType =
     {
         selectedIndex: int;
@@ -224,18 +262,20 @@ type CompleteReply =
         // # The list of all matches to the completion request, such as
         // # ['a.isalnum', 'a.isalpha'] for the above example.
 //        matches: array<string>;
-        matches: obj; // changed for custom UI
+        matches: obj // changed for custom UI
 
         // # the substring of the matched text
         // # this is typically the common prefix of the matches,
         // # and the text that is already in the block that would be replaced by the full completion.
         // # This would be 'a.is' in the above example.
-        matched_text: string;
+        matched_text: string
 
         // # status should be 'ok' unless an exception was raised during the request,
         // # in which case it should be 'error', along with the usual error message content
         // # in other messages.
-        status: string;
+        status: string
+
+        filter_start_index: int
     }
 
 type HistoryRequest =
@@ -290,32 +330,74 @@ type ConnectReply =
         hb_port: int;      // # The port the heartbeat socket is listening on.
     }
 
+type CommOpen = obj
+
+type CommInfoRequest = obj
+
 type KernelRequest = obj
+
+type KernelReply_LanguageInfo =
+    {
+        // # Name of the programming language that the kernel implements.
+        // # Kernel included in IPython returns 'python'.
+        name: string;
+
+        // # Language version number.
+        // # It is Python version number (e.g., '2.7.3') for the kernel
+        // # included in IPython.
+        version: string;
+
+        // # mimetype for script files in this language
+        mimetype: string;
+
+        // # Extension including the dot, e.g. '.py'
+        file_extension: string;
+
+        // # Pygments lexer, for highlighting
+        // # Only needed if it differs from the 'name' field.
+        pygments_lexer: string;
+
+        // # Codemirror mode, for for highlighting in the notebook.
+        // # Only needed if it differs from the 'name' field.
+        codemirror_mode: string;
+
+        // # Nbconvert exporter, if notebooks written with this kernel should
+        // # be exported with something other than the general 'script'
+        // # exporter.
+        nbconvert_exporter: string;
+    }
+
+type KernelReply_HelpLink = { text: string; url: string; }
 
 type KernelReply =
     {
-        // # Version of messaging protocol (mandatory).
+        // # Version of messaging protocol.
         // # The first integer indicates major version.  It is incremented when
         // # there is any backward incompatible change.
         // # The second integer indicates minor version.  It is incremented when
         // # there is any backward compatible change.
-        protocol_version: array<int>;
-
-        // # IPython version number (optional).
-        // # Non-python kernel backend may not have this version number.
-        // # The last component is an extra field, which may be 'dev' or
-        // # 'rc1' in development version.  It is an empty string for
-        // # released version.
-        ipython_version: Option<array<obj>>;
-
-        // # Language version number (mandatory).
-        // # It is Python version number (e.g., [2, 7, 3]) for the kernel
-        // # included in IPython.
-        language_version: array<int>;
-
-        // # Programming language in which kernel is implemented (mandatory).
-        // # Kernel included in IPython returns 'python'.
-        language: string
+        protocol_version: string;
+   
+        // # The kernel implementation name
+        // # (e.g. 'ipython' for the IPython kernel)
+        implementation: string;
+   
+        // # Implementation version number.
+        // # The version number of the kernel's implementation
+        // # (e.g. IPython.__version__ for the IPython kernel)
+        implementation_version: string;
+   
+        // # Information about the language of code for the kernel
+        language_info: KernelReply_LanguageInfo;
+        language: string;
+   
+        // # A banner of information about the kernel,
+        // # which may be desplayed in console environments.
+        banner : string;
+   
+        // # Optional: A list of dictionaries, each with keys 'text' and 'url'.
+        // # These will be displayed in the help menu in the notebook UI.
+        help_links: KernelReply_HelpLink array;
     }
 
 type KernelStatus = 
@@ -342,10 +424,10 @@ type DisplayData =
         // # The data dict contains key/value pairs, where the kids are MIME
         // # types and the values are the raw data of the representation in that
         // # format.
-        data: dict;
+        data: Dictionary<string,obj>;
 
         // # Any metadata that describes the data
-        metadata: dict;
+        metadata: Dictionary<string,obj>;
     }
 
 type Pyin = 
@@ -368,8 +450,8 @@ type Pyout =
         // # data and metadata are identical to a display_data message.
         // # the object being displayed is that passed to the display hook,
         // # i.e. the *result* of the execution.
-        data: dict;
-        metadata: dict;
+        data: Dictionary<string,obj>;
+        metadata: Dictionary<string,obj>;
     }
 
 type Stream = 
@@ -401,8 +483,11 @@ type ShellMessage =
     | ExecuteReplyError of ExecuteReplyError
 
     // intellisense
+    | InspectRequest of InspectRequest
+    | InspectReply of InspectReply
     | ObjectInfoRequest of ObjectInfoRequest
     | CompleteRequest of CompleteRequest
+    | IntellisenseRequest of IntellisenseRequest
     | CompleteReply of CompleteReply
 
     // history
@@ -412,6 +497,10 @@ type ShellMessage =
     // connect
     | ConnectRequest of ConnectRequest
     | ConnectReply of ConnectReply
+
+    // comm open?
+    | CommOpen of CommOpen
+    | CommInfoRequest of CommInfoRequest
 
     // kernel info
     | KernelRequest of KernelRequest
@@ -435,7 +524,7 @@ type Header =
 
 type KernelMessage = 
     {
-        Identifiers: list<string>;
+        Identifiers: list<byte[]>;
         HmacSignature: string;
         Header: Header;
         ParentHeader: Header;
@@ -449,23 +538,32 @@ module ShellMessages =
     let Deserialize (messageType:string) (messageJson:string) =
         
         match messageType with
-        | "execute_request"     -> ExecuteRequest (JsonConvert.DeserializeObject<ExecuteRequest>(messageJson))
-        | "execute_reply_ok"    -> ExecuteReplyOk (JsonConvert.DeserializeObject<ExecuteReplyOk>(messageJson))
-        | "execute_reply_error" -> ExecuteReplyError (JsonConvert.DeserializeObject<ExecuteReplyError>(messageJson))
+        | "execute_request"      -> ExecuteRequest (JsonConvert.DeserializeObject<ExecuteRequest>(messageJson))
+        | "execute_reply_ok"     -> ExecuteReplyOk (JsonConvert.DeserializeObject<ExecuteReplyOk>(messageJson))
+        | "execute_reply_error"  -> ExecuteReplyError (JsonConvert.DeserializeObject<ExecuteReplyError>(messageJson))
 
-        | "object_info_request" -> ObjectInfoRequest (JsonConvert.DeserializeObject<ObjectInfoRequest>(messageJson))
-        | "complete_request"    -> CompleteRequest (JsonConvert.DeserializeObject<CompleteRequest>(messageJson))
-        | "complete_reply"      -> CompleteReply (JsonConvert.DeserializeObject<CompleteReply>(messageJson))
+        | "object_info_request"  -> ObjectInfoRequest (JsonConvert.DeserializeObject<ObjectInfoRequest>(messageJson))
+        | "inspect_request"      -> InspectRequest (JsonConvert.DeserializeObject<InspectRequest>(messageJson))
+        | "complete_request"     -> CompleteRequest (JsonConvert.DeserializeObject<CompleteRequest>(messageJson))
+        | "complete_reply"       -> CompleteReply (JsonConvert.DeserializeObject<CompleteReply>(messageJson))
 
-        | "history_request"     -> HistoryRequest (JsonConvert.DeserializeObject<HistoryRequest>(messageJson))
-        | "history_reply"       -> HistoryReply (JsonConvert.DeserializeObject<HistoryReply>(messageJson))
+        | "intellisense_request" -> IntellisenseRequest (JsonConvert.DeserializeObject<IntellisenseRequest>(messageJson))
 
-        | "connect_request"     -> ConnectRequest (JsonConvert.DeserializeObject<ConnectRequest>(messageJson))
-        | "connect_reply"       -> ConnectReply (JsonConvert.DeserializeObject<ConnectReply>(messageJson))
+        | "history_request"      -> HistoryRequest (JsonConvert.DeserializeObject<HistoryRequest>(messageJson))
+        | "history_reply"        -> HistoryReply (JsonConvert.DeserializeObject<HistoryReply>(messageJson))
 
-        | "kernel_info_request" -> KernelRequest (JsonConvert.DeserializeObject<KernelRequest>(messageJson))
-        | "kernel_info_reply"   -> KernelReply (JsonConvert.DeserializeObject<KernelReply>(messageJson))
+        | "connect_request"      -> ConnectRequest (JsonConvert.DeserializeObject<ConnectRequest>(messageJson))
+        | "connect_reply"        -> ConnectReply (JsonConvert.DeserializeObject<ConnectReply>(messageJson))
 
-        | "shutdown_request"    -> ShutdownRequest (JsonConvert.DeserializeObject<ShutdownRequest>(messageJson))
-        | "shutdown_reply"      -> ShutdownReply (JsonConvert.DeserializeObject<ShutdownReply>(messageJson))
-        | _                     -> failwith ("Unsupported messageType: " + messageType)
+        | "kernel_info_request"  -> KernelRequest (JsonConvert.DeserializeObject<KernelRequest>(messageJson))
+        | "kernel_info_reply"    -> KernelReply (JsonConvert.DeserializeObject<KernelReply>(messageJson))
+
+        | "shutdown_request"     -> ShutdownRequest (JsonConvert.DeserializeObject<ShutdownRequest>(messageJson))
+        | "shutdown_reply"       -> ShutdownReply (JsonConvert.DeserializeObject<ShutdownReply>(messageJson))
+
+        //Jupyter 4.x support, do we need to do anything with this?
+        | "comm_open"            -> CommOpen (JsonConvert.DeserializeObject<CommOpen>(messageJson))
+
+        | "comm_info_request"    -> CommInfoRequest (JsonConvert.DeserializeObject<CommInfoRequest>(messageJson))
+
+        | _                      -> failwith ("Unsupported messageType: " + messageType)
