@@ -190,6 +190,7 @@ th {
 .cm-s-neat .CodeMirror-matchingbracket {outline:1px solid grey; color:black !important;}
 
 .cm-s-neat.CodeMirror {
-    font-family: Consolas, Monaco, Menlo, "Andale Mono", "lucida console", "Courier New", monospace !important;
+    font-family: "Fira Code", Consolas, Monaco, Menlo, "Andale Mono", "lucida console", "Courier New", monospace !important;
+    font-feature-settings: "calt" 1;
     box-shadow: inset 0 0 2px black;
 }
