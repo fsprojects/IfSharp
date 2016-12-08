@@ -5,7 +5,7 @@ This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feat
 
 You can use Jupyter F# Notebooks for free (with free server-side execution) at [Azure Notebooks](https://notebooks.azure.com/). If you select "Show me some samples", then there is an "Introduction to F#" which guides you through the language and its use in Jupyter.
 
-Build status: [![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri?svg=true)](https://ci.appveyor.com/project/cgravill/ifsharp) (master/Windows)
+Build status: [![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri?svg=true)](https://ci.appveyor.com/project/cgravill/ifsharp) (master/Windows) [![Build Status](https://travis-ci.org/fsprojects/IfSharp.svg?branch=master)](https://travis-ci.org/fsprojects/IfSharp) (master/Travis)
 
 # Compatibility
 IfSharp supports Jupyter 4.0, 4.1, 4.2 and works with both Python 2.X and Python 3.X
