@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri?svg=true)](https://ci.appveyor.com/project/fsprojects/ifsharp)
+
 # IfSharp, Jupyter and F# Azure Notebooks
 
 This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](FSharp_Jupyter_Notebooks.ipynb) for some of the features that are included.
