@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri?svg=true)](https://ci.appveyor.com/project/fsprojects/ifsharp)
+[![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri?svg=true)](https://ci.appveyor.com/project/cgravill/ifsharp)
 
 # IfSharp, Jupyter and F# Azure Notebooks
 
