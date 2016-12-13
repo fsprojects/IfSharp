@@ -155,6 +155,15 @@ define(function () {
             $([IPython.events]).on('create.Cell', function (event, data) {
                 applyIntellisense(data.cell);
             });
+
+            $([IPython.events]).on('delete.Cell', function (event, data) {
+                data.cell.code_mirror.intellisense.setDeclarations([])
+            });
+
+            $([IPython.events]).on('command_mode.Cell', function (event, data) {
+                data.cell.code_mirror.intellisense.setDeclarations([])
+            });
+            
         });
 
     }

@@ -730,6 +730,8 @@ var DeclarationsIntellisense = function ()
             setFilter('');
             setVisible(true);
             showDocumentation(true);
+        } else {
+            setVisible(false);
         }
     }
 
