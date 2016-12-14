@@ -256,6 +256,23 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             else
                 pyout (sprintf "Unreocognised fsioutput setting: %s" lastFsiOutput)
 
+        if Array.length results.NuGetLines > 0 then
+
+            let nugets =
+                results.NuGetLines
+                |> (Seq.map compiler.NuGetManager.ParseNugetLine >> Seq.map (fun (name, version, pre) -> "\"" + name + "\""))
+                |> (String.concat "; ")
+
+            let message =
+                sprintf
+                    """Instead of #N please get NuGets by Paket (https://fsprojects.github.io/Paket/) e.g. %s%s#load "Paket.fsx"%sPaket.Package [%s]"""
+                    Environment.NewLine
+                    Environment.NewLine
+                    Environment.NewLine
+                    nugets
+
+            pyout message
+
         // do nuget stuff
         for package in results.Packages do
             if not (String.IsNullOrWhiteSpace(package.Error)) then

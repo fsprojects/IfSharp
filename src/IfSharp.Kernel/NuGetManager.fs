@@ -121,6 +121,9 @@ type NuGetManager (executingDirectory : string) =
     /// Downloads a nuget package by the specified name
     member this.DownloadNugetPackage (nugetPackage : string, version : Option<string>, prerelease : bool) =
         
+
+
+
         let version = defaultArg version ""
         let key = String.Format("{0}/{1}/{2}", nugetPackage, version, prerelease)
 
@@ -240,7 +243,9 @@ type NuGetManager (executingDirectory : string) =
         let nugetLines = DirectivePreprocessor.Line.NugetDirective |> orEmpty
         let otherLines = DirectivePreprocessor.Line.Other |> orEmpty
 
-        // parse the nuget lines and then download the packages
+        //This broke: https://github.com/fsprojects/IfSharp/issues/106
+
+        (*// parse the nuget lines and then download the packages
         let nugetPackages =
             nugetLines
             |> Seq.map (fun (idx, line) -> (idx, this.ParseNugetLine(line)))
@@ -251,8 +256,8 @@ type NuGetManager (executingDirectory : string) =
         let errors =
             nugetPackages
             |> Seq.filter (fun (_, package) -> String.IsNullOrEmpty(package.Error) = false)
-            |> Seq.map (fun (idx, package) -> CustomErrorInfo.From("", idx, 0, idx, lines.[idx].Length, package.Error, "Error", "preprocess"))
-            |> Seq.toArray
+            |> Seq.map (fun (idx, package) -> CustomErrorInfo.From("", idx, 0, idx, lines.[idx].Length, "Please switch to Paket", "Error", "preprocess"))
+            |> Seq.toArray*)
 
         {
             OriginalLines = lines;
@@ -261,6 +266,6 @@ type NuGetManager (executingDirectory : string) =
             NuGetLines = nugetLines |> Seq.map(fun (_, line) -> line) |> Seq.toArray;
             
             FilteredLines = otherLines |> Seq.map(fun (_, line) -> line) |> Seq.toArray;
-            Packages = nugetPackages |> Seq.map(fun (_, package) -> package) |> Seq.toArray;
-            Errors = errors;
+            Packages = Array.empty //nugetPackages |> Seq.map(fun (_, package) -> package) |> Seq.toArray;
+            Errors = Array.empty //errors;
         }
