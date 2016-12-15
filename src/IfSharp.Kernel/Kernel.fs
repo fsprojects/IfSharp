@@ -41,7 +41,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     do shellSocket.Bind(shellSocketURL)
 
     let payload = new List<Payload>()
-    let compiler = FsCompiler(FileInfo(".").FullName)
+    let nuGetManager = NuGetManager(FileInfo(".").FullName)
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
 
@@ -232,7 +232,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         logMessage code
 
         // preprocess
-        let results = compiler.NuGetManager.Preprocess(code)
+        let results = nuGetManager.Preprocess(code)
         let newCode = String.Join("\n", results.FilteredLines)
 
         if not (Seq.isEmpty results.HelpLines) then
@@ -260,7 +260,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
             let nugets =
                 results.NuGetLines
-                |> (Seq.map compiler.NuGetManager.ParseNugetLine >> Seq.map (fun (name, version, pre) -> "\"" + name + "\""))
+                |> (Seq.map nuGetManager.ParseNugetLine >> Seq.map (fun (name, version, pre) -> "\"" + name + "\""))
                 |> (String.concat "; ")
 
             let message =
@@ -285,7 +285,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                     fsiEval.EvalInteraction(code)
 
                 for assembly in package.Assemblies do
-                    let fullAssembly = compiler.NuGetManager.GetFullAssemblyPath(package, assembly)
+                    let fullAssembly = nuGetManager.GetFullAssemblyPath(package, assembly)
                     pyout ("Referenced: " + fullAssembly)
 
                     let code = String.Format(@"#r @""{0}""", fullAssembly)
@@ -365,18 +365,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         sendStateIdle msg
 
     /// Handles a 'complete_request' message
-    let completeRequest (msg : KernelMessage) (content : CompleteRequest) = 
-        let decls, pos, filterString = GetDeclarations(content.line, 0, content.cursor_pos)
-        let items = decls |> Array.map (fun x -> x.Value)
-        let newContent = 
-            {
-                matched_text = filterString
-                filter_start_index = pos
-                matches = items
-                status = "ok"
-            }
-
-        sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
+    let completeRequest (msg : KernelMessage) (content : CompleteRequest) =
+        // Don't respond. Use "intellisense_request" instead.
+        ()
 
     /// Handles a 'intellisense_request' message
     let intellisenseRequest (msg : KernelMessage) (content : IntellisenseRequest) = 
@@ -396,7 +387,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         let realLineNumber = position.line + lineOffset + 1
         let codeString = String.Join("\n", codes)
-        let (_, decls, tcr, filterStartIndex) = compiler.GetDeclarations(codeString, realLineNumber, position.ch)
+
+        let (decls, tcr, filterStartIndex, filterString) = GetDeclarations(codeString, realLineNumber, position.ch)
         
         let matches = 
             decls
@@ -405,17 +397,16 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         let newContent = 
             {
-                matched_text = ""
+                matched_text = filterString
                 filter_start_index = filterStartIndex
                 matches = matches
                 status = "ok"
             }
-        
+
         // send back errors
         let errors = 
             [|
-                yield! tcr.Check.Errors |> Seq.map CustomErrorInfo.From
-                yield! tcr.Preprocess.Errors
+                yield! tcr.Errors |> Seq.map CustomErrorInfo.From
             |]
 
         // create an array of tuples <cellNumber>, <line>

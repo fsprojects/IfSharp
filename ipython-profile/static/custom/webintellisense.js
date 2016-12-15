@@ -719,12 +719,12 @@ var DeclarationsIntellisense = function ()
 
     function setDeclarations(data)
     {
+        // set the data
+        declarations = data;
+        filteredDeclarations = data;
+
         if (data != null && data.length > 0)
         {
-            // set the data
-            declarations = data;
-            filteredDeclarations = data;
-
             // show the elements
             setSelectedIndex(0);
             setFilter('');

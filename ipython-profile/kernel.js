@@ -112,25 +112,13 @@ define(function () {
                             return;
                         }
 
-                        // v2
                         callbacks.shell.reply = function (msg) {
                             intellisense.setDeclarations(msg.content.matches);
-                            if (msg.content.filter_start_index)
-                                intellisense.setStartColumnIndex(msg.content.filter_start_index);
+                            intellisense.setStartColumnIndex(msg.content.cursor_start);
                         };
 
                         callbacks.iopub.output = function (msg) {
                             updateMarkers(msg.content.data.errors);
-                        };
-
-                        // v1
-                        callbacks.complete_reply = function (data) {
-                            intellisense.setDeclarations(data.matches);
-                            intellisense.setStartColumnIndex(data.filter_start_index);
-                        };
-
-                        callbacks.output = function (msgType, content, metadata) {
-                            updateMarkers(content.data.errors);
                         };
 
                         var content = {

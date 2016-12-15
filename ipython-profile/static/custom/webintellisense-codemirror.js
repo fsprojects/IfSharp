@@ -12,7 +12,7 @@ var CodeMirrorIntellisense = function (editor)
     var triggers = { upDecls: [], downDecls: [], upMeths: [], downMeths: [] };
     var declarationsCallback = null;
     var methodsCallback = null;
-    var autoCompleteStart = { lineIndex: 0, columnIndex: 0 };
+    var autoCompleteStart = { lineIndex: 0, columnIndex: 0, replaceStart: 0 };
     var triggered = false;
 
     function processTriggers(triggers, evt, callback)
@@ -117,7 +117,7 @@ var CodeMirrorIntellisense = function (editor)
         var cursor = editor.getCursor();
         var line = editor.getLine(autoCompleteStart.lineIndex);
 
-        var startRange = { line: cursor.line, ch: autoCompleteStart.columnIndex };
+        var startRange = { line: cursor.line, ch: autoCompleteStart.replaceStart + autoCompleteStart.columnIndex };
         var endRange = { line: cursor.line, ch: cursor.ch };
         editor.replaceRange(itemValue, startRange, endRange);
         editor.setSelection({ line: cursor.line, ch: cursor.ch + itemValue.length });
@@ -233,7 +233,7 @@ var CodeMirrorIntellisense = function (editor)
      */
     this.setStartColumnIndex = function (i)
     {
-        autoCompleteStart.columnIndex = i;
+        autoCompleteStart.replaceStart = i;
         decls.setFilter(getFilterText());
     };
 
