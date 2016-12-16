@@ -148,10 +148,6 @@ define(function () {
                 data.cell.code_mirror.intellisense.setDeclarations([])
             });
 
-            $([IPython.events]).on('command_mode.Cell', function (event, data) {
-                data.cell.code_mirror.intellisense.setDeclarations([])
-            });
-            
         });
 
     }

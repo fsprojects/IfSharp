@@ -685,17 +685,12 @@ var DeclarationsIntellisense = function ()
         {
             var listItem = createListItemDefault(item);
 
-            listItem.ondblclick = function ()
+            listItem.onclick = function ()
             {
                 setSelectedIndex(idx);
                 triggerItemChosen(getSelectedItem());
                 setVisible(false);
                 showDocumentation(false);
-            };
-
-            listItem.onclick = function ()
-            {
-                setSelectedIndex(idx);
             };
 
             listElement.appendChild(listItem);

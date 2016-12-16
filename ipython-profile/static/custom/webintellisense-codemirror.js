@@ -76,6 +76,14 @@ var CodeMirrorIntellisense = function (editor)
             }
         });
 
+        editor.on('focus', function (cm)
+        {
+            IPython.notebook.get_cells()
+                .forEach(function (cell) {
+                    cell.code_mirror.intellisense.setDeclarations([])
+                });
+        });
+
         editor.on('cursorActivity', function (cm)
         {
             if (decls.isVisible())
