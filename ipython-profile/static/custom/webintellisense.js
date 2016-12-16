@@ -671,6 +671,10 @@ var DeclarationsIntellisense = function ()
                 listElement.scrollTop = bottom - listElement.offsetHeight;
             }
         }
+        else
+        {
+            setVisible(false);
+        }
     }
 
     function refreshUI()

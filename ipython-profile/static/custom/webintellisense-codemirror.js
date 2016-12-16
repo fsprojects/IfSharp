@@ -62,30 +62,36 @@ var CodeMirrorIntellisense = function (editor)
         {
             if (decls.isVisible())
             {
-                // backspace
-                if (evt.keyCode === 8)
-                {
-                    decls.setFilter(getFilterText());
-
-                    // hide if we go too far left
-                    var cursor = editor.getCursor();
-                    if (cursor.ch <= autoCompleteStart.columnIndex)
-                    {
-                        decls.setVisible(false);
-                    }
-                }
-                else
-                {
-                    decls.handleKeyDown(evt);
-                }
+                decls.handleKeyDown(evt);
             }
+
             if (!processTriggers(triggers.downDecls, evt, declarationsCallback))
             {
                 processTriggers(triggers.downMeths, evt, methodsCallback);
             }
+
             if (meths.isVisible())
             {
                 meths.handleKeyDown(evt);
+            }
+        });
+
+        editor.on('cursorActivity', function (cm)
+        {
+            if (decls.isVisible())
+            {
+                var cursor = editor.getCursor();
+                var pos = autoCompleteStart.replaceStart + autoCompleteStart.columnIndex;
+
+                if (cursor.line !== autoCompleteStart.lineIndex ||
+                    cursor.ch <= pos)
+                {
+                    decls.setVisible(false);
+                }
+                else
+                {
+                   decls.setFilter(getFilterText());
+                }
             }
         });
     }
@@ -116,11 +122,12 @@ var CodeMirrorIntellisense = function (editor)
         var itemValue = item.value || item.name;
         var cursor = editor.getCursor();
         var line = editor.getLine(autoCompleteStart.lineIndex);
+        var pos = autoCompleteStart.replaceStart + autoCompleteStart.columnIndex;
 
-        var startRange = { line: cursor.line, ch: autoCompleteStart.replaceStart + autoCompleteStart.columnIndex };
+        var startRange = { line: cursor.line, ch: pos };
         var endRange = { line: cursor.line, ch: cursor.ch };
         editor.replaceRange(itemValue, startRange, endRange);
-        editor.setSelection({ line: cursor.line, ch: cursor.ch + itemValue.length });
+        editor.setSelection({ line: cursor.line, ch: pos + itemValue.length });
         decls.setVisible(false);
         editor.focus();
     });
@@ -158,7 +165,7 @@ var CodeMirrorIntellisense = function (editor)
     {
         var cursor = editor.getCursor();
         var line = editor.getLine(autoCompleteStart.lineIndex);
-        return line.substring(autoCompleteStart.columnIndex, cursor.ch);
+        return line.substring(autoCompleteStart.replaceStart + autoCompleteStart.columnIndex, cursor.ch);
     }
 
     // set the editor
