@@ -4,6 +4,7 @@
 
 open System
 open Paket
+open Paket.LoadingScripts.ScriptGeneration
 
 let deps =
     let dir =
@@ -31,10 +32,16 @@ let Package list =
     for package in list do
         add package ""
 
+    generateScriptsForRootFolder FSharp (Paket.FrameworkIdentifier.DotNetFramework Paket.FrameworkVersion.V4_5_1)  (System.IO.DirectoryInfo __SOURCE_DIRECTORY__)
+
     deps.Install(false)
+
+    
 
 let Version list =
     for package, version in list do
         add package version
+
+    generateScriptsForRootFolder FSharp (Paket.FrameworkIdentifier.DotNetFramework Paket.FrameworkVersion.V4_5_1)  (System.IO.DirectoryInfo __SOURCE_DIRECTORY__)
 
     deps.Install(false)
