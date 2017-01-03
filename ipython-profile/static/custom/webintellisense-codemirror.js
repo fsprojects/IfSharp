@@ -76,11 +76,16 @@ var CodeMirrorIntellisense = function (editor)
             }
         });
 
-        editor.on('focus', function (cm)
+        editor.on('focus', function (cm, evt)
         {
             IPython.notebook.get_cells()
                 .forEach(function (cell) {
-                    cell.code_mirror.intellisense.setDeclarations([])
+                    var intellisense = cell.code_mirror.intellisense
+
+                    if (typeof intellisense != "undefined")
+                    {
+                        intellisense.setDeclarations([])
+                    }
                 });
         });
 
