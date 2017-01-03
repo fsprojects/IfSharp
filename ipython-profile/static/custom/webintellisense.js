@@ -671,6 +671,10 @@ var DeclarationsIntellisense = function ()
                 listElement.scrollTop = bottom - listElement.offsetHeight;
             }
         }
+        else
+        {
+            setVisible(false);
+        }
     }
 
     function refreshUI()
@@ -681,17 +685,12 @@ var DeclarationsIntellisense = function ()
         {
             var listItem = createListItemDefault(item);
 
-            listItem.ondblclick = function ()
+            listItem.onclick = function ()
             {
                 setSelectedIndex(idx);
                 triggerItemChosen(getSelectedItem());
                 setVisible(false);
                 showDocumentation(false);
-            };
-
-            listItem.onclick = function ()
-            {
-                setSelectedIndex(idx);
             };
 
             listElement.appendChild(listItem);
@@ -719,12 +718,12 @@ var DeclarationsIntellisense = function ()
 
     function setDeclarations(data)
     {
+        // set the data
+        declarations = data;
+        filteredDeclarations = data;
+
         if (data != null && data.length > 0)
         {
-            // set the data
-            declarations = data;
-            filteredDeclarations = data;
-
             // show the elements
             setSelectedIndex(0);
             setFilter('');
