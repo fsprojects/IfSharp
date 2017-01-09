@@ -79,34 +79,38 @@ module Evaluation =
     let GetDeclarations(source, lineNumber, charIndex) = 
         
         let (parse, tcr, _) = fsiEval.ParseAndCheckInteraction(source)
-        let lines = source.Split([| '\n' |])
-        let line = lines.[lineNumber - 1]
-        let preprocess = getPreprocessorIntellisense "." charIndex line
-        match preprocess with
-        | None ->
-            match extractNames(line, charIndex) with
-            | Some (names, startIdx) ->
-                let filterString = line.Substring(startIdx, charIndex - startIdx)
-                let getValue(str:string) =
-                    if str.Contains(" ") then "``" + str + "``" else str
 
-                // get declarations for a location
-                let decls = 
-                    tcr.GetDeclarationListInfo(Some(parse), lineNumber, charIndex, line, names, filterString)
-                    |> Async.RunSynchronously
+        try
+            let lines = source.Split([| '\n' |])
+            let line = lines.[lineNumber - 1]
+            let preprocess = getPreprocessorIntellisense "." charIndex line
+            match preprocess with
+            | None ->
+                match extractNames(line, charIndex) with
+                | Some (names, startIdx) ->
+                    let filterString = line.Substring(startIdx, charIndex - startIdx)
+                    let getValue(str:string) =
+                        if str.Contains(" ") then "``" + str + "``" else str
+
+                    // get declarations for a location
+                    let decls = 
+                        tcr.GetDeclarationListInfo(Some(parse), lineNumber, charIndex, line, names, filterString)
+                        |> Async.RunSynchronously
+
+                    let items = 
+                        decls.Items
+                        |> Array.filter (fun x -> x.Name.StartsWith(filterString, StringComparison.OrdinalIgnoreCase))
+                        |> Array.map (fun x -> { Documentation = formatTip(x.DescriptionText, None); Glyph = x.Glyph; Name = x.Name; Value = getValue x.Name })
+
+                    (items, tcr, startIdx, filterString)
+                | None -> 
+                    ([||], tcr, charIndex, "")
+            | Some(x) -> 
 
                 let items = 
-                    decls.Items
-                    |> Array.filter (fun x -> x.Name.StartsWith(filterString, StringComparison.OrdinalIgnoreCase))
-                    |> Array.map (fun x -> { Documentation = formatTip(x.DescriptionText, None); Glyph = x.Glyph; Name = x.Name; Value = getValue x.Name })
-
-                (items, tcr, startIdx, filterString)
-            | None -> 
-                ([||], tcr, charIndex, "")
-        | Some(x) -> 
-
-            let items = 
-                x.Matches
-                |> Array.map (fun x -> { Documentation = matchToDocumentation x; Glyph = matchToGlyph x.MatchType; Name = x.Name; Value = x.Name })
-            
-            (items, tcr, x.FilterStartIndex, "")
+                    x.Matches
+                    |> Array.map (fun x -> { Documentation = matchToDocumentation x; Glyph = matchToGlyph x.MatchType; Name = x.Name; Value = x.Name })
+                
+                (items, tcr, x.FilterStartIndex, "")
+        with _ ->
+            (Array.empty, tcr, 0, "")
