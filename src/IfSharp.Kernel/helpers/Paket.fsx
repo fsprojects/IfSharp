@@ -36,14 +36,14 @@ let Package list =
     for package in list do
         add package ""
 
-    generateScripts()
-
     deps.Install(false)
+
+    generateScripts() |> ignore
 
 let Version list =
     for package, version in list do
         add package version
 
-    generateScripts()
-
     deps.Install(false)
+
+    generateScripts() |> ignore
