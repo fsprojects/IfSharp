@@ -49,7 +49,7 @@ NUGET
       System.Security.Cryptography.X509Certificates (>= 4.3) - framework: >= net46
       System.Threading.Timer (>= 4.3)
     Newtonsoft.Json (9.0.1)
-    Paket.Core (3.31.1)
+    Paket.Core (3.33.3)
       Chessie (>= 0.6)
       FSharp.Core (>= 4.0.1.7-alpha)
       Mono.Cecil (>= 0.10.0-beta1-v2)
