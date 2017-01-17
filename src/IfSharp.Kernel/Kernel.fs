@@ -303,6 +303,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         // clear some state
         sbOut.Clear() |> ignore
         sbErr.Clear() |> ignore
+        sbPrint.Clear() |> ignore
         payload.Clear()
 
         // only increment if we are not silent
@@ -322,6 +323,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             | exn -> 
                 handleException exn
                 Some exn
+
+        if sbPrint.Length > 0 then
+            sendDisplayData "text/plain" (sbPrint.ToString()) "display_data"
 
         if sbErr.Length > 0 then
             let err = sbErr.ToString().Trim()
@@ -353,11 +357,11 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 let lastExpression = GetLastExpression()
                 match lastExpression with
                 | Some(it) -> 
-                        
-                    let printer = Printers.findDisplayPrinter(it.ReflectionType)
-                    let (_, callback) = printer
-                    let callbackValue = callback(it.ReflectionValue)
-                    sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
+                    if it.ReflectionType <> typeof<unit> then
+                        let printer = Printers.findDisplayPrinter(it.ReflectionType)
+                        let (_, callback) = printer
+                        let callbackValue = callback(it.ReflectionValue)
+                        sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
 
                 | None -> ()
 

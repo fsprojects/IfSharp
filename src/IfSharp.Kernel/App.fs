@@ -47,6 +47,10 @@ module App =
     let Display (value : obj) =
 
         if value <> null then
+            if sbPrint.Length > 0 then
+                Kernel.Value.SendDisplayData("text/plain", sbPrint.ToString())
+                sbPrint.Clear() |> ignore
+
             let printer = Printers.findDisplayPrinter(value.GetType())
             let (_, callback) = printer
             let callbackValue = callback(value)

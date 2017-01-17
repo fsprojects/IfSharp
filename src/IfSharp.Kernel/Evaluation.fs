@@ -33,9 +33,11 @@ module Evaluation =
     let internal startSession () =
         let sbOut = new StringBuilder()
         let sbErr = new StringBuilder()
+        let sbPrint = new StringBuilder()
         let inStream = new StringReader("")
         let outStream = new StringWriter(sbOut)
         let errStream = new StringWriter(sbErr)
+        let printStream = new StringWriter(sbPrint)
     
         let fsiObj = Microsoft.FSharp.Compiler.Interactive.Settings.fsi
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(fsiObj, false)
@@ -54,10 +56,12 @@ module Evaluation =
         let extraPrinters = 
           unbox<ResizeArray<System.Type * (obj -> seq<string * string> * string)>>
             (fsiSession.EvalExpression("FsInteractiveService.htmlPrinters").Value.ReflectionValue)
-        sbErr, sbOut, extraPrinters, fsiSession
+
+        Console.SetOut(printStream)
+        sbErr, sbOut, sbPrint, extraPrinters, fsiSession
 
     let internal fsiout = ref false
-    let internal sbErr, sbOut, extraPrinters, fsiEval = startSession ()
+    let internal sbErr, sbOut, sbPrint, extraPrinters, fsiEval = startSession ()
 
     /// Gets `it` only if `it` was printed to the console
     let GetLastExpression() =
