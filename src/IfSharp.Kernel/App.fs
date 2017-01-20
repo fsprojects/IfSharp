@@ -51,7 +51,7 @@ module App =
                 Kernel.Value.SendDisplayData("text/plain", sbPrint.ToString())
                 sbPrint.Clear() |> ignore
 
-            let printer = Printers.findDisplayPrinter(value.GetType())
+            let printer = Printers.findDisplayPrinter (value.GetType())
             let (_, callback) = printer
             let callbackValue = callback(value)
             Kernel.Value.SendDisplayData(callbackValue.ContentType, callbackValue.Data)

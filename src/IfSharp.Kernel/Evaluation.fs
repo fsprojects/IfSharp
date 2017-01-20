@@ -3,6 +3,7 @@
 open System
 open System.IO
 open System.Text
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
 
 [<AutoOpen>]
@@ -81,8 +82,21 @@ module Evaluation =
 
     /// New way of getting the declarations
     let GetDeclarations(source, lineNumber, charIndex) = 
-        
-        let (parse, tcr, _) = fsiEval.ParseAndCheckInteraction(source)
+
+        let scriptFileName = Path.Combine(Environment.CurrentDirectory, "script.fsx")
+        let options =
+            fsiEval.InteractiveChecker.GetProjectOptionsFromScript(
+                scriptFileName, source)
+            |> Async.RunSynchronously
+
+        let (parseFileResults, checkFileAnswer) =
+            fsiEval.InteractiveChecker.ParseAndCheckFileInProject(scriptFileName, 0, source, options)
+            |> Async.RunSynchronously
+
+        let checkFileResults =
+            match checkFileAnswer with
+            | FSharpCheckFileAnswer.Aborted -> failwith "unexpected"
+            | FSharpCheckFileAnswer.Succeeded x -> x
 
         try
             let lines = source.Split([| '\n' |])
@@ -98,7 +112,7 @@ module Evaluation =
 
                     // get declarations for a location
                     let decls = 
-                        tcr.GetDeclarationListInfo(Some(parse), lineNumber, charIndex, line, names, filterString)
+                        checkFileResults.GetDeclarationListInfo(Some(parseFileResults), lineNumber, charIndex, line, names, filterString)
                         |> Async.RunSynchronously
 
                     let items = 
@@ -106,15 +120,15 @@ module Evaluation =
                         |> Array.filter (fun x -> x.Name.StartsWith(filterString, StringComparison.OrdinalIgnoreCase))
                         |> Array.map (fun x -> { Documentation = formatTip(x.DescriptionText, None); Glyph = x.Glyph; Name = x.Name; Value = getValue x.Name })
 
-                    (items, tcr, startIdx, filterString)
+                    (items, checkFileResults, startIdx, filterString)
                 | None -> 
-                    ([||], tcr, charIndex, "")
+                    ([||], checkFileResults, charIndex, "")
             | Some(x) -> 
 
                 let items = 
                     x.Matches
                     |> Array.map (fun x -> { Documentation = matchToDocumentation x; Glyph = matchToGlyph x.MatchType; Name = x.Name; Value = x.Name })
                 
-                (items, tcr, x.FilterStartIndex, "")
+                (items, checkFileResults, x.FilterStartIndex, "")
         with _ ->
-            (Array.empty, tcr, 0, "")
+            ([||], checkFileResults, 0, "")
