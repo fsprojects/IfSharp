@@ -4,8 +4,8 @@ NUGET
     AsyncIO (0.1.20)
     Chessie (0.6)
       FSharp.Core
-    FAKE (4.46.1)
-    FSharp.Compiler.Service (8.0)
+    FAKE (4.50)
+    FSharp.Compiler.Service (9.0.1)
       System.Collections.Immutable (>= 1.2)
       System.Reflection.Metadata (>= 1.4.1-beta-24227-04)
     FSharp.Compiler.Tools (4.0.1.20)
@@ -23,7 +23,7 @@ NUGET
       System.Threading.ThreadPool (>= 4.0.10) - framework: >= net463
     Microsoft.NETCore.Platforms (1.1) - framework: >= net463
     Microsoft.Win32.Primitives (4.3) - framework: >= net463
-    Mono.Cecil (0.10.0-beta1-v2)
+    Mono.Cecil (0.10.0-beta2)
     NetMQ (3.3.3.4)
       AsyncIO (>= 0.1.20)
     NETStandard.Library (1.6.1) - framework: >= net463
@@ -49,7 +49,7 @@ NUGET
       System.Security.Cryptography.X509Certificates (>= 4.3) - framework: >= net46
       System.Threading.Timer (>= 4.3)
     Newtonsoft.Json (9.0.1)
-    Paket.Core (3.33.3)
+    Paket.Core (3.33.4)
       Chessie (>= 0.6)
       FSharp.Core (>= 4.0.1.7-alpha)
       Mono.Cecil (>= 0.10.0-beta1-v2)
@@ -64,7 +64,7 @@ NUGET
       System.Xml.XPath.XmlDocument (>= 4.3.0-prerelease)
     System.AppContext (4.3) - framework: >= net463
     System.Collections.Concurrent (4.3) - framework: >= net463
-    System.Collections.Immutable (1.3)
+    System.Collections.Immutable (1.3.1)
     System.Console (4.3) - framework: >= net463
     System.Diagnostics.DiagnosticSource (4.3) - framework: >= net463
     System.Diagnostics.FileVersionInfo (4.3)
@@ -87,8 +87,8 @@ NUGET
     System.Net.Sockets (4.3) - framework: >= net463
     System.Reflection (4.3) - framework: >= net463
     System.Reflection.Emit (4.3) - framework: >= net463
-    System.Reflection.Metadata (1.4.1)
-      System.Collections.Immutable (>= 1.3)
+    System.Reflection.Metadata (1.4.2)
+      System.Collections.Immutable (>= 1.3.1)
     System.Reflection.TypeExtensions (4.3) - framework: >= net463
       System.Reflection (>= 4.3) - framework: >= net462
     System.Runtime (4.3) - framework: >= net463

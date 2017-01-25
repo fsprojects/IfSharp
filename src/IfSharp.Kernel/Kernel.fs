@@ -358,7 +358,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 match lastExpression with
                 | Some(it) -> 
                     if it.ReflectionType <> typeof<unit> then
-                        let printer = Printers.findDisplayPrinter(it.ReflectionType)
+                        let printer =
+                            Printers.findDisplayPrinter it.ReflectionType
                         let (_, callback) = printer
                         let callbackValue = callback(it.ReflectionValue)
                         sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"

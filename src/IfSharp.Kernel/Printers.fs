@@ -19,11 +19,12 @@ module Printers =
         displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
 
     /// Default display printer
-    let defaultDisplayPrinter(x) =
-        { ContentType = "text/plain"; Data = sprintf "%A" x }
+    let defaultDisplayPrinter findType x =
+        { ContentType = "text/plain"
+          Data = Evaluation.fsiEval.FormatValue(x, findType) }
 
     /// Finds a display printer based off of the type
-    let findDisplayPrinter(findType) =
+    let findDisplayPrinter findType =
         // Get printers that were registered using `fsi.AddHtmlPrinter` and turn them 
         // into printers expected here (just contactenate all <script> tags with HTML)
         let extraPrinters = 
@@ -41,7 +42,7 @@ module Printers =
         if printers.Length > 0 then
             printers.Head
         else
-            (typeof<obj>, defaultDisplayPrinter)
+            (findType, defaultDisplayPrinter findType)
 
     /// Adds default display printers
     let addDefaultDisplayPrinters() =
