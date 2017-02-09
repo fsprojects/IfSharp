@@ -85,12 +85,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1
 		docs\files\img\toaster.png = docs\files\img\toaster.png
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{8BA6BD71-43AD-4532-AF2C-DA3E4E0EC136}"
-	ProjectSection(SolutionItems) = preProject
-		lib\NuGet.dll = lib\NuGet.dll
-		lib\README.md = lib\README.md
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kernel-spec", "kernel-spec", "{4D56C9F0-7F98-4587-A320-98C06876AC9B}"
 	ProjectSection(SolutionItems) = preProject
 		kernel-spec\kernel.json = kernel-spec\kernel.json

@@ -273,24 +273,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
             pyout message
 
-        // do nuget stuff
-        for package in results.Packages do
-            if not (String.IsNullOrWhiteSpace(package.Error)) then
-                pyout ("NuGet error: " + package.Error)
-            else
-                pyout ("NuGet package: " + package.Package.Value.Id)
-                for frameworkAssembly in package.FrameworkAssemblies do
-                    pyout ("Referenced Framework: " + frameworkAssembly.AssemblyName)
-                    let code = String.Format(@"#r @""{0}""", frameworkAssembly.AssemblyName)
-                    fsiEval.EvalInteraction(code)
-
-                for assembly in package.Assemblies do
-                    let fullAssembly = nuGetManager.GetFullAssemblyPath(package, assembly)
-                    pyout ("Referenced: " + fullAssembly)
-
-                    let code = String.Format(@"#r @""{0}""", fullAssembly)
-                    fsiEval.EvalInteraction(code)
-
         if not <| String.IsNullOrEmpty(newCode) then
             fsiEval.EvalInteraction(newCode)
 

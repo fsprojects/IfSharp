@@ -102,9 +102,6 @@
       <HintPath>..\..\packages\FSharp.Compiler.Tools\tools\FSharp.Compiler.Interactive.Settings.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="NuGet">
-      <HintPath>..\..\lib\NuGet.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
