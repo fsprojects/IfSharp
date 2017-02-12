@@ -1,12 +1,9 @@
 ﻿namespace IfSharp.Kernel
 
 open System
-open System.Drawing
 open System.IO
 open System.Net
 open System.Text
-open System.Drawing.Imaging
-open System.Windows.Forms
 open System.Xml
 open System.Xml.Linq
 open System.Xml.XPath

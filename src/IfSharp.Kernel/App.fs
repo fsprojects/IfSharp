@@ -207,7 +207,7 @@ module App =
 
             // write custom logo file
             printfn "Saving custom logo [%s]" logoFile
-            IfSharpResources.ifsharp_logo().Save(logoFile)
+            File.WriteAllBytes(logoFile, IfSharpResources.ifsharp_logo())
 
             // write fsharp css file
             let cssFile = Path.Combine(customDir, "fsharp.css")
@@ -242,10 +242,10 @@ module App =
             File.WriteAllText(kernelFile, code)
             
             printfn "Saving kernel icon [%s]" logo64File
-            IfSharpResources.ifsharp_64logo().Save(logo64File)
+            File.WriteAllBytes(logo64File, IfSharpResources.ifsharp_64logo())
             
             printfn "Saving kernel icon [%s]" logo32File
-            IfSharpResources.ifsharp_32logo().Save(logo32File)
+            File.WriteAllBytes(logo32File, IfSharpResources.ifsharp_32logo())
 
             printfn "Installing dependencies via Paket"
             let dependencies = Paket.Dependencies.Locate(System.IO.Path.GetDirectoryName(thisExecutable))
