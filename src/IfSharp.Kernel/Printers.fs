@@ -3,9 +3,6 @@
 open System
 open System.Text
 open System.Web
-//open System.Drawing
-//open System.Drawing.Imaging
-//open System.IO
 
 module Printers =
 
@@ -19,12 +16,53 @@ module Printers =
         displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
 
     /// Default display printer
-    let defaultDisplayPrinter findType x =
-        { ContentType = "text/plain"
-          Data = Evaluation.fsiEval.FormatValue(x, findType) }
+    let defaultDisplayPrinter(x) =
+        { ContentType = "text/plain"; Data = sprintf "%A" x }
+
+    //https://technet.microsoft.com/en-us/ee353649(v=vs.85)
+    let mapToFSharpAliases fullType name =
+        //Attempt to use more standard F# types in signature
+        match fullType with
+        //| array<'T> -> ""
+        | _ when fullType = typeof<System.Numerics.BigInteger> -> "bigint"
+        | _ when fullType = typeof<System.Boolean> -> "bool"
+        | _ when fullType = typeof<System.Byte> -> "byte"
+        | _ when fullType = typeof<System.Char> -> "char"
+        | _ when fullType = typeof<System.Decimal> -> "decimal"
+        | _ when fullType = typeof<System.Double> -> "double"
+        | _ when fullType = typeof<System.Exception> -> "exn"
+        | _ when fullType = typeof<System.Single> -> "single"
+        //| "Format<'Printer,'State,'Residue,'Result,'Tuple> Type of a formatting expression.
+        //| "Format<'Printer,'State,'Residue,'Result> Type of a formatting expression.
+        | _ when fullType = typeof<System.Int16> -> "int16"
+        | _ when fullType = typeof<System.Int32> -> "int"
+        | _ when fullType = typeof<System.Int64> -> "int64"
+        | _ when fullType = typeof<System.IntPtr> -> "nativeint"
+        | _ when fullType = typeof<System.Object> -> "obj"
+        | _ when fullType = typeof<System.SByte> -> "sbyte"
+        | _ when fullType = typeof<System.Single> -> "single"
+        | _ when fullType = typeof<System.String> -> "string"
+        | _ when fullType = typeof<System.UInt16> -> "uint16"
+        | _ when fullType = typeof<System.UInt32> -> "uint32"
+        | _ when fullType = typeof<System.UInt64> -> "uint64"
+        | _ when fullType = typeof<System.Byte> -> "uint8"
+        | _ when fullType = typeof<System.UIntPtr> -> "unativeint"
+        //Unit
+        | _ -> name
+
+    let rec possiblyAFuncAsString(p) =
+        if FSharp.Reflection.FSharpType.IsFunction p then
+            let fromType, toType = FSharp.Reflection.FSharpType.GetFunctionElements p
+            sprintf "(%s -> %s)" (possiblyAFuncAsString fromType) (possiblyAFuncAsString toType)
+        else
+            mapToFSharpAliases p p.Name
+
+    let functionPrinter(func:obj) =
+        let funcArguments = possiblyAFuncAsString (func.GetType())
+        { ContentType = "text/plain"; Data = sprintf "%A : %s" func funcArguments }
 
     /// Finds a display printer based off of the type
-    let findDisplayPrinter findType =
+    let findDisplayPrinter(findType) =
         // Get printers that were registered using `fsi.AddHtmlPrinter` and turn them 
         // into printers expected here (just contactenate all <script> tags with HTML)
         let extraPrinters = 
@@ -41,8 +79,10 @@ module Printers =
 
         if printers.Length > 0 then
             printers.Head
+        elif FSharp.Reflection.FSharpType.IsFunction findType then
+            (typeof<Type>, functionPrinter)
         else
-            (findType, defaultDisplayPrinter findType)
+            (typeof<obj>, defaultDisplayPrinter)
 
     /// Adds default display printers
     let addDefaultDisplayPrinters() =
