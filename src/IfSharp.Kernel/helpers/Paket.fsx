@@ -22,10 +22,17 @@ let deps =
     d
 
 let private add package version =
-    deps.Add(None, package, version, force = false,
-        withBindingRedirects = false, cleanBindingRedirects = false,
-        createNewBindingFiles = false, interactive = false,
-        installAfter = false, semVerUpdateMode = SemVerUpdateMode.NoRestriction,
+    deps.Add(
+        None,
+        package,
+        version,
+        force = false,
+        withBindingRedirects = false,
+        cleanBindingRedirects = false,
+        createNewBindingFiles = false,
+        interactive = false,
+        installAfter = false,
+        semVerUpdateMode = SemVerUpdateMode.NoRestriction,
         touchAffectedRefs = false)
 
 let private generateScripts() =
