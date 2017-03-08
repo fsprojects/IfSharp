@@ -22,6 +22,7 @@ let deps =
     d
 
 let private add package version =
+    deps.Remove package
     deps.Add(
         None,
         package,
