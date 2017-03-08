@@ -21,8 +21,16 @@ let deps =
     d.Restore(false)
     d
 
+let private remove_quiet packageName =
+    deps.Remove(
+        None,
+        packageName,
+        force = false,
+        interactive = false,
+        installAfter = false)
+
 let private add package version =
-    deps.Remove package
+    remove_quiet package
     deps.Add(
         None,
         package,
@@ -53,5 +61,11 @@ let Version list =
         add package version
 
     deps.Install(false)
+
+    generateScripts() |> ignore
+
+let Clear() =
+    deps.GetInstalledPackages() |> List.iter (fun (_, package, _) -> remove_quiet package)
+    add "FSharp.Core" "~> 4.0.0"
 
     generateScripts() |> ignore
