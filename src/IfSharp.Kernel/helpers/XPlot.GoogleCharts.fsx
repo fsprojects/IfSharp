@@ -4,7 +4,9 @@
 #r "Google.DataTable.Net.Wrapper.dll"
 #r "IfSharp.Kernel.dll"
 
+open IfSharp.Kernel
 open IfSharp.Kernel.App
+open IfSharp.Kernel.Globals
 
 @"<script src=""https://www.google.com/jsapi""></script>" |> Util.Html |> Display
 
@@ -12,7 +14,7 @@ type XPlot.GoogleCharts.GoogleChart with
   member __.GetContentHtml() =
     let html = __.GetInlineHtml()
     html
-      .Replace ("google.setOnLoadCallback(drawChart);", "google.load('visualization', '1.0', { packages: ['corechart'], callback: drawChart })")
+      .Replace ("google.setOnLoadCallback(drawChart);", "if (typeof google != 'undefined') { google.load('visualization', '1.0', { packages: ['corechart'], callback: drawChart }); }")
 
 type XPlot.GoogleCharts.Chart with
   static member Content (chart : XPlot.GoogleCharts.GoogleChart) =
