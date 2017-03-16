@@ -11,6 +11,8 @@ define(function () {
 
     var changedSinceTypecheck = true;
     var changedRecently = false;
+    var kernelIdledSinceTypeCheck = false;
+    var kernelIdledRecently = false
 
     var onload = function () {
 
@@ -160,18 +162,29 @@ define(function () {
                         data.cell.code_mirror.intellisense.setDeclarations([])
                     });
 
+                    $([IPython.events]).on('kernel_idle.Kernel', function (event, data) {
+                        kernelIdledSinceTypeCheck = true;
+                        kernelIdledRecently = true;
+                    });
+
+
+
                     window.setInterval(function () {
-                        if (!changedSinceTypecheck)
+                        if (!changedSinceTypecheck && !kernelIdledSinceTypeCheck)
                             return;
 
-                        if (changedRecently) {
+                        if (changedRecently || kernelIdledRecently) {
                             changedRecently = false;
+                            kernelIdledRecently = false;
                             return;
                         }
 
                         changedSinceTypecheck = false;
                         changedRecently = false;
+                        kernelIdledSinceTypeCheck = false;
+                        kernelIdledRecently = false;
                         intellisenseRequest({ keyCode: 0 })
+                        console.log("requesting intellisense");
                     }, 1000);
 
                 });
