@@ -184,7 +184,6 @@ define(function () {
                         kernelIdledSinceTypeCheck = false;
                         kernelIdledRecently = false;
                         intellisenseRequest({ keyCode: 0 })
-                        console.log("requesting intellisense");
                     }, 1000);
 
                 });
