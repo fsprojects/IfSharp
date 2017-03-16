@@ -16,25 +16,6 @@ do
         """
 <script type="text/javascript">
 %s
-/*function ifsharpMakeImage(gd, fmt) {
-    return Plotly.toImage(gd, {format: fmt})
-        .then(function(url) {
-            var img = document.createElement('img');
-            img.setAttribute('src', url);
-            var div = document.createElement('div');
-            div.appendChild(img);
-            gd.parentNode.replaceChild(div, gd);
-        });
-}
-function ifsharpMakePng(gd) {
-    var fmt =
-        (document.documentMode || /Edge/.test(navigator.userAgent)) ?
-            'svg' : 'png';
-    return ifsharpMakeImage(gd, fmt);
-}
-function ifsharpMakeSvg(gd) {
-    return ifsharpMakeImage(gd, 'svg');
-}*/
 </script>
 """
         (wc.DownloadString("https://www.google.com/jsapi"))
