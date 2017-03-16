@@ -1,5 +1,4 @@
-CodeMirror.defineMode('fsharp', function ()
-{
+CodeMirror.defineMode('fsharp', function () {
     var words = {
         'abstract': 'keyword',
         'and': 'keyword',
@@ -106,53 +105,42 @@ CodeMirror.defineMode('fsharp', function ()
         'volatile': 'keyword'
     };
 
-    function tokenBase(stream, state)
-    {
+    function tokenBase(stream, state) {
         var ch = stream.next();
 
-        if (ch === '"')
-        {
+        if (ch === '"') {
             state.tokenize = tokenString;
             return state.tokenize(stream, state);
         }
-        if (ch === '/')
-        {
-            if (stream.eat('/'))
-            {
+        if (ch === '/') {
+            if (stream.eat('/')) {
                 stream.skipToEnd();
                 return 'comment';
             }
         }
-        if (ch === '(')
-        {
-            if (stream.eat('*'))
-            {
+        if (ch === '(') {
+            if (stream.eat('*')) {
                 state.commentLevel++;
                 state.tokenize = tokenComment;
                 return state.tokenize(stream, state);
             }
         }
-        if (ch === '~')
-        {
+        if (ch === '~') {
             stream.eatWhile(/\w/);
             return 'variable-2';
         }
-        if (ch === '`')
-        {
+        if (ch === '`') {
             stream.eatWhile(/\w/);
             return 'quote';
         }
-        if (/\d/.test(ch))
-        {
+        if (/\d/.test(ch)) {
             stream.eatWhile(/[\d]/);
-            if (stream.eat('.'))
-            {
+            if (stream.eat('.')) {
                 stream.eatWhile(/[\d]/);
             }
             return 'number';
         }
-        if (/[+\-*&%=<>!?|]/.test(ch))
-        {
+        if (/[+\-*&%=<>!?|]/.test(ch)) {
             return 'operator';
         }
         stream.eatWhile(/\w/);
@@ -160,36 +148,29 @@ CodeMirror.defineMode('fsharp', function ()
         return words[cur] || 'variable';
     }
 
-    function tokenString(stream, state)
-    {
+    function tokenString(stream, state) {
         var next, end = false, escaped = false;
-        while ((next = stream.next()) != null)
-        {
-            if (next === '"' && !escaped)
-            {
+        while ((next = stream.next()) != null) {
+            if (next === '"' && !escaped) {
                 end = true;
                 break;
             }
             escaped = !escaped && next === '\\';
         }
-        if (end && !escaped)
-        {
+        if (end && !escaped) {
             state.tokenize = tokenBase;
         }
         return 'string';
     }
 
-    function tokenComment(stream, state)
-    {
+    function tokenComment(stream, state) {
         var prev, next;
-        while (state.commentLevel > 0 && (next = stream.next()) != null)
-        {
+        while (state.commentLevel > 0 && (next = stream.next()) != null) {
             if (prev === '(' && next === '*') state.commentLevel++;
             if (prev === '*' && next === ')') state.commentLevel--;
             prev = next;
         }
-        if (state.commentLevel <= 0)
-        {
+        if (state.commentLevel <= 0) {
             state.tokenize = tokenBase;
         }
         return 'comment';
@@ -197,8 +178,7 @@ CodeMirror.defineMode('fsharp', function ()
 
     return {
         startState: function () { return { tokenize: tokenBase, commentLevel: 0 }; },
-        token: function (stream, state)
-        {
+        token: function (stream, state) {
             if (stream.eatSpace()) return null;
             return state.tokenize(stream, state);
         },
@@ -210,16 +190,3 @@ CodeMirror.defineMode('fsharp', function ()
 });
 
 CodeMirror.defineMIME("text/x-fsharp", "fsharp");
-
-CodeMirror.requireMode('fsharp', function ()
-{
-    IPython.notebook.get_cells()
-        .forEach(function (c)
-        {
-            if (c.cell_type === 'code')
-            {
-                c.force_highlight('fsharp');
-                c.code_mirror.setOption('theme', 'neat');
-            }
-        });
-});
