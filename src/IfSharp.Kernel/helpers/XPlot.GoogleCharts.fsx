@@ -10,6 +10,38 @@ open IfSharp.Kernel.Globals
 
 @"<script src=""https://www.google.com/jsapi""></script>" |> Util.Html |> Display
 
+do
+    use wc = new System.Net.WebClient()
+    sprintf
+        """
+<script type="text/javascript">
+%s
+/*function ifsharpMakeImage(gd, fmt) {
+    return Plotly.toImage(gd, {format: fmt})
+        .then(function(url) {
+            var img = document.createElement('img');
+            img.setAttribute('src', url);
+            var div = document.createElement('div');
+            div.appendChild(img);
+            gd.parentNode.replaceChild(div, gd);
+        });
+}
+function ifsharpMakePng(gd) {
+    var fmt =
+        (document.documentMode || /Edge/.test(navigator.userAgent)) ?
+            'svg' : 'png';
+    return ifsharpMakeImage(gd, fmt);
+}
+function ifsharpMakeSvg(gd) {
+    return ifsharpMakeImage(gd, 'svg');
+}*/
+</script>
+"""
+        (wc.DownloadString("https://www.google.com/jsapi"))
+        |> Util.Html
+        |> Display
+
+
 type XPlot.GoogleCharts.GoogleChart with
   member __.GetContentHtml() =
     let html = __.GetInlineHtml()
