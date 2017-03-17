@@ -102,6 +102,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <CopyHelpers Include="..\IfSharp.Kernel\helpers\XPlot.GoogleCharts.fsx">
+      <Link>XPlot.GoogleCharts.fsx</Link>
+    </CopyHelpers>
+    <CopyHelpers Include="..\IfSharp.Kernel\helpers\XPlot.GoogleCharts.Paket.fsx">
+      <Link>XPlot.GoogleCharts.Paket.fsx</Link>
+    </CopyHelpers>
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
