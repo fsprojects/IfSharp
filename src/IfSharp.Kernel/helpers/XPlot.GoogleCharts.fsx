@@ -13,8 +13,9 @@ do
     sprintf
         """
 <script type="text/javascript">
-if (google.charts.load == undefined) {
+if (loadedgooglecharts == undefined) {
 %s
+    var loadedgooglecharts = true;
 }
 </script>
 """
@@ -26,7 +27,7 @@ type XPlot.GoogleCharts.GoogleChart with
   member __.GetContentHtml() =
     let html = __.GetInlineHtml()
     html
-      .Replace ("google.setOnLoadCallback(drawChart);", "google.charts.load('current',{ packages: ['corechart'], callback: drawChart });")
+      .Replace ("google.setOnLoadCallback(drawChart);", "google.charts.load('current',{ packages: ['corechart', 'annotationchart', 'calendar', 'gauge', 'geochart', 'map', 'sankey', 'table', 'timeline', 'treemap'], callback: drawChart });")
 
 type XPlot.GoogleCharts.Chart with
   static member Content (chart : XPlot.GoogleCharts.GoogleChart) =
