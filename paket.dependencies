@@ -1,15 +1,15 @@
 framework: >= net451
 source https://www.nuget.org/api/v2
 
-nuget FSharp.Compiler.Service
+nuget FSharp.Compiler.Service ~> 9.0.1
 nuget FSharp.Compiler.Tools
 nuget AsyncIO = 0.1.20.0
 nuget NetMQ
-nuget Newtonsoft.Json
+nuget Newtonsoft.Json ~> 9.0
 nuget FAKE
-nuget xUnit
+nuget xUnit ~> 2.1.0
 nuget xunit.runner.console
-nuget Paket.Core
+nuget Paket.Core ~> 4.0.6
 nuget Trinet.Core.IO.Ntfs
 
 group Docs
