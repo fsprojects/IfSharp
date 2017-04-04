@@ -72,7 +72,7 @@ module Evaluation =
             |> Seq.filter (fun x -> x <> "")
             |> Seq.toArray
 
-        let index = lines |> Seq.tryFindIndex (fun x -> x.StartsWith("val it : "))
+        let index = lines |> Seq.tryFindIndex (fun x -> x.StartsWith("val it :"))
         if index.IsSome then
             try 
                 fsiEval.EvalExpression("it")
