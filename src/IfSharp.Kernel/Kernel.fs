@@ -227,15 +227,15 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let pyout (message) = sendDisplayData "text/plain" message "pyout"
 
     /// Preprocesses the code and evaluates it
-    let preprocessAndEval(code) = 
+    let preprocessCode(code) = 
 
         logMessage code
 
         // preprocess
-        let results = nuGetManager.Preprocess(code)
-        let newCode = String.Join("\n", results.FilteredLines)
+        let preprocessing = nuGetManager.Preprocess(code)
+        let newCode = String.Join("\n", preprocessing.FilteredLines)
 
-        if not (Seq.isEmpty results.HelpLines) then
+        if not (Seq.isEmpty preprocessing.HelpLines) then
             fsiEval.EvalInteraction("#help")
             let ifsharpHelp =
                 """  IF# notebook directives:
@@ -247,8 +247,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             sbOut.Clear() |> ignore
 
         //This is a persistent toggle, just respect the last one
-        if not (Seq.isEmpty results.FsiOutputLines) then
-            let lastFsiOutput = Seq.last results.FsiOutputLines
+        if not (Seq.isEmpty preprocessing.FsiOutputLines) then
+            let lastFsiOutput = Seq.last preprocessing.FsiOutputLines
             if lastFsiOutput.ToLower().Contains("on") then
                 fsiout := true
             else if lastFsiOutput.ToLower().Contains("off") then
@@ -256,10 +256,10 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             else
                 pyout (sprintf "Unreocognised fsioutput setting: %s" lastFsiOutput)
 
-        if Array.length results.NuGetLines > 0 then
+        if Array.length preprocessing.NuGetLines > 0 then
 
             let nugets =
-                results.NuGetLines
+                preprocessing.NuGetLines
                 |> (Seq.map nuGetManager.ParseNugetLine >> Seq.map (fun (name, version, pre) -> "\"" + name + "\""))
                 |> (String.concat "; ")
 
@@ -273,80 +273,101 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
             pyout message
 
-        if not <| String.IsNullOrEmpty(newCode) then
+        
+        newCode
+
+        (*if not <| String.IsNullOrEmpty(newCode) then
+
+            
+            let value, errors = fsiEval.EvalExpressionNonThrowing newCode
+
             fsiEval.EvalInteraction(newCode)
 
         if fsiout.Value then
-            pyout (sbOut.ToString())
+            pyout (sbOut.ToString())*)
     
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
         
-        // clear some state
+        // clear some state from previous runs
         sbOut.Clear() |> ignore
         sbErr.Clear() |> ignore
         sbPrint.Clear() |> ignore
         payload.Clear()
 
         // only increment if we are not silent
-        if content.silent = false then executionCount <- executionCount + 1
+        if not content.silent then executionCount <- executionCount + 1
         
         // send busy
         sendStateBusy msg
         sendMessage ioSocket msg "pyin" { code = content.code; execution_count = executionCount  }
 
+        // preprocess
+        let newCode = preprocessCode content.code
+
         // evaluate
-        let ex = 
-            try
-                // preprocess
-                preprocessAndEval (content.code)
-                None
-            with
-            | exn -> 
-                handleException exn
-                Some exn
+        if not (String.IsNullOrEmpty newCode) then
+            
+            let sendError err =
+                let executeReply =
+                    {
+                        status = "error";
+                        execution_count = executionCount;
+                        ename = "generic";
+                        evalue = err;
+                        traceback = [||]
+                    }
 
-        if sbPrint.Length > 0 then
-            sendDisplayData "text/plain" (sbPrint.ToString()) "display_data"
+                sendMessage shellSocket msg "execute_reply" executeReply
+                sendMessage ioSocket msg "stream" { name = "stderr"; data = err; }
+                logMessage err
 
-        if sbErr.Length > 0 then
-            let err = sbErr.ToString().Trim()
-            let executeReply =
-                {
-                    status = "error";
-                    execution_count = executionCount;
-                    ename = "generic";
-                    evalue = err;
-                    traceback = [||]
-                }
+            try 
+                let value, errors = fsiEval.EvalInteractionNonThrowing newCode
 
-            sendMessage shellSocket msg "execute_reply" executeReply
-            sendMessage ioSocket msg "stream" { name = "stderr"; data = err; }
-        else
-            let executeReply =
-                {
-                    status = "ok";
-                    execution_count = executionCount;
-                    payload = payload |> Seq.toList;
-                    user_variables = Dictionary<string,obj>();
-                    user_expressions = Dictionary<string,obj>()
-                }
+                if errors |> Array.length > 0 then
+                    let err = errors |> Seq.map (fun error -> error.Message) |> (String.concat Environment.NewLine)
+                    sendError err
 
-            sendMessage shellSocket msg "execute_reply" executeReply
+                match value with
+                | Choice1Of2 _ ->
+                    () //Success!
 
-            // send all the data
-            if not <| content.silent then
-                let lastExpression = GetLastExpression()
-                match lastExpression with
-                | Some(it) -> 
-                    if it.ReflectionType <> typeof<unit> then
-                        let printer =
-                            Printers.findDisplayPrinter it.ReflectionType
-                        let (_, callback) = printer
-                        let callbackValue = callback(it.ReflectionValue)
-                        sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
+                    let executeReply =
 
-                | None -> ()
+                        {
+                            status = "ok";
+                            execution_count = executionCount;
+                            payload = payload |> Seq.toList;
+                            user_variables = Dictionary<string,obj>();
+                            user_expressions = Dictionary<string,obj>()
+                        }
+
+                    sendMessage shellSocket msg "execute_reply" executeReply
+
+                    // send all the data
+                    if not content.silent then
+                        let lastExpression = GetLastExpression()
+                        match lastExpression with
+                        | Some(it) -> 
+                            if it.ReflectionType <> typeof<unit> then
+                                let printer =
+                                    Printers.findDisplayPrinter it.ReflectionType
+                                let (_, callback) = printer
+                                let callbackValue = callback(it.ReflectionValue)
+                                sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
+
+                        | None -> ()
+
+
+                | Choice2Of2 exn ->
+                    //Usually this is redundant but if we haven't shown any errors, try showing this
+                    if errors.Length = 0 then
+                        let err = "Expression evaluation failed: " + exn.Message + Environment.NewLine + exn.CompleteStackTrace()
+                        sendError err
+            with exn ->
+                let err = "Expression evaluation failed: " + exn.Message + Environment.NewLine + exn.CompleteStackTrace()
+                sendError err
 
         // we are now idle
         sendStateIdle msg
@@ -463,10 +484,10 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Loops forever receiving messages from the client and processing them
     let doShell() =
 
-        try
-            preprocessAndEval headerCode
-        with
-        | exn -> handleException exn
+        //TODO: Processing the header/include.fsx may not be needed any more, check
+        let preprocessedCode = preprocessCode headerCode
+
+        fsiEval.EvalInteraction preprocessedCode
 
         logMessage (sbErr.ToString())
         logMessage (sbOut.ToString())
