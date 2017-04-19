@@ -84,14 +84,14 @@
     <CopyHelpers Include="..\IfSharp.Kernel\helpers\paket.lock">
       <Link>paket.lock</Link>
     </CopyHelpers>
+    <None Include="..\IfSharp.Kernel\any\netstandard1.6\FSharp.Core.optdata">
+      <Link>FSharp.Core.optdata</Link>
+    </None>
+    <None Include="..\IfSharp.Kernel\any\netstandard1.6\FSharp.Core.sigdata">
+      <Link>FSharp.Core.sigdata</Link>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="FSharp.Core.optdata">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="FSharp.Core.sigdata">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="paket.references" />
   </ItemGroup>
