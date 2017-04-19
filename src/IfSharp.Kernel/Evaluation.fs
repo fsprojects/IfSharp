@@ -12,7 +12,7 @@ module Evaluation =
     type SimpleDeclaration =
         {
             Documentation: string
-            Glyph: int
+            Glyph: FSharpGlyph
             Name: string
             Value: string
         }
@@ -72,7 +72,7 @@ module Evaluation =
             |> Seq.filter (fun x -> x <> "")
             |> Seq.toArray
 
-        let index = lines |> Seq.tryFindIndex (fun x -> x.StartsWith("val it : "))
+        let index = lines |> Seq.tryFindIndex (fun x -> x.StartsWith("val it :"))
         if index.IsSome then
             try 
                 fsiEval.EvalExpression("it")
@@ -84,7 +84,7 @@ module Evaluation =
     let GetDeclarations(source, lineNumber, charIndex) = 
 
         let scriptFileName = Path.Combine(Environment.CurrentDirectory, "script.fsx")
-        let options =
+        let options, errors =
             fsiEval.InteractiveChecker.GetProjectOptionsFromScript(
                 scriptFileName, source)
             |> Async.RunSynchronously
@@ -112,7 +112,7 @@ module Evaluation =
 
                     // get declarations for a location
                     let decls = 
-                        checkFileResults.GetDeclarationListInfo(Some(parseFileResults), lineNumber, charIndex, line, names, filterString)
+                        checkFileResults.GetDeclarationListInfo(Some(parseFileResults), lineNumber, charIndex, line, names, filterString, (fun _ -> []))
                         |> Async.RunSynchronously
 
                     let items = 

@@ -55,8 +55,8 @@ module FsCompilerInternals =
 
     let matchToGlyph m = 
         match m with
-        | File -> 1000
-        | Folder -> 1001
+        | File -> FSharpGlyph.Variable //1000
+        | Folder -> FSharpGlyph.Variable //1001
 
     /// Formats a comment into a string
     let buildFormatComment (xmlCommentRetriever: string * string -> string) cmt (sb: StringBuilder) =
@@ -102,7 +102,7 @@ module FsCompilerInternals =
     /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
     let extractNames (line, charIndex) =
         
-        let sourceTok = SourceTokenizer([], Some "/home/test.fsx")
+        let sourceTok = FSharpSourceTokenizer([], Some "/home/test.fsx")
         let tokenizer = sourceTok.CreateLineTokenizer(line)
         let rec gatherTokens (tokenizer:FSharpLineTokenizer) state =
             seq {
