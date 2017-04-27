@@ -275,16 +275,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
         
         newCode
-
-        (*if not <| String.IsNullOrEmpty(newCode) then
-
-            
-            let value, errors = fsiEval.EvalExpressionNonThrowing newCode
-
-            fsiEval.EvalInteraction(newCode)
-
-        if fsiout.Value then
-            pyout (sbOut.ToString())*)
     
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
@@ -368,6 +358,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             with exn ->
                 let err = "Expression evaluation failed: " + exn.Message + Environment.NewLine + exn.CompleteStackTrace()
                 sendError err
+
+        if sbPrint.Length > 0 then
+            sendDisplayData "text/plain" (sbPrint.ToString()) "display_data"
 
         // we are now idle
         sendStateIdle msg
