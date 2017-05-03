@@ -9,8 +9,8 @@ nuget AsyncIO = 0.1.20.0
 nuget NetMQ
 nuget Newtonsoft.Json
 nuget FAKE >= 4.58.6
-nuget xUnit
-nuget xunit.runner.console
+nuget xunit 2.1
+nuget xunit.runner.console 2.1
 nuget Paket.Core ~> 4.3.2
 nuget Trinet.Core.IO.Ntfs
 
