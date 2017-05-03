@@ -9,6 +9,7 @@ open IfSharp.Kernel.App
 open IfSharp.Kernel.Globals
 
 do
+    System.Net.ServicePointManager.SecurityProtocol <- System.Net.SecurityProtocolType.Tls12
     use wc = new System.Net.WebClient()
     sprintf
         """
