@@ -102,6 +102,9 @@
     <CopyHelpers Include="..\IfSharp.Kernel\helpers\XPlot.GoogleCharts.Paket.fsx">
       <Link>XPlot.GoogleCharts.Paket.fsx</Link>
     </CopyHelpers>
+    <CopyHelpers Include="..\IfSharp.Kernel\helpers\plotly-latest.min.js">
+      <Link>plotly-latest.min.js</Link>
+    </CopyHelpers>
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>

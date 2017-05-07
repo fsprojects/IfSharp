@@ -10,8 +10,9 @@ do
     Printers.addDisplayPrinter(fun (plot: PlotlyChart) ->
         { ContentType = "text/html"; Data = plot.GetInlineHtml() })
 
-    System.Net.ServicePointManager.SecurityProtocol <- System.Net.SecurityProtocolType.Tls12
-    use wc = new System.Net.WebClient()
+    //System.Net.ServicePointManager.SecurityProtocol <- System.Net.SecurityProtocolType.Tls12
+    //use wc = new System.Net.WebClient()
+    
     sprintf
         """
 <script type="text/javascript">
@@ -44,7 +45,8 @@ function ifsharpMakeSvg(gd) {
 }
 </script>
 """
-        (wc.DownloadString("https://cdn.plot.ly/plotly-latest.min.js"))
+        //(wc.DownloadString("https://cdn.plot.ly/plotly-latest.min.js"))
+        (System.IO.File.ReadAllText(__SOURCE_DIRECTORY__ + "/plotly-latest.min.js"))
         |> Util.Html
         |> Display
 
