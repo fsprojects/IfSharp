@@ -29,12 +29,22 @@ Run it with:
 The container exposes a volume called `notebooks` where the files get saved. On Linux, connect to the notebook on `http://localhost:your_port` and, on Windows, use `http://your_docker_machine:your_port`.
 
 # Manual Installation (Windows)
-1. Install [Anaconda](http://continuum.io/downloads)
-2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
-3. Download current zip release [v3.0.0-beta1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta1/IfSharp.v3.0.0-beta1.zip)
-4. Run IfSharp.exe
+1. Download [Anaconda](http://continuum.io/downloads) for Python 3.6
+2. Launch Anaconda3-4.4.0-Windows-x86_64.exe (or x-86.exe for 32-bit)
+3. Click through the installation wizard, choosing the given install location. At the 'advanced installation options' screen shown below, select "Add Anaconda to my PATH environment variable". The installer warns against this step, as it can clash with previously installed software, however it's essential in running IfSharp. Now install. 
+
+This should also install Jupyter: check this by entering 'jupyter notebook' into the Anaconda console window. If Jupyter does not launch (it should launch in the browser), install using 'pip install jupyter', or by following [Jupyter](http://jupyter.readthedocs.io/en/latest/install.html) instructions.
+
+![Installation screenshot](/docs/files/img/anaconda-install.png)
+***
+
+4. Download current zip release of IfSharp [v3.0.0-beta1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta1/IfSharp.v3.0.0-beta1.zip)
+4. Run IfSharp.exe (IfSharp application icon). 
 
 Jupyter with IfSharp can be run via "jupyter notebook" in future
+
+# Troubleshooting
+If the launch fails in the console window, check that the Anaconda version used is currently added to the path. If not, uninstalling Anaconda and reinstalling using instructions 1-
 
 # Manual Installation (Mac)
 1. Install [Anaconda](http://continuum.io/downloads)
