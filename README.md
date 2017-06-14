@@ -1,4 +1,3 @@
-
 # IfSharp, Jupyter and F# Azure Notebooks
 
 This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](FSharp_Jupyter_Notebooks.ipynb) for some of the features that are included.
@@ -35,7 +34,7 @@ The container exposes a volume called `notebooks` where the files get saved. On 
 
 This should also install Jupyter: check this by entering 'jupyter notebook' into the Anaconda console window. If Jupyter does not launch (it should launch in the browser), install using 'pip install jupyter', or by following [Jupyter](http://jupyter.readthedocs.io/en/latest/install.html) instructions.
 
-![Installation screenshot](/docs/files/img/anaconda-install.png)
+![Installation screenshot](/docs/files/img/anaconda-installation.png)
 ***
 
 4. Download current zip release of IfSharp [v3.0.0-beta1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta1/IfSharp.v3.0.0-beta1.zip)
