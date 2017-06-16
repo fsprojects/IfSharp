@@ -30,7 +30,7 @@ The container exposes a volume called `notebooks` where the files get saved. On 
 # Manual Installation (Windows)
 1. Download [Anaconda](http://continuum.io/downloads) for Python 3.6
 2. Launch Anaconda3-4.4.0-Windows-x86_64.exe (or x-86.exe for 32-bit)
-3. Click through the installation wizard, choosing the given install location. At the 'advanced installation options' screen shown below, select "Add Anaconda to my PATH environment variable". The installer warns against this step, as it can clash with previously installed software, however it's essential in running IfSharp. Now install. 
+   Click through the installation wizard, choosing the given install location. At the 'advanced installation options' screen shown below, select "Add Anaconda to my PATH environment variable". The installer warns against this step, as it can clash with previously installed software, however it's essential in running IfSharp. Now install. 
 
 This should also install Jupyter: check this by entering 'jupyter notebook' into the Anaconda console window. If Jupyter does not launch (it should launch in the browser), install using 'pip install jupyter', or by following [Jupyter](http://jupyter.readthedocs.io/en/latest/install.html) instructions.
 
