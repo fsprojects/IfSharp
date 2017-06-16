@@ -37,7 +37,7 @@ This should also install Jupyter: you may check this by entering 'jupyter notebo
 ![Installation screenshot](/docs/files/img/anaconda-installation.png)
 ***
 
-3. Download current zip release of IfSharp [v3.0.0-beta1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta1/IfSharp.v3.0.0-beta1.zip)
+3. Download current zip release of IfSharp [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
 4. Run IfSharp.exe (IfSharp application icon). 
 
 Jupyter with IfSharp can be run via "jupyter notebook" in future
@@ -49,12 +49,9 @@ If the launch fails in the console window, check that the Anaconda version used 
 1. Install [Anaconda](http://continuum.io/downloads)
 2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
 3. Install [Mono](http://www.mono-project.com/download/) (tested 4.2.4)
-3. Download current zip release [v3.0.0-beta1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta1/IfSharp.v3.0.0-beta1.zip)
+3. Download current zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
 4. Unzip the release then run `mono IfSharp.exe`
-5. (workaround: Copy ~/.local/share/jupyter/kernels/ifsharp to /usr/local/share/jupyter/kernels/ifsharp)
-6. Run `jupyter notebook`
-
-The workaround is for IPython/Jupyter changes will be fixed in a future release.
+5. Run `jupyter notebook`
 
 # Manual Installation (Linux)
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
