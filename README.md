@@ -37,7 +37,7 @@ This should also install Jupyter: you may check this by entering 'jupyter notebo
 ![Installation screenshot](/docs/files/img/anaconda-installation.png)
 ***
 
-4. Download current zip release of IfSharp [v3.0.0-beta1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta1/IfSharp.v3.0.0-beta1.zip)
+3. Download current zip release of IfSharp [v3.0.0-beta1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta1/IfSharp.v3.0.0-beta1.zip)
 4. Run IfSharp.exe (IfSharp application icon). 
 
 Jupyter with IfSharp can be run via "jupyter notebook" in future
