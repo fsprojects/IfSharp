@@ -34,11 +34,11 @@ NUGET
       System.Threading.Thread (>= 4.0) - framework: >= net463
       System.Threading.ThreadPool (>= 4.0.10) - framework: >= net463
       System.Threading.Timer (>= 4.0.1) - framework: >= net463
-    Mono.Cecil (0.10.0-beta5)
+    Mono.Cecil (0.10.0-beta6)
     NetMQ (3.3.3.4)
       AsyncIO (>= 0.1.20)
     Newtonsoft.Json (10.0.2)
-    Paket.Core (4.3.2)
+    Paket.Core (4.8.8)
       Chessie (>= 0.6)
       FSharp.Core
       Mono.Cecil (>= 0.10.0-beta4)

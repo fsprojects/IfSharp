@@ -11,7 +11,7 @@ nuget Newtonsoft.Json
 nuget FAKE >= 4.58.6
 nuget xunit 2.1
 nuget xunit.runner.console 2.1
-nuget Paket.Core ~> 4.3.2
+nuget Paket.Core ~> 4.8.8
 nuget Trinet.Core.IO.Ntfs
 
 group Docs
