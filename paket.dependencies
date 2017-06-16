@@ -2,9 +2,9 @@ framework: >= net451
 source https://www.nuget.org/api/v2
 redirects: on
 
-nuget FSharp.Compiler.Service ~> 12.0.5
-nuget FSharp.Compiler.Tools ~> 4.1.5
-nuget FSharp.Core >= 4.1.12
+nuget FSharp.Compiler.Service ~> 12.0.8
+nuget FSharp.Compiler.Tools ~> 4.1.17
+nuget FSharp.Core >= 4.2.1
 nuget AsyncIO = 0.1.20.0
 nuget NetMQ
 nuget Newtonsoft.Json
