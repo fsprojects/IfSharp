@@ -265,8 +265,8 @@ module App =
         // tell the user something bad happened
 
         try
-            if p.Start() = false then failwith "Unable to start Jupyter, please install Jupyter first"
-        with _ -> failwith "Unable to start Jupyter, please install Jupyter first"
+            if p.Start() = false then failwith "Unable to start Jupyter, please install Jupyter and ensure it is on the path"
+        with _ -> failwith "Unable to start Jupyter, please install Jupyter and ensure it is on the path"
 
     /// First argument must be an ipython connection file, blocks forever
     let Start (args : array<string>) = 
