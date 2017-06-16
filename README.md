@@ -48,7 +48,7 @@ If the launch fails in the console window, check that the Anaconda version used 
 # Manual Installation (Mac)
 1. Install [Anaconda](http://continuum.io/downloads)
 2. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html)
-3. Install [Mono](http://www.mono-project.com/download/) (tested 4.2.4)
+3. Install [Mono](http://www.mono-project.com/download/) (tested Mono 4.2.4 & Mono 5.0.1)
 3. Download current zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
 4. Unzip the release then run `mono IfSharp.exe`
 5. Run `jupyter notebook`
