@@ -55,7 +55,7 @@ If the launch fails in the console window, check that the Anaconda version used 
 
 # Manual Installation (Linux)
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
-2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (Tested mono 5.2) and F# (tested 4.1). (warning: Mono 4.6 does *not* work due to a [networking bug](https://github.com/fsprojects/IfSharp/issues/90) which is addressed in the upcoming Mono 4.8)
+2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (Tested mono 5.2) and F# (tested 4.1).
 3. Download the current IfSharp zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
 4. Unzip the release then run `mono IfSharp.exe` (this sets up the Jupyter kernel files in `~/.local/share/jupyter/kernels/ifsharp/`) 
 6. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
