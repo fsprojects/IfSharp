@@ -74,8 +74,14 @@ module Evaluation =
 
         let index = lines |> Seq.tryFindIndex (fun x -> x.StartsWith("val it :"))
         if index.IsSome then
+            //We could display more of these errors but the errors may be confusing. Consider.
             try 
-                fsiEval.EvalExpression("it")
+                let result, errors = fsiEval.EvalExpressionNonThrowing("it")
+                match result with
+                | Choice1Of2 (Some value) -> Some value
+                | Choice1Of2 None -> None
+                | Choice2Of2 (exn:exn) -> None
+
             with _ -> None
         else 
             None
