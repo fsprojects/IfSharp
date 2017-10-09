@@ -47,7 +47,7 @@ If the launch fails in the console window, check that the Anaconda version used 
 
 # Manual Installation (Mac)
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
-2. Install [Mono](http://www.mono-project.com/download/) (tested Mono 4.2.4 & Mono 5.0.1)
+2. Install [Mono](http://www.mono-project.com/download/) (tested Mono 5.2.0.224)
 3. Download current IfSharp zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
 4. Unzip the release then run `mono IfSharp.exe`
 5. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
