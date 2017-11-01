@@ -1,30 +1,24 @@
-FROM ubuntu:16.04
+FROM mono:5.4.0.201
 
-RUN apt-key adv \
-        --keyserver hkp://keyserver.ubuntu.com:80 \
-        --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-    && echo "deb http://download.mono-project.com/repo/debian wheezy/snapshots/4.4 main" | \
-        tee /etc/apt/sources.list.d/mono-xamarin.list \
-    && apt-get update \
-    && apt-get install -y \
-        mono-complete \
-        fsharp \
+RUN apt update \
+    && apt install -y \
         python3-pip \
-        git \
-    && rm -rf /var/lib/apt/lists/*
+        git
 
-RUN pip3 install --upgrade pip && pip3 install jupyter
+RUN pip3 install --upgrade setuptools pip && pip3 install jupyter
 
 WORKDIR /
 RUN git clone https://github.com/fsprojects/IfSharp.git
+RUN mkdir notebooks
+VOLUME notebooks
+
+RUN useradd -ms /bin/bash ifsharp-user
+RUN chown -R ifsharp-user /notebooks && chown -R ifsharp-user /IfSharp
+USER ifsharp-user
 
 WORKDIR /IfSharp
 RUN ./build.sh
 RUN mono bin/ifsharp.exe --install
-
-WORKDIR /
-RUN mkdir notebooks
-VOLUME notebooks
 
 EXPOSE 8888
 
