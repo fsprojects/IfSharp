@@ -176,3 +176,4 @@ temp/
 TestResults.xml
 .paket/paket.exe
 
+/.paket/Paket.Restore.targets
