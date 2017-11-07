@@ -3,3 +3,4 @@ NetMQ
 Newtonsoft.Json
 Paket.Core
 FSharp.Core
+FSharp.Compiler.Tools
