@@ -226,6 +226,18 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Sends a message to pyout
     let pyout (message) = sendDisplayData "text/plain" message "pyout"
 
+    let nugetErrors (nugetLines:string[]) =
+        if nugetLines.Length > 0 then 
+            nugetLines
+                |> (Seq.map nuGetManager.ParseNugetLine >> Seq.map (fun (name, version, pre) -> "\"" + name + "\""))
+                |> (String.concat "; ")
+                |> sprintf """Instead of #N please get NuGets by Paket (https://fsprojects.github.io/Paket/) e.g. %s%s#load "Paket.fsx"%sPaket.Package [%s]"""
+                    Environment.NewLine
+                    Environment.NewLine
+                    Environment.NewLine
+        else
+            null
+
     /// Preprocesses the code and evaluates it
     let preprocessCode(code) = 
 
@@ -239,7 +251,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             fsiEval.EvalInteraction("#help")
             let ifsharpHelp =
                 """  IF# notebook directives:
-
     #fsioutput ["on"|"off"];;   Toggle output display on/off
     """
             let fsiHelp = sbOut.ToString()
@@ -256,29 +267,28 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             else
                 pyout (sprintf "Unreocognised fsioutput setting: %s" lastFsiOutput)
 
-        if Array.length preprocessing.NuGetLines > 0 then
+        let nugetErrors = nugetErrors preprocessing.NuGetLines
+            
+        newCode, nugetErrors
 
-            let nugets =
-                preprocessing.NuGetLines
-                |> (Seq.map nuGetManager.ParseNugetLine >> Seq.map (fun (name, version, pre) -> "\"" + name + "\""))
-                |> (String.concat "; ")
-
-            let message =
-                sprintf
-                    """Instead of #N please get NuGets by Paket (https://fsprojects.github.io/Paket/) e.g. %s%s#load "Paket.fsx"%sPaket.Package [%s]"""
-                    Environment.NewLine
-                    Environment.NewLine
-                    Environment.NewLine
-                    nugets
-
-            pyout message
-
-        
-        newCode
-    
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
         
+        // Send error local function
+        let sendError err =
+                let executeReply =
+                    {
+                        status = "error";
+                        execution_count = executionCount;
+                        ename = "generic";
+                        evalue = err;
+                        traceback = [||]
+                    }
+
+                sendMessage shellSocket msg "execute_reply" executeReply
+                sendMessage ioSocket msg "stream" { name = "stderr"; data = err; }
+                logMessage err
+
         // clear some state from previous runs
         sbOut.Clear() |> ignore
         sbErr.Clear() |> ignore
@@ -293,25 +303,13 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         sendMessage ioSocket msg "pyin" { code = content.code; execution_count = executionCount  }
 
         // preprocess
-        let newCode = preprocessCode content.code
+        let newCode, err = preprocessCode content.code
+
+        if not (String.IsNullOrEmpty err) then
+            sendError err
 
         // evaluate
         if not (String.IsNullOrEmpty newCode) then
-            
-            let sendError err =
-                let executeReply =
-                    {
-                        status = "error";
-                        execution_count = executionCount;
-                        ename = "generic";
-                        evalue = err;
-                        traceback = [||]
-                    }
-
-                sendMessage shellSocket msg "execute_reply" executeReply
-                sendMessage ioSocket msg "stream" { name = "stderr"; data = err; }
-                logMessage err
-
             try 
                 let value, errors = fsiEval.EvalInteractionNonThrowing newCode
 
@@ -478,7 +476,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let doShell() =
 
         //TODO: Processing the header/include.fsx may not be needed any more, check
-        let preprocessedCode = preprocessCode headerCode
+        let preprocessedCode, _ = preprocessCode headerCode
 
         fsiEval.EvalInteraction preprocessedCode
 
