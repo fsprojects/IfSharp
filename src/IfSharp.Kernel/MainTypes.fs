@@ -2,6 +2,7 @@
 
 open System.Collections.Generic
 
+//http://jupyter-client.readthedocs.io/en/latest/kernels.html#connection-files
 type ConnectionInformation = 
     {
         stdin_port: int;
