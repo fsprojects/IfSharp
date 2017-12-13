@@ -5,7 +5,6 @@ open System.Collections.Generic
 open System.IO
 open System.Reflection
 open System.Text
-open System.Threading
 open System.Security.Cryptography
 
 
@@ -475,10 +474,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Loops forever receiving messages from the client and processing them
     let doShell() =
 
-        //TODO: Processing the header/include.fsx may not be needed any more, check
-        let preprocessedCode, _ = preprocessCode headerCode
-
-        fsiEval.EvalInteraction preprocessedCode
+        fsiEval.EvalInteraction headerCode
 
         logMessage (sbErr.ToString())
         logMessage (sbOut.ToString())
