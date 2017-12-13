@@ -3,15 +3,15 @@ source https://www.nuget.org/api/v2
 redirects: on
 
 nuget FSharp.Compiler.Service ~> 12.0.8
-nuget FSharp.Compiler.Tools ~> 4.1.17
-nuget FSharp.Core = 4.2.1
+nuget FSharp.Compiler.Tools ~> 4.1.29
+nuget FSharp.Core = 4.2.3
 nuget AsyncIO = 0.1.20.0
 nuget NetMQ
-nuget Newtonsoft.Json
+nuget Newtonsoft.Json ~> 10.0.3
 nuget FAKE >= 4.58.6
 nuget xunit 2.1
 nuget xunit.runner.console 2.1
-nuget Paket.Core ~> 4.8.8
+nuget Paket.Core ~> 5.124.1
 nuget Trinet.Core.IO.Ntfs
 
 group Docs
