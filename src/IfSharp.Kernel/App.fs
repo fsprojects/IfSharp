@@ -268,17 +268,18 @@ module App =
             if p.Start() = false then failwith "Unable to start Jupyter, please install Jupyter and ensure it is on the path"
         with _ -> failwith "Unable to start Jupyter, please install Jupyter and ensure it is on the path"
 
-    /// First argument must be an ipython connection file, blocks forever
+    /// First argument must be an Jupyter connection file, blocks forever
     let Start (args : array<string>) = 
 
-        if args.Length = 0 then
+        match args with
+        | [||] ->
             Install true
-            StartJupyter()
+            StartJupyter() //Eventually Jupyter will call back in with the connection file
 
-        else if args.[0] = "--install" then
+        | [|"--install"|] ->
             Install true
 
-        else
+        | _ ->
             // Verify kernel installation status
             Install false
 
