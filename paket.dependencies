@@ -2,7 +2,7 @@ framework: >= net451
 source https://www.nuget.org/api/v2
 redirects: on
 
-nuget FSharp.Compiler.Service ~> 12.0.8
+nuget FSharp.Compiler.Service ~> 13.0.0
 nuget FSharp.Compiler.Tools ~> 4.1.29
 nuget FSharp.Core = 4.2.3
 nuget AsyncIO = 0.1.20.0

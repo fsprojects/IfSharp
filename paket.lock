@@ -8,7 +8,7 @@ NUGET
       FSharp.Core (>= 4.0.1.7-alpha) - restriction: && (>= net451) (>= netstandard1.6)
       NETStandard.Library (>= 1.6) - restriction: && (>= net451) (>= netstandard1.6)
     FAKE (4.61)
-    FSharp.Compiler.Service (12.0.8)
+    FSharp.Compiler.Service (13.0)
       FSharp.Core (>= 4.1.17) - restriction: && (>= net451) (>= netstandard1.6)
       Microsoft.DiaSymReader (>= 1.1) - restriction: && (>= net451) (>= netstandard1.6)
       Microsoft.DiaSymReader.PortablePdb (>= 1.2) - restriction: && (>= net451) (>= netstandard1.6)
