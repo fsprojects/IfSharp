@@ -5,13 +5,13 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("IfSharp.Kernel")>]
 [<assembly: AssemblyProductAttribute("IfSharp.Kernel")>]
 [<assembly: AssemblyDescriptionAttribute("A short summary of your project.")>]
-[<assembly: AssemblyVersionAttribute("2.0.2")>]
-[<assembly: AssemblyFileVersionAttribute("2.0.2")>]
+[<assembly: AssemblyVersionAttribute("2017-06-15")>]
+[<assembly: AssemblyFileVersionAttribute("2017-06-15")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "IfSharp.Kernel"
     let [<Literal>] AssemblyProduct = "IfSharp.Kernel"
     let [<Literal>] AssemblyDescription = "A short summary of your project."
-    let [<Literal>] AssemblyVersion = "2.0.2"
-    let [<Literal>] AssemblyFileVersion = "2.0.2"
+    let [<Literal>] AssemblyVersion = "2017-06-15"
+    let [<Literal>] AssemblyFileVersion = "2017-06-15"
