@@ -1,4 +1,4 @@
-framework: >= net461
+framework: >= net451
 source https://api.nuget.org/v3/index.json
 redirects: force
 
