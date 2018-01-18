@@ -59,6 +59,36 @@ If the launch fails in the console window, check that the Anaconda version used 
 4. Unzip the release then run `mono IfSharp.exe` (this sets up the Jupyter kernel files in `~/.local/share/jupyter/kernels/ifsharp/`) 
 6. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
 
+# Manual Installation (Linux - HDInsights)
+1. Follow instructions to [install or update Mono](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-install-mono) on HDInsights.
+2. [SSH into the HDInsights cluster](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-linux-use-ssh-unix).
+3. Download the current Ifsharp zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip) with the following commands: 
+```
+# create ifsharp folder under /tmp
+mkdir ifsharp
+cd ifsharp
+wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip
+unzip IfSharp.v3.0.0-beta2.zip
+chmod +x ifsharp.exe
+```
+4. From the [Azure portal](https://portal.azure.com/), open your cluster.  See [List and show clusters](../hdinsight-administer-use-portal-linux.md#list-and-show-clusters) for the instructions. The cluster is opened in a new portal blade.
+5. From the **Quick links** section, click **Cluster dashboards** to open the **Cluster dashboards** blade.  If you don't see **Quick Links**, click **Overview** from the left menu on the blade.
+6. Click **Jupyter Notebook**. If prompted, enter the admin credentials for the cluster.
+   
+   > [!NOTE]
+   > You may also reach the Jupyter notebook on Spark cluster by opening the following URL in your browser. Replace **CLUSTERNAME** with the name of your cluster:
+   >
+   > `https://CLUSTERNAME.azurehdinsight.net/jupyter`
+   >
+7. Click **New**, and then click **Terminal**.
+8. In the terminal window `cd` into the `/tmp/ifsharp/` folder and using mono, run the installer:
+
+```
+cd /tmp/ifsharp
+mono IfSharp.exe
+```
+9. Back on the Jupyter homepage, click **New** and you will now see the IFsharp kernel installed.
+
 
 # Screens
 ## Intellisense
