@@ -37,7 +37,7 @@ This should also install Jupyter: you may check this by entering 'jupyter notebo
 ![Installation screenshot](/docs/files/img/anaconda-installation.png)
 ***
 
-3. Download current zip release of IfSharp [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
+3. Download current zip release of IfSharp [v3.0.0-beta3](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta3/IfSharp.v3.0.0-beta3.zip)
 4. Run IfSharp.exe (IfSharp application icon). 
 
 Jupyter with IfSharp can be run via "jupyter notebook" in future
@@ -48,27 +48,27 @@ If the launch fails in the console window, check that the Anaconda version used 
 # Manual Installation (Mac)
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 2. Install [Mono](http://www.mono-project.com/download/) (tested Mono 5.2.0.224)
-3. Download current IfSharp zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
+3. Download current IfSharp zip release [v3.0.0-beta3](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta3/IfSharp.v3.0.0-beta3.zip)
 4. Unzip the release then run `mono IfSharp.exe`
 5. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
 
 # Manual Installation (Linux)
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (Tested mono 5.2) and F# (tested 4.1).
-3. Download the current IfSharp zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip)
+3. Download the current IfSharp zip release [v3.0.0-beta3](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta3/IfSharp.v3.0.0-beta3.zip)
 4. Unzip the release then run `mono IfSharp.exe` (this sets up the Jupyter kernel files in `~/.local/share/jupyter/kernels/ifsharp/`) 
 6. Run `jupyter notebook`, the IfSharp kernel should now be one of the supported kernel types.
 
 # Manual Installation (Linux - HDInsights)
 1. Follow instructions to [install or update Mono](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-install-mono) on HDInsights.
 2. [SSH into the HDInsights cluster](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-linux-use-ssh-unix).
-3. Download the current Ifsharp zip release [v3.0.0-beta2](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip) with the following commands: 
+3. Download the current Ifsharp zip release [v3.0.0-beta3](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta3/IfSharp.v3.0.0-beta3.zip) with the following commands: 
 ```
 # create ifsharp folder under /tmp
 mkdir ifsharp
 cd ifsharp
-wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta2/IfSharp.v3.0.0-beta2.zip
-unzip IfSharp.v3.0.0-beta2.zip
+wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta3/IfSharp.v3.0.0-beta3.zip
+unzip IfSharp.v3.0.0-beta3.zip
 chmod +x ifsharp.exe
 ```
 4. From the [Azure portal](https://portal.azure.com/), open your cluster.  See [List and show clusters](../hdinsight-administer-use-portal-linux.md#list-and-show-clusters) for the instructions. The cluster is opened in a new portal blade.
