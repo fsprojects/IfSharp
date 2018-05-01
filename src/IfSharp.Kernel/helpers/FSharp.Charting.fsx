@@ -1,9 +1,5 @@
-#I "packages/FSharp.Charting/lib/net40"
-
 #r "System.Windows.Forms.DataVisualization.dll"
 #r "IfSharp.Kernel.dll"
-#r "FSharp.Charting.dll"
-#r "FSharp.Compiler.Service.dll"
 
 open FSharp.Charting
 open System.IO
@@ -12,7 +8,6 @@ open IfSharp.Kernel
 open System.Drawing
 open System.Drawing.Imaging
 open System.Windows.Forms
-
 
 type GenericChartWithSize =
     {
@@ -29,7 +24,6 @@ type GenericChartsWithSize =
 //static member
 let MultipleCharts (charts: ChartTypes.GenericChart list) (size:int*int) (cols:int) =
     { Charts = charts; Size = size; Columns = cols }
-
 
 type ChartTypes.GenericChart with
     /// Wraps a GenericChartWithSize around the GenericChart
