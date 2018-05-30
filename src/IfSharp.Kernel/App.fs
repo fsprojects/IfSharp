@@ -171,7 +171,6 @@ module App =
         let kernelFile = Path.Combine(kernelDir, "kernel.json") |> addFile
         let logoFile = Path.Combine(customDir, "ifsharp_logo.png") |> addFile
         let kjsFile = Path.Combine(kernelDir, "kernel.js") |> addFile
-        let fjsFile = Path.Combine(customDir, "fsharp.js") |> addFile
         let wjsFile = Path.Combine(customDir, "webintellisense.js") |> addFile
         let wcjsFile = Path.Combine(customDir, "webintellisense-codemirror.js") |> addFile
         let logo64File = Path.Combine(kernelDir, "logo-64x64.png") |> addFile
