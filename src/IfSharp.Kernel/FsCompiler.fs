@@ -68,13 +68,13 @@ module FsCompilerInternals =
 
     /// Converts a ToolTipElement into a string
     let buildFormatElement isSingle el (sb: StringBuilder) xmlCommentRetriever =
-        
+
         match el with
         | FSharpToolTipElement.None -> ()
-        | FSharpToolTipElement.Single(it, comment) ->
+        (*| FSharpToolTipElement.Single(it, comment) ->
             sb.AppendLine(it) |> buildFormatComment xmlCommentRetriever comment
         | FSharpToolTipElement.SingleParameter(it, comment, _) ->
-            sb.AppendLine(it) |> buildFormatComment xmlCommentRetriever comment
+            sb.AppendLine(it) |> buildFormatComment xmlCommentRetriever comment*)
         | FSharpToolTipElement.Group(items) ->
             let items, msg =
                 if items.Length > 10 then
@@ -83,8 +83,10 @@ module FsCompilerInternals =
                 else items, null
             if isSingle && items.Length > 1 then
                 sb.AppendLine("Multiple overloads") |> ignore
-            for (it, comment) in items do
-                sb.AppendLine(it) |> buildFormatComment xmlCommentRetriever comment
+            //for (it, comment) in items do
+            for elementData in items do
+                //sb.AppendLine elementData.MainDescription |> ignore
+                sb.AppendLine(elementData.MainDescription) |> buildFormatComment xmlCommentRetriever elementData.XmlDoc
             if msg <> null then sb.AppendFormat(msg) |> ignore
         | FSharpToolTipElement.CompositionError(err) ->
             sb.Append("Composition error: " + err) |> ignore

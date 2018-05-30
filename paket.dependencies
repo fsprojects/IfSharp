@@ -4,7 +4,7 @@ framework: >= net451
 source https://api.nuget.org/v3/index.json
 redirects: force
 
-nuget FSharp.Compiler.Service ~> 13.0.0
+nuget FSharp.Compiler.Service ~> 14.0.2
 nuget FSharp.Compiler.Tools ~> 10.0.2
 nuget FSharp.Core = 4.3.4
 nuget AsyncIO 0.1.26
