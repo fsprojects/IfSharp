@@ -8,6 +8,7 @@ open Microsoft.FSharp.Compiler.Interactive.Shell
 
 [<AutoOpen>]
 module Evaluation = 
+    open Microsoft.FSharp.Compiler
 
     type SimpleDeclaration =
         {
@@ -116,10 +117,18 @@ module Evaluation =
                     let getValue(str:string) =
                         if str.Contains(" ") then "``" + str + "``" else str
 
-                    // get declarations for a location
-                    let decls = 
-                        checkFileResults.GetDeclarationListInfo(Some(parseFileResults), lineNumber, charIndex, line, names, filterString, (fun _ -> []))
+                    //https://github.com/fsharp/FSharp.Compiler.Service/issues/835
+                    //Particularly suggestion it should be folded into GetDeclarationListInfo, and perhaps we should move to the F# AST as well
+                    let partialName = QuickParse.GetPartialLongNameEx(line, charIndex-1) 
+
+                    let decls =
+                        checkFileResults.GetDeclarationListInfo(Some parseFileResults, lineNumber, line, partialName)
                         |> Async.RunSynchronously
+
+                    // get declarations for a location
+                    (*let decls = 
+                        checkFileResults.GetDeclarationListInfo(Some(parseFileResults), lineNumber, charIndex, line, names, filterString, (fun _ -> []))
+                        |> Async.RunSynchronously*)
 
                     let items = 
                         decls.Items
