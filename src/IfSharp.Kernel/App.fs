@@ -218,10 +218,6 @@ module App =
             printfn "Saving kernel js [%s]" kjsFile
             File.WriteAllText(kjsFile, IfSharpResources.kernel_js())
 
-            // write fsharp js file
-            printfn "Saving fsharp js [%s]" fjsFile
-            File.WriteAllText(fjsFile, IfSharpResources.fsharp_js())
-
             // write webintellisense js file
             printfn "Saving webintellisense js [%s]" wjsFile
             File.WriteAllText(wjsFile, IfSharpResources.webintellisense_js())
