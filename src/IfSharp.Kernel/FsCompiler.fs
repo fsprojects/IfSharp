@@ -11,7 +11,6 @@ open System.Reflection
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.Ast
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler.SimpleSourceCodeServices
 
 [<AutoOpen>]
 module FsCompilerInternals = 
