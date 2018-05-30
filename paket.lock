@@ -7,7 +7,7 @@ NUGET
       FSharp.Core  - restriction: && (>= net451) (< netstandard1.6)
       FSharp.Core (>= 4.0.1.7-alpha) - restriction: && (>= net451) (>= netstandard1.6)
       NETStandard.Library (>= 1.6) - restriction: && (>= net451) (>= netstandard1.6)
-    FAKE (4.64.2)
+    FAKE (4.64.13)
     FSharp.Compiler.Service (22.0.3)
       FSharp.Core (>= 4.1.18)
       Microsoft.DiaSymReader (>= 1.1)
@@ -36,7 +36,7 @@ NUGET
       System.Text.Encoding (>= 4.3)
       System.Threading (>= 4.3)
     Microsoft.Net.Compilers (2.8.2)
-    Microsoft.NETCore.Platforms (2.0.1) - restriction: || (&& (>= monotouch) (>= net451)) (&& (< net45) (>= net451) (>= netstandard1.3) (< netstandard1.4)) (&& (< net45) (>= net451) (>= netstandard1.4) (< netstandard1.5)) (&& (< net45) (>= net451) (>= netstandard1.5) (< netstandard1.6)) (&& (< net45) (>= net451) (>= netstandard1.6) (< netstandard2.0)) (&& (>= net451) (>= netcoreapp2.0) (< netstandard2.0)) (&& (>= net451) (< netstandard1.0)) (&& (>= net451) (< netstandard1.3)) (&& (>= net451) (< netstandard2.0) (>= uap10.0)) (&& (>= net451) (< portable-net45+win8+wpa81)) (&& (>= net451) (< portable-net451+win81+wpa81)) (&& (>= net451) (>= xamarinios)) (&& (>= net451) (>= xamarinmac)) (&& (>= net451) (>= xamarintvos)) (&& (>= net451) (>= xamarinwatchos)) (&& (>= net46) (< netstandard1.4)) (&& (>= net461) (< netstandard2.0))
+    Microsoft.NETCore.Platforms (2.1) - restriction: || (&& (>= monotouch) (>= net451)) (&& (< net45) (>= net451) (>= netstandard1.3) (< netstandard1.4)) (&& (< net45) (>= net451) (>= netstandard1.4) (< netstandard1.5)) (&& (< net45) (>= net451) (>= netstandard1.5) (< netstandard1.6)) (&& (< net45) (>= net451) (>= netstandard1.6) (< netstandard2.0)) (&& (>= net451) (>= netcoreapp2.0) (< netstandard2.0)) (&& (>= net451) (< netstandard1.0)) (&& (>= net451) (< netstandard1.3)) (&& (>= net451) (< netstandard2.0) (>= uap10.0)) (&& (>= net451) (< portable-net45+win8+wpa81)) (&& (>= net451) (< portable-net451+win81+wpa81)) (&& (>= net451) (>= xamarinios)) (&& (>= net451) (>= xamarinmac)) (&& (>= net451) (>= xamarintvos)) (&& (>= net451) (>= xamarinwatchos)) (&& (>= net46) (< netstandard1.4)) (&& (>= net461) (< netstandard2.0))
     Microsoft.Win32.Primitives (4.3) - restriction: || (&& (< net45) (>= net451) (>= netstandard1.3) (< netstandard1.4)) (&& (< net45) (>= net451) (>= netstandard1.4) (< netstandard1.5)) (&& (< net45) (>= net451) (>= netstandard1.5) (< netstandard1.6)) (&& (< net45) (>= net451) (>= netstandard1.6) (< netstandard2.0)) (&& (>= net451) (< netstandard2.0) (>= uap10.0)) (&& (>= net46) (< netstandard1.4))
     Mono.Cecil (0.10.0-beta7)
     NetMQ (4.0.0.1)
@@ -105,7 +105,7 @@ NUGET
     System.Threading (4.3)
     System.ValueTuple (4.5)
     System.Xml.ReaderWriter (4.3.1) - restriction: || (&& (< net45) (>= net451) (>= netstandard1.3) (< netstandard1.4)) (&& (< net45) (>= net451) (< netstandard1.3)) (&& (< net45) (>= net451) (>= netstandard1.4) (< netstandard1.5)) (&& (< net45) (>= net451) (>= netstandard1.5) (< netstandard1.6)) (&& (< net45) (>= net451) (>= netstandard1.6) (< netstandard2.0)) (&& (< net45) (>= net451) (< portable-net451+win81+wpa81)) (&& (>= net451) (< netstandard2.0) (>= uap10.0)) (&& (>= net451) (< portable-net45+win8+wpa81)) (&& (>= net46) (< netstandard1.4))
-    Trinet.Core.IO.Ntfs (4.0)
+    Trinet.Core.IO.Ntfs (4.1.1)
     xunit (2.1)
       xunit.assert (2.1)
       xunit.core (2.1)
@@ -119,14 +119,3 @@ NUGET
     xunit.extensibility.execution (2.1)
       xunit.extensibility.core (2.1)
     xunit.runner.console (2.1)
-
-GROUP Docs
-RESTRICTION: >= net451
-NUGET
-  remote: https://www.nuget.org/api/v2
-    FSharp.Compiler.Service (2.0.0.6)
-    FSharp.Formatting (2.14.4)
-      FSharp.Compiler.Service (2.0.0.6)
-      FSharpVSPowerTools.Core (>= 2.3 < 2.4)
-    FSharpVSPowerTools.Core (2.3)
-      FSharp.Compiler.Service (>= 2.0.0.3)

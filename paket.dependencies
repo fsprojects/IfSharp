@@ -15,10 +15,3 @@ nuget xunit 2.1
 nuget xunit.runner.console 2.1
 nuget Paket.Core ~> 5.169.5
 nuget Trinet.Core.IO.Ntfs
-
-group Docs
-
-	framework: >= net451
-	source https://www.nuget.org/api/v2
-
-	nuget FSharp.Formatting
