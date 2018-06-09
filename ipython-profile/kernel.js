@@ -154,6 +154,7 @@ define(function () {
 
                 // applies intellisense hooks onto cells that are selected
                 $([IPython.events]).on('create.Cell', function (event, data) {
+                    data.cell.cm_config.mode = 'text/x-fsharp'
                     applyIntellisense(data.cell);
                 });
 
