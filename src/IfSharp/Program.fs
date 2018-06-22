@@ -4,7 +4,7 @@ open System.Globalization
 open System.IO
 open Trinet.Core.IO.Ntfs
 
-//This hidden info can be leftover depending how you unzip a release on Windows
+//This hidden info can be left behind depending how you unzip a release on Windows, which in turn can break notebook's use of Paket
 let ClearAlternativeStreamsWindows() =
     let path = System.Reflection.Assembly.GetEntryAssembly().Location
     if path <> null then
