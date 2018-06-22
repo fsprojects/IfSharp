@@ -42,6 +42,14 @@ module Evaluation =
         let printStream = new StringWriter(sbPrint)
     
         let fsiObj = Microsoft.FSharp.Compiler.Interactive.Settings.fsi
+        // The following is a workaround for IfSharp github issue #143
+        // Mono fails to handle tailcall in Fsi printing code, thus constraining the length of print on Mono
+        if Type.GetType("Mono.Runtime") <> null then
+            // Default PrintLength value of 100 triggeres the issue when printing the array of size 12x100
+            // Value of 50 "postpones" the issue. E.g. Issue is triggered on printing larger arrays of size 50x100
+            // Value of 10 seems to work, arrays 1000x1000 are printed without the error, although trancated with elipsis as expected
+            // After the value is set to 10, effectivly the sequences are truncated to 100 elements during printing . Maybe F# interactive issue
+            fsiObj.PrintLength <- 10            
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(fsiObj, false)
         let args = [|"--noninteractive"; "--define:HAS_FSI_ADDHTMLPRINTER" |]
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, inStream, outStream, errStream)
