@@ -64,6 +64,13 @@ let private addGitHub repo file version options =
         options)
     
 let private GitHubString gitHubRepoString =
+    let GitHubRepoStringCheck =
+        System.Text.RegularExpressions.Regex("^[a-zA-Z\d]+(-[a-zA-Z\d]+)*/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(:[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)?( [a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)*)*$")
+    let GitHubRepoStringCheckIsValid (s:string) = GitHubRepoStringCheck.IsMatch s
+
+    if not(GitHubRepoStringCheckIsValid gitHubRepoString)
+    then raise (System.ArgumentException("GitHub repository string should match the pattern: user/repo[:version][ file]"))
+    
     let mutable file = ""
     let mutable version = ""
 
