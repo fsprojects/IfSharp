@@ -69,7 +69,7 @@ let private GitHubString gitHubRepoString =
     let GitHubRepoStringCheckIsValid (s:string) = GitHubRepoStringCheck.IsMatch s
 
     if not(GitHubRepoStringCheckIsValid gitHubRepoString)
-    then raise (System.ArgumentException("GitHub repository string should match the pattern: user/repo[:version][ file]"))
+    then raise (System.ArgumentException("GitHub repository string should match the pattern: user/repo[:version][ file]", "GitHubRepoString"))
     
     let mutable file = ""
     let mutable version = ""
