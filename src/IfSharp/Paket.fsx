@@ -62,7 +62,15 @@ let private addGitHub repo file version options =
         file,
         version,
         options)
-    
+        
+let private getPartOrDefault delimiter s =  
+    let splitBy delimiter (line:string)  = Seq.toList (line.Split delimiter)
+    let splitedByDelimiter = splitBy [|delimiter|] s
+    if splitedByDelimiter.Length > 1 then            
+        splitedByDelimiter.[0], splitedByDelimiter.[1]
+    else
+        splitedByDelimiter.[0], ""
+ 
 let private GitHubString gitHubRepoString =
     let GitHubRepoStringCheck =
         System.Text.RegularExpressions.Regex("^[a-zA-Z\d]+(-[a-zA-Z\d]+)*/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(:[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)?( [a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)*)*$")
@@ -70,30 +78,15 @@ let private GitHubString gitHubRepoString =
 
     if not(GitHubRepoStringCheckIsValid gitHubRepoString)
     then raise (System.ArgumentException("GitHub repository string should match the pattern: user/repo[:version][ file]", "GitHubRepoString"))
-    
-    let mutable file = ""
-    let mutable version = ""
-
-    let splitBy delimiter (line:string)  = Seq.toList (line.Split delimiter)
-    let splitByColon = splitBy [| ':' |]
-    let splitBySpace = splitBy [| ' ' |]
-
-    let splitedBySpace = splitBySpace gitHubRepoString
+     
         
-    let splitedByColon = 
-        if splitedBySpace.Length > 1
-        then
-            file <- splitedBySpace.[1]
-            splitByColon splitedBySpace.[0]
-        else splitByColon gitHubRepoString
+    let repo, file, version =
+        let repoVersion, file =
+            getPartOrDefault ' ' gitHubRepoString
+        let repo, version =
+            getPartOrDefault ':' repoVersion
+        repo, file, version
 
-    let repo =
-        if splitedByColon.Length > 1
-        then
-            version <- splitedByColon.[1]
-            splitedByColon.[0]
-        else splitedByColon.[0]
-        
     addGitHub repo file version InstallerOptions.Default
     deps.Install(false)
     ()
@@ -101,6 +94,34 @@ let private GitHubString gitHubRepoString =
 let GitHub list =
     for repo in list do
         GitHubString repo
+    deps.Install(false)
+    ()
+
+let private addGit repo version options =
+    printfn "addGit repo=%s version=%s" repo version
+    deps.AddGit(
+        Some "Git",
+        repo,
+        version,
+        options)
+    
+let private GitString gitRepoString =
+    let GitRepoStringCheck =
+        System.Text.RegularExpressions.Regex("^\S*(\s+\S*)?$")
+    let GitRepoStringCheckIsValid (s:string) = GitRepoStringCheck.IsMatch s
+
+    if not(GitRepoStringCheckIsValid gitRepoString)
+    then raise (System.ArgumentException("Git repository string should match the pattern: repo[ version]", "GitRepoString"))
+    
+    let repo, version = getPartOrDefault ' ' gitRepoString
+    addGit repo version InstallerOptions.Default
+    
+    deps.Install(false)
+    ()
+
+let Git list =
+    for repo in list do
+        GitString repo
     deps.Install(false)
     ()
 
