@@ -15,33 +15,16 @@ open System
 
 // Information about the project are used
 //  - for version and project name in generated AssemblyInfo file
-//  - by the generated NuGet package 
 //  - to run tests and to publish documentation on GitHub gh-pages
 //  - for documentation, you also need to edit info in "docs/tools/generate.fsx"
 
 // The name of the project 
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
-let project = "IfSharp.Kernel"
+let project = "IfSharp"
 
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
-let summary = "A short summary of your project."
-
-// Longer description of the project
-// (used as a description for NuGet package; line breaks are automatically cleaned up)
-let description = """
-  F# implementation of iPython
-"""
-// List of author names (for NuGet package)
-let authors = [ "Peter Rosconi" ]
-// Tags for your project (for NuGet package)
-let tags = ""
-
-// File system information 
-// (<solutionFile>.sln is built during the building process)
-let solutionFile  = "IfSharp"
-// Pattern specifying assemblies to be tested using NUnit
-let testAssemblies = ["tests/*/bin/Release/IfSharp.*Tests*.dll"]
+let summary = "F# kernel for Jupyter Notebooks."
 
 // Git configuration (used for publishing documentation in gh-pages branch)
 // The profile where the project is posted 
@@ -71,11 +54,6 @@ Target "AssemblyInfo" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Clean build results & restore NuGet packages
 
-//Target "RestorePackages" (fun _ ->
-//    !! "./**/packages.config"
-//    |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
-//)
-
 Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp"]
 )
@@ -87,9 +65,7 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 Target "Build" (fun _ ->
-    [ "src/IfSharpConsole/IfSharpConsole.csproj"
-    //; "src/IfSharp.Kernel/IfSharp.Kernel.fsproj"
-    ] 
+    [ "src/IfSharp/IfSharp.fsproj"] 
       |> MSBuildRelease "bin" "Rebuild"
       |> ignore
 )
@@ -109,53 +85,6 @@ FinalTarget "CloseTestRunner" (fun _ ->
     ProcessHelper.killProcess "nunit-agent.exe"
 )
 
-// --------------------------------------------------------------------------------------
-// Build a NuGet package
-
-Target "NuGet" (fun _ ->
-    // Format the description to fit on a single line (remove \r\n and double-spaces)
-    let description = description.Replace("\r", "")
-                                 .Replace("\n", "")
-                                 .Replace("  ", " ")
-    let nugetPath = ".nuget/nuget.exe"
-    NuGet (fun p -> 
-        { p with   
-            Authors = authors
-            Project = project
-            Summary = summary
-            Description = description
-            Version = release.NugetVersion
-            ReleaseNotes = String.Join(Environment.NewLine, release.Notes)
-            Tags = tags
-            OutputPath = "bin"
-            ToolPath = nugetPath
-            AccessKey = getBuildParamOrDefault "nugetkey" ""
-            Publish = hasBuildParam "nugetkey"
-            Dependencies = [] })
-        ("nuget/" + project + ".nuspec")
-)
-
-// --------------------------------------------------------------------------------------
-// Generate the documentation
-
-Target "GenerateDocs" (fun _ ->
-    executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
-)
-
-// --------------------------------------------------------------------------------------
-// Release Scripts
-
-Target "ReleaseDocs" (fun _ ->
-    let ghPages      = "gh-pages"
-    let ghPagesLocal = "temp/gh-pages"
-    Repository.clone "temp" (gitHome + "/" + gitName + ".git") ghPages
-    Branches.checkoutBranch ghPagesLocal ghPages
-    CopyRecursive "docs/output" ghPagesLocal true |> printfn "%A"
-    CommandHelper.runSimpleGitCommand ghPagesLocal "add ." |> printfn "%s"
-    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
-    CommandHelper.runSimpleGitCommand ghPagesLocal cmd |> printfn "%s"
-    Branches.push ghPagesLocal
-)
 
 Target "Release" DoNothing
 
@@ -170,10 +99,6 @@ Target "All" DoNothing
   ==> "All"
 
 "All" 
-  ==> "CleanDocs"
-  ==> "GenerateDocs"
-  ==> "ReleaseDocs"
-  ==> "NuGet"
   ==> "xUnit"
   ==> "Release"
 

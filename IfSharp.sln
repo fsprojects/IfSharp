@@ -5,36 +5,6 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel", "src\IfSharp.Kernel\IfSharp.Kernel.fsproj", "{2FE619B3-4756-4285-B31F-232607F62D78}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9D4EDE1C-AB08-4800-9A57-4689DA45B701}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{D2376EF6-662E-45C9-A440-0530EFD799BF}"
-	ProjectSection(SolutionItems) = preProject
-		Feature Notebook format 4_0.ipynb = Feature Notebook format 4_0.ipynb
-		Feature Notebook.ipynb = Feature Notebook.ipynb
-		ifsharpsetup.iss = ifsharpsetup.iss
-		LICENSE.txt = LICENSE.txt
-		README.md = README.md
-		RELEASE_NOTES.md = RELEASE_NOTES.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88BC26ED-4DC4-4035-AA6D-44CD2A160996}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{A8428CDC-273B-434D-AAA2-0D0164E3D329}"
-	ProjectSection(SolutionItems) = preProject
-		docs\content\customPrinters.fsx = docs\content\customPrinters.fsx
-		docs\content\globals.fsx = docs\content\globals.fsx
-		docs\content\index.fsx = docs\content\index.fsx
-		docs\content\installation.fsx = docs\content\installation.fsx
-		docs\content\nuget.fsx = docs\content\nuget.fsx
-		docs\content\utils.fsx = docs\content\utils.fsx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{E7CBA335-71DC-45BC-BB08-8837F866EDB9}"
-	ProjectSection(SolutionItems) = preProject
-		docs\tools\generate.fsx = docs\tools\generate.fsx
-		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{3C993D34-1BD4-4002-B149-7DB2ECAD61CF}"
 	ProjectSection(SolutionItems) = preProject
 		build.cmd = build.cmd
@@ -51,8 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-
 		ipython-profile\kernel.js = ipython-profile\kernel.js
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IfSharpConsole", "src\IfSharpConsole\IfSharpConsole.csproj", "{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{45519D10-5973-41C3-A8D0-BCBF0008044D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE}"
@@ -63,27 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{3AAFA6
 		ipython-profile\static\custom\webintellisense.js = ipython-profile\static\custom\webintellisense.js
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{7B100429-EB1D-4D08-919F-5F9D6D148BFA}"
-	ProjectSection(SolutionItems) = preProject
-		docs\files\img\chart-1.png = docs\files\img\chart-1.png
-		docs\files\img\chart-2.png = docs\files\img\chart-2.png
-		docs\files\img\chart-3.png = docs\files\img\chart-3.png
-		docs\files\img\errors-1.png = docs\files\img\errors-1.png
-		docs\files\img\icon.ico = docs\files\img\icon.ico
-		docs\files\img\icon.png = docs\files\img\icon.png
-		docs\files\img\intellisense-1.png = docs\files\img\intellisense-1.png
-		docs\files\img\intellisense-2.png = docs\files\img\intellisense-2.png
-		docs\files\img\intellisense-3.png = docs\files\img\intellisense-3.png
-		docs\files\img\intellisense-4.png = docs\files\img\intellisense-4.png
-		docs\files\img\intellisense-5.png = docs\files\img\intellisense-5.png
-		docs\files\img\intellisense-reference.gif = docs\files\img\intellisense-reference.gif
-		docs\files\img\logo.png = docs\files\img\logo.png
-		docs\files\img\math-1.png = docs\files\img\math-1.png
-		docs\files\img\toaster.png = docs\files\img\toaster.png
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kernel-spec", "kernel-spec", "{4D56C9F0-7F98-4587-A320-98C06876AC9B}"
 	ProjectSection(SolutionItems) = preProject
 		kernel-spec\kernel.json = kernel-spec\kernel.json
@@ -91,36 +38,47 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kernel-spec", "kernel-spec"
 		kernel-spec\logo-64x64.png = kernel-spec\logo-64x64.png
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp", "src\IfSharp\IfSharp.fsproj", "{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|x64.ActiveCfg = Debug|x64
 		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|x64.Build.0 = Debug|x64
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|x64.ActiveCfg = Release|x64
 		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|x64.Build.0 = Release|x64
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|x64.ActiveCfg = Debug|x64
 		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|x64.Build.0 = Debug|x64
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|x64.ActiveCfg = Release|x64
 		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|x64.Build.0 = Release|x64
-		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Debug|x64.ActiveCfg = Debug|x64
-		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Debug|x64.Build.0 = Debug|x64
-		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Release|x64.ActiveCfg = Release|x64
-		{6BD0E996-0AEE-4FC7-8FB9-46E033D0C7F1}.Release|x64.Build.0 = Release|x64
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|x64.Build.0 = Debug|Any CPU
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|x64.ActiveCfg = Release|Any CPU
+		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A8428CDC-273B-434D-AAA2-0D0164E3D329} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
-		{E7CBA335-71DC-45BC-BB08-8837F866EDB9} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6} = {88BC26ED-4DC4-4035-AA6D-44CD2A160996}
 		{45519D10-5973-41C3-A8D0-BCBF0008044D} = {F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}
 		{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE} = {45519D10-5973-41C3-A8D0-BCBF0008044D}
-		{F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19} = {9D4EDE1C-AB08-4800-9A57-4689DA45B701}
-		{7B100429-EB1D-4D08-919F-5F9D6D148BFA} = {F420A7BF-AF5F-4C69-99D3-C0DA09FA1F19}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0D40E243-FC1E-43DA-B53D-08D731012F40}

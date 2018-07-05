@@ -1,4 +1,4 @@
-FROM mono:5.4.0.201
+FROM mono:5.12.0.226
 
 RUN apt update \
     && apt install -y \

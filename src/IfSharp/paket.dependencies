@@ -1,0 +1,4 @@
+framework: net461
+generate_load_scripts: true
+source https://www.nuget.org/api/v2
+nuget FSharp.Core ~> 4.3.4
