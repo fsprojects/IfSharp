@@ -126,7 +126,6 @@ define(function () {
                     var editor = cell.code_mirror;
                     if (editor.intellisense == null) {
                         var intellisense = new CodeMirrorIntellisense(editor);
-                        editor.setOption('theme', 'neat');
                         editor.intellisense = intellisense;
 
                         editor.on('changes', function (cm, changes) {
