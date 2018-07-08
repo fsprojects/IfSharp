@@ -1,6 +1,6 @@
-version 5.173.1
+version 5.174.2
 
-framework: >= net461
+framework: >= net471
 source https://api.nuget.org/v3/index.json
 redirects: force
 
@@ -13,5 +13,5 @@ nuget Newtonsoft.Json ~> 10.0.3
 nuget FAKE >= 4.58.6
 nuget xunit 2.1
 nuget xunit.runner.console 2.1
-nuget Paket.Core ~> 5.169.5
+nuget Paket.Core ~> 5.174.2
 nuget Trinet.Core.IO.Ntfs

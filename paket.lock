@@ -1,13 +1,12 @@
 REDIRECTS: FORCE
-RESTRICTION: >= net461
+RESTRICTION: >= net471
 NUGET
   remote: https://api.nuget.org/v3/index.json
     AsyncIO (0.1.26)
     Chessie (0.6)
-      FSharp.Core  - restriction: && (>= net461) (< netstandard1.6)
-      FSharp.Core (>= 4.0.1.7-alpha) - restriction: && (>= net461) (>= netstandard1.6)
-      NETStandard.Library (>= 1.6) - restriction: && (>= net461) (>= netstandard1.6)
-    FAKE (4.64.13)
+      FSharp.Core (>= 4.0.1.7-alpha)
+      NETStandard.Library (>= 1.6)
+    FAKE (5.1)
     FSharp.Compiler.Service (22.0.3)
       FSharp.Core (>= 4.1.18)
       Microsoft.DiaSymReader (>= 1.1)
@@ -36,14 +35,14 @@ NUGET
       System.Text.Encoding (>= 4.3)
       System.Threading (>= 4.3)
     Microsoft.Net.Compilers (2.8.2)
-    Microsoft.NETCore.Platforms (2.1) - restriction: || (&& (< net45) (>= net461) (>= netstandard2.0)) (&& (>= net461) (>= netcoreapp2.0)) (&& (>= net461) (>= netstandard1.6))
+    Microsoft.NETCore.Platforms (2.1)
     Mono.Cecil (0.10)
     NetMQ (4.0.0.1)
       AsyncIO (>= 0.1.26)
-    NETStandard.Library (2.0.3) - restriction: && (>= net461) (>= netstandard1.6)
+    NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
     Newtonsoft.Json (10.0.3)
-    Paket.Core (5.169.6)
+    Paket.Core (5.174.2)
       Chessie (>= 0.6)
       FSharp.Compiler.Tools
       FSharp.Core
@@ -62,7 +61,7 @@ NUGET
     System.Runtime (4.3)
     System.Runtime.Extensions (4.3)
     System.Runtime.InteropServices (4.3)
-      System.Runtime (>= 4.3) - restriction: || (&& (>= dnxcore50) (>= net461)) (&& (< net45) (>= net461) (< netstandard1.2)) (&& (< net45) (>= net461) (< netstandard1.3)) (&& (< net45) (>= net461) (>= netstandard1.5)) (&& (< net45) (>= net461) (< netstandard1.5)) (&& (>= net461) (>= netcoreapp1.1)) (>= net462)
+      System.Runtime (>= 4.3)
     System.Text.Encoding (4.3)
     System.Threading (4.3)
     System.ValueTuple (4.5)
