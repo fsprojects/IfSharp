@@ -1,5 +1,5 @@
 REDIRECTS: FORCE
-RESTRICTION: >= net471
+RESTRICTION: == net471
 NUGET
   remote: https://api.nuget.org/v3/index.json
     AsyncIO (0.1.26)

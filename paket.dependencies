@@ -1,6 +1,6 @@
 version 5.174.2
 
-framework: >= net471
+framework: net471
 source https://api.nuget.org/v3/index.json
 redirects: force
 
