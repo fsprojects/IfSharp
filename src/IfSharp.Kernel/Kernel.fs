@@ -11,6 +11,9 @@ open System.Security.Cryptography
 open Newtonsoft.Json
 open NetMQ
 open NetMQ.Sockets
+open System.Threading.Tasks
+open Microsoft.FSharp.Control
+open System.Threading
 
 /// A function that by it's side effect sends the received dict as a comm_message
 type SendCommMessage = Dictionary<string,obj> -> unit
@@ -22,7 +25,11 @@ type CommCloseCallback = CommTearDown  -> unit
 type CommId = string
 type CommTargetName = string
 
-/// The set of callbacks which define comm registration at the kernell side
+type OutputType =
+    |   ExecuteResultOutputType
+    |   DisplayDataOutputType
+
+/// The set of callbacks which define comm registration at the kernel side
 type CommCallbacks = {
     /// called upon comm creation
     onOpen : CommOpenCallback
@@ -64,7 +71,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
 
-    /// Registered comm difinitions (can be activated from Frontend side by comm_open message containing registered comm_target name)
+    /// Registered comm definitions (can be activated from Frontend side by comm_open message containing registered comm_target name)
     let mutable registeredComms : Map<CommTargetName,CommCallbacks> = Map.empty;
     /// Comms that are in the open state
     let mutable activeComms : Map<CommId,CommTargetName> = Map.empty;
@@ -178,26 +185,28 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
     /// Convenience method for sending a message
     let sendMessage (socket: NetMQSocket) (envelope) (messageType) (content) =
+        // lock on socket prevents simultaneous sends to the same socket from different threads
+        // e.g. when Async results are ready and they are sent to be displayed
+        lock socket (fun () ->
+            let header = createHeader messageType envelope
+            let msg = NetMQMessage()
 
-        let header = createHeader messageType envelope
-        let msg = NetMQMessage()
+            for ident in envelope.Identifiers do
+                msg.Append(ident)
 
-        for ident in envelope.Identifiers do
-            msg.Append(ident)
+            let header = serialize header
+            let parent_header = serialize envelope.Header
+            let meta = "{}"
+            let content = serialize content
+            let signature = sign [header; parent_header; meta; content]
 
-        let header = serialize header
-        let parent_header = serialize envelope.Header
-        let meta = "{}"
-        let content = serialize content
-        let signature = sign [header; parent_header; meta; content]
-
-        msg.Append(encode "<IDS|MSG>")
-        msg.Append(encode signature)
-        msg.Append(encode header)
-        msg.Append(encode parent_header)
-        msg.Append(encode "{}")
-        msg.Append(encode content)
-        socket.SendMultipartMessage(msg)
+            msg.Append(encode "<IDS|MSG>")
+            msg.Append(encode signature)
+            msg.Append(encode header)
+            msg.Append(encode parent_header)
+            msg.Append(encode "{}")
+            msg.Append(encode content)
+            socket.SendMultipartMessage(msg))
 
         
     /// Convenience method for sending the state of the kernel
@@ -216,9 +225,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let kernelInfoRequest(msg : KernelMessage) (content : KernelRequest) = 
         let content = 
             {
-                protocol_version = "4.0.0";
+                protocol_version = "5.1.0";
                 implementation = "ifsharp";
-                implementation_version = "4.0.0";
+                implementation_version = "5.1.0";
                 banner = "";
                 help_links = [||];
                 language = "fsharp";
@@ -238,17 +247,36 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         sendMessage shellSocket msg "kernel_info_reply" content
 
     /// Sends display data information immediately
-    let sendDisplayData (contentType) (displayItem) (messageType) =        
+    let sendDisplayData (contentType) (displayItem) (messageType) (display_id) = 
         if lastMessage.IsSome then
 
             let d = Dictionary<string,obj>()
             d.Add(contentType, displayItem)
 
-            let reply = { execution_count = executionCount; data = d; metadata = Dictionary<string,obj>() }
-            sendMessage ioSocket lastMessage.Value messageType reply
+            let d2 = Dictionary<string,obj>()
+            d2.Add("display_id",display_id)
 
-    /// Sends a message to pyout
-    let pyout (message) = sendDisplayData "text/plain" message "pyout"
+            let reply:DisplayData = { data = d; metadata = Dictionary<string,obj>(); transient = d2 }
+            sendMessage ioSocket lastMessage.Value messageType reply
+    
+    /// pyout renamed to execute_result in current version of protocol
+    let sendExecutionResult message additionalRepresentations display_id = 
+        if lastMessage.IsSome then            
+            // A plain text representation should always be provided in the text/plain mime-type. (https://jupyter-client.readthedocs.io/en/latest/messaging.html)
+            let d = Dictionary<string,obj>()
+            d.Add("text/plain", message)            
+            
+            // Results can have multiple simultaneous formats depending on its configuration. (https://jupyter-client.readthedocs.io/en/latest/messaging.html)            
+            let addPresentation presentation = 
+                let mime,data = presentation
+                d.Add(mime,data)
+            List.iter addPresentation additionalRepresentations
+
+            let d2 = Dictionary<string,obj>()
+            d2.Add("display_id", display_id)
+
+            let reply:ExecutionResult = { data = d; metadata = Dictionary<string,obj>(); transient = d2;  execution_count = executionCount; }
+            sendMessage ioSocket lastMessage.Value "execute_result" reply    
 
     let nugetErrors (nugetLines:string[]) =
         if nugetLines.Length > 0 then 
@@ -278,7 +306,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     #fsioutput ["on"|"off"];;   Toggle output display on/off
     """
             let fsiHelp = sbOut.ToString()
-            pyout (ifsharpHelp + fsiHelp)
+            sendExecutionResult (ifsharpHelp + fsiHelp)
             sbOut.Clear() |> ignore
 
         //This is a persistent toggle, just respect the last one
@@ -288,12 +316,76 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 fsiout := true
             else if lastFsiOutput.ToLower().Contains("off") then
                 fsiout := false
-            else
-                pyout (sprintf "Unreocognised fsioutput setting: %s" lastFsiOutput)
+            else                
+                sendExecutionResult (sprintf "Unrecognised fsioutput setting: %s" lastFsiOutput) [] (Guid.NewGuid().ToString())
 
         let nugetErrors = nugetErrors preprocessing.NuGetLines
             
         newCode, nugetErrors
+
+    /// Sends the "value" to the frontend presented in a proper  way
+    let produceOutput value outputType =
+        let t = value.GetType()
+        let display_id = Guid.NewGuid().ToString()
+        if t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Async<_>> then                
+            let deferredOutput = async {
+                // This async execution will block the thread when accessing ".Result" of the Task<T> (see below).                                        
+                // I do such blocking here because attaching task continuation via reflection is too complicated, so simply block the dedicated thread                
+                
+                // Before switching to a dedicated thread the display placeholder is produced synchronously
+                // This is done to keep the visual order of "produceOutput" call outputs (in case of several async computations are initiated) in the frontend
+                let deferredMessage = "(Async is being calculated. Results will appear as they are ready)"                
+                match outputType with
+                | ExecuteResultOutputType -> sendExecutionResult deferredMessage [] display_id
+                | DisplayDataOutputType -> sendDisplayData "text/plain" deferredMessage "display_data" display_id
+
+                // the rest is done in dedicated thread
+                do! Async.SwitchToNewThread()
+                
+                // We are dealing with Async<argT>
+                let argT = t.GenericTypeArguments.[0]
+
+                // Extracting Async<argT>.StartAsTask with reflection
+                let asyncT = typedefof<Async>
+                let methodInfo = asyncT.GetMethod("StartAsTask")
+                let methodInfo2 = methodInfo.MakeGenericMethod([|argT|])
+
+                // And then invoking it
+                let noneTaskCreationOptions: TaskCreationOptions option = None
+                let noneCancelationToken: CancellationToken option = None
+                let resultTaskObj = methodInfo2.Invoke(null,[|value; noneTaskCreationOptions; noneCancelationToken|])
+
+                // Extracting Task<argT>.Result property accessor
+                let taskT = typedefof<Task<_>>
+                let taskT2 = taskT.MakeGenericType([|argT|])
+                let resultExtractor = taskT2.GetProperty("Result")
+                // And invoking it
+                let extractedResult = resultExtractor.GetValue(resultTaskObj)
+
+                // updating corresponding cell content by printing resulted argT value
+                let printer = Printers.findDisplayPrinter (argT)
+                let (_, callback) = printer
+                let callbackValue = callback(extractedResult)                
+                sendDisplayData callbackValue.ContentType callbackValue.Data "update_display_data" display_id
+            }
+            Async.StartImmediate deferredOutput
+        else
+            let printer = Printers.findDisplayPrinter (value.GetType())
+            let (_, callback) = printer
+            let callbackValue = callback(value)
+
+            match outputType with
+                | ExecuteResultOutputType ->
+                    if callbackValue.ContentType = "text/plain" then                                    
+                        sendExecutionResult callbackValue.Data [] display_id
+                    else
+                        // printer returned non plain text while plain text is required by the protocol
+                        // thus generating compulsory value
+                        let plainText = sprintf "%A" value
+                        // adding originally returned value as optional
+                        sendExecutionResult plainText [callbackValue.ContentType,callbackValue.Data] display_id                    
+                | DisplayDataOutputType ->
+                    sendDisplayData callbackValue.ContentType callbackValue.Data "display_data" display_id
 
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
@@ -363,12 +455,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                         match lastExpression with
                         | Some(it) -> 
                             if it.ReflectionType <> typeof<unit> then
-                                let printer =
-                                    Printers.findDisplayPrinter it.ReflectionType
-                                let (_, callback) = printer
-                                let callbackValue = callback(it.ReflectionValue)
-                                sendDisplayData callbackValue.ContentType callbackValue.Data "pyout"
-
+                                produceOutput it.ReflectionValue OutputType.ExecuteResultOutputType
                         | None -> ()
 
 
@@ -382,10 +469,11 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 sendError err
 
         if sbPrint.Length > 0 then
-            sendDisplayData "text/plain" (sbPrint.ToString()) "display_data"
+            let display_id = Guid.NewGuid()
+            sendDisplayData "text/plain" (sbPrint.ToString()) "display_data" (display_id.ToString())
 
         // we are now idle
-        sendStateIdle msg
+        sendStateIdle msg       
 
     /// Handles a 'complete_request' message
     let completeRequest (msg : KernelMessage) (content : CompleteRequest) =
@@ -453,7 +541,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             |]
             |> Array.filter (fun x -> x.Subcategory <> "parse")
             
-        sendDisplayData "errors" newErrors "display_data"
+        sendDisplayData "errors" newErrors "display_data" (Guid.NewGuid().ToString())
         sendMessage (shellSocket) (msg) ("complete_reply") (newContent)
 
     /// Handles a 'connect_request' message
@@ -606,7 +694,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         with
         | ex -> handleException ex
     
-    /// Regesters a comm with specified target_name and callbacks
+    /// Registers a comm with specified target_name and callbacks
     member __.RegisterComm(target_name, onOpen,onMessage,onClose) =
         if Map.containsKey target_name registeredComms then
             logMessage (sprintf "Warning! The comm with target_name \"%s\" is already registered. Overriding previous registration" target_name)
@@ -621,16 +709,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Removes comm registration by specified comm target_name
     member __.UnregisterComm(target_name) =
         registeredComms <- Map.remove target_name registeredComms
-    
-    /// Returns the constructed comm_id, send function. Comm target_name must be registered with RegisterComm prior to this call
-    //member __.OpenComm(target_name) =
-    //    match Map.tryFind target_name registeredComms with
-    //    | Some callbacks ->
-    //        sendMessage
-            
-    //    | Nonw ->
-    //        failwith (sprintf "the comm target_name \"%s\" is not registered. Register it befor opening" target_name)
-        
+       
 
     /// Clears the display
     member __.ClearDisplay () =
@@ -639,11 +718,31 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
     /// Sends auto complete information to the client
     member __.AddPayload (text) =
-        payload.Add( { html = ""; source = "page"; start_line_number = 1; text = text })
+        payload.Add( { html = ""; source = "page"; start_line_number = 1; text = text })    
+    
+    /// Shows the value in a frontend
+    member __.DisplayValue(value) = 
+        produceOutput value OutputType.DisplayDataOutputType
+
+    /// Sends plain text execution results as well as other optional representations
+    /// Return display_id of generated cell
+    member __.SendExecuteResult(text,additionalRepresentations) =
+        let display_id = Guid.NewGuid().ToString()
+        sendExecutionResult text additionalRepresentations display_id
+        display_id
 
     /// Adds display data to the list of display data to send to the client
+    /// Return display_id of generated cell
     member __.SendDisplayData (contentType, displayItem) =
-        sendDisplayData contentType displayItem "display_data"
+        let display_id = Guid.NewGuid().ToString()
+        sendDisplayData contentType displayItem "display_data" (display_id.ToString())
+        display_id    
+
+    /// Updates the display data for the particular display_id
+    /// Return display_id of updated cell
+    member __.UpdateDisplayData (contentType, displayItem,display_id) =        
+        sendDisplayData contentType displayItem "update_display_data" display_id
+        display_id
 
     /// Starts the kernel asynchronously
     member __.StartAsync() = 

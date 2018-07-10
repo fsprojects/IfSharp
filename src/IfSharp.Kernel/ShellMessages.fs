@@ -25,11 +25,6 @@ type ExecuteRequest =
         // # is forced to be False.
         store_history: bool;
 
-        // # A list of variable names from the user's namespace to be retrieved.
-        // # What returns is a rich representation of each variable (dict keyed by name).
-        // # See the display_data content for the structure of the representation data.
-        user_variables: array<string>;
-
         // # Similarly, a dict mapping names to expressions to be evaluated in the
         // # user's dict.
         user_expressions: Dictionary<string,obj>;
@@ -445,7 +440,7 @@ type ShutdownReply = ShutdownRequest
 type DisplayData = 
     {
         // # Who create the data
-        source: string;
+        // source: string; // Removed in protocol V5
 
         // # The data dict contains key/value pairs, where the kids are MIME
         // # types and the values are the raw data of the representation in that
@@ -454,6 +449,11 @@ type DisplayData =
 
         // # Any metadata that describes the data
         metadata: Dictionary<string,obj>;
+
+        // # Optional transient data introduced in 5.1. Information not to be
+        // # persisted to a notebook or other documents. Intended to live only
+        // # during a live kernel session.
+        transient: Dictionary<string,obj>;
     }
 
 type Pyin = 
@@ -466,7 +466,8 @@ type Pyin =
         execution_count: int;
     }
 
-type Pyout = 
+type ExecutionResult = 
+    // These are identical to display_data messages, with the addition of an execution_count key.
     {
         // # The counter for this execution is also provided so that clients can
         // # display it, since IPython automatically creates variables called _N
@@ -478,6 +479,10 @@ type Pyout =
         // # i.e. the *result* of the execution.
         data: Dictionary<string,obj>;
         metadata: Dictionary<string,obj>;
+        // # Optional transient data introduced in 5.1. Information not to be
+        // # persisted to a notebook or other documents. Intended to live only
+        // # during a live kernel session.
+        transient: Dictionary<string,obj>;
     }
 
 type Stream = 
@@ -540,8 +545,9 @@ type ShellMessage =
     | ShutdownReply of ShutdownReply
     
     // input / output
-    | Pyout of Pyout
+    | ExecutionResult of ExecutionResult
     | DisplayData of DisplayData
+    | UpdateDisplayData of DisplayData
 
 type Header = 
     {
