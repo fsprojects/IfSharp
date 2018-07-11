@@ -54,7 +54,48 @@ let Package list =
     deps.Install(false)
     ()
 
-let private addGitHub repo file version options =
+
+type GitHubDependency = {
+    Repo: string
+    Branch: string option
+    File: string option
+}
+
+type OrdinaryGitDependency = {
+    Repo: string
+    Branch: string option
+}
+
+type GitDependency =
+    | GitHub of GitHubDependency
+    | OrdinaryGit of OrdinaryGitDependency
+
+let gitHubRepo repoName =
+    GitHub
+        {
+            Repo = repoName
+            Branch = None
+            File = None
+        }
+
+let gitRepo repoName =
+    OrdinaryGit
+        {
+            Repo = repoName
+            Branch = None
+        }
+
+let chooseBranch branchName gitDependency =
+    match gitDependency with
+        | GitHub gitHub -> GitHub {gitHub with Branch = Some branchName}
+        | OrdinaryGit git -> OrdinaryGit {git with Branch = Some branchName}
+        
+let singleFile fileName gitDependency =
+    match gitDependency with
+        | GitHub gitHub -> GitHub {gitHub with File = Some fileName}
+        | OrdinaryGit git -> failwith "Git dependency doesn't support fetching single file"
+
+let private addGitHub repo version file options =
     remove_quiet repo
     deps.AddGithub(
         Some "GitHub",
@@ -63,67 +104,35 @@ let private addGitHub repo file version options =
         version,
         options)
         
-let private getPartOrDefault delimiter s =  
-    let splitBy delimiter (line:string)  = Seq.toList (line.Split delimiter)
-    let splitedByDelimiter = splitBy [|delimiter|] s
-    if splitedByDelimiter.Length > 1 then            
-        splitedByDelimiter.[0], splitedByDelimiter.[1]
-    else
-        splitedByDelimiter.[0], ""
- 
-let private GitHubString gitHubRepoString =
-    let GitHubRepoStringCheck =
-        System.Text.RegularExpressions.Regex("^[a-zA-Z\d]+(-[a-zA-Z\d]+)*/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(:[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)?( [a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)*)*$")
-    let GitHubRepoStringCheckIsValid (s:string) = GitHubRepoStringCheck.IsMatch s
-
-    if not(GitHubRepoStringCheckIsValid gitHubRepoString)
-    then raise (System.ArgumentException("GitHub repository string should match the pattern: user/repo[:version][ file]", "GitHubRepoString"))
-     
-        
-    let repo, file, version =
-        let repoVersion, file =
-            getPartOrDefault ' ' gitHubRepoString
-        let repo, version =
-            getPartOrDefault ':' repoVersion
-        repo, file, version
-
-    addGitHub repo file version InstallerOptions.Default
-    deps.Install(false)
-    ()
-
-let GitHub list =
-    for repo in list do
-        GitHubString repo
-    deps.Install(false)
-    ()
-
-let private addGit repo version options =
-    printfn "addGit repo=%s version=%s" repo version
+let private addOrdinaryGit repo version options =
     deps.AddGit(
         Some "Git",
         repo,
         version,
         options)
-    
-let private GitString gitRepoString =
-    let GitRepoStringCheck =
-        System.Text.RegularExpressions.Regex("^\S*(\s+\S*)?$")
-    let GitRepoStringCheckIsValid (s:string) = GitRepoStringCheck.IsMatch s
 
-    if not(GitRepoStringCheckIsValid gitRepoString)
-    then raise (System.ArgumentException("Git repository string should match the pattern: repo[ version]", "GitRepoString"))
-    
-    let repo, version = getPartOrDefault ' ' gitRepoString
-    addGit repo version InstallerOptions.Default
-    
-    deps.Install(false)
-    ()
+let private addGit =
+    function
+        | GitHub gitHub -> 
+            let branch =
+                match gitHub.Branch with
+                | Some branch -> branch
+                | None -> ""
+            let file =
+                match gitHub.File with
+                | Some file -> file
+                | None -> ""
+            addGitHub gitHub.Repo branch file InstallerOptions.Default
+        | OrdinaryGit git -> 
+            let branch =
+                match git.Branch with
+                | Some branch -> branch
+                | None -> ""
+            addOrdinaryGit git.Repo branch InstallerOptions.Default
 
-let Git list =
-    for repo in list do
-        GitString repo
+let Git seq =
+    Seq.iter addGit seq
     deps.Install(false)
-    ()
 
 let Version list =
     for package, version in list do
