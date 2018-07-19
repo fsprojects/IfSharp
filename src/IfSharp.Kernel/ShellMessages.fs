@@ -330,9 +330,35 @@ type ConnectReply =
         hb_port: int;      // # The port the heartbeat socket is listening on.
     }
 
-type CommOpen = obj
+type CommOpen =
+    {
+        comm_id: string;        // # unique Com instance ID that has been just created by frontend
+        target_name: string;    // # Which type of comm instance to construct at kernel side
+        data: Dictionary<string,obj>;              // # initialization specific data
+    }
 
-type CommInfoRequest = obj
+type CommMessage =
+    {
+        comm_id: string;    // # unique Com instance ID
+        data: Dictionary<string,obj>;          // # payload
+    }
+
+type CommTearDown = 
+    {
+        comm_id: string;    // # unique Com instance ID
+        data: Dictionary<string,obj>;          // # payload
+    }
+
+type CommInfoRequest =
+    {
+        target_name: string; // Optional, the target name
+    }
+
+type CommInfoReply =
+    {
+        // A dictionary of the comms, indexed by uuids.
+        comms: Dictionary<string,Dictionary<string,string>>
+    }
 
 type KernelRequest = obj
 
@@ -498,9 +524,12 @@ type ShellMessage =
     | ConnectRequest of ConnectRequest
     | ConnectReply of ConnectReply
 
-    // comm open?
+    // Comm related
     | CommOpen of CommOpen
+    | CommMessage of CommMessage
+    | CommTearDown of CommTearDown
     | CommInfoRequest of CommInfoRequest
+    | CommInfoReply of CommInfoReply
 
     // kernel info
     | KernelRequest of KernelRequest
@@ -561,8 +590,9 @@ module ShellMessages =
         | "shutdown_request"     -> ShutdownRequest (JsonConvert.DeserializeObject<ShutdownRequest>(messageJson))
         | "shutdown_reply"       -> ShutdownReply (JsonConvert.DeserializeObject<ShutdownReply>(messageJson))
 
-        //Jupyter 4.x support, do we need to do anything with this?
         | "comm_open"            -> CommOpen (JsonConvert.DeserializeObject<CommOpen>(messageJson))
+        | "comm_msg"             -> CommMessage (JsonConvert.DeserializeObject<CommMessage>(messageJson))
+        | "comm_close"           -> CommTearDown (JsonConvert.DeserializeObject<CommTearDown>(messageJson))
 
         | "comm_info_request"    -> CommInfoRequest (JsonConvert.DeserializeObject<CommInfoRequest>(messageJson))
 
