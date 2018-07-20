@@ -1,8 +1,7 @@
-#I "packages/XPlot.GoogleCharts/lib/net45/"
-#I "packages/Google.DataTable.Net.Wrapper/lib/"
-#r "XPlot.GoogleCharts.dll"
-#r "Google.DataTable.Net.Wrapper.dll"
 #r "IfSharp.Kernel.dll"
+
+#r "packages/XPlot.GoogleCharts/lib/net45/XPlot.GoogleCharts.dll"
+#r "packages/Google.DataTable.Net.Wrapper/lib/Google.DataTable.Net.Wrapper.dll"
 
 open IfSharp.Kernel
 open IfSharp.Kernel.App
