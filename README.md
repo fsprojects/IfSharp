@@ -100,13 +100,7 @@ mono ifsharp.exe
 ![Intellisense Example #2](docs/files/img/intellisense-2.png?raw=true "Intellisense Example #2")
 ***
 
-![Intellisense Example #4 #r Directive](docs/files/img/intellisense-reference.gif?raw=true "Intellisense Example #3 #r Directive")
-***
-
-![Intellisense Example #5 #load Directive](docs/files/img/intellisense-5.png?raw=true "Intellisense Example #load Directive")
-***
-
-## Integrated NuGet
+## Integrated NuGet (via Paket)
 ![NuGet Example](docs/files/img/integratedNuget.png?raw=true "NuGet example")
 
 ## Inline Error Messages
