@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{3C993D34
 		build.fsx = build.fsx
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel.Tests", "tests\IfSharp.Kernel.Tests\IfSharp.Kernel.Tests.fsproj", "{52627028-50B5-427F-BDDB-9DEADB72E7D6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-profile", "{F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}"
 	ProjectSection(SolutionItems) = preProject
 		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
@@ -56,14 +54,6 @@ Global
 		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|x64.ActiveCfg = Release|x64
 		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|x64.Build.0 = Release|x64
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|x64.ActiveCfg = Debug|x64
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Debug|x64.Build.0 = Debug|x64
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|x64.ActiveCfg = Release|x64
-		{52627028-50B5-427F-BDDB-9DEADB72E7D6}.Release|x64.Build.0 = Release|x64
 		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|x64.ActiveCfg = Debug|Any CPU

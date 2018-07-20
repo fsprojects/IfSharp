@@ -38,7 +38,7 @@ let gitName = "IfSharp"
 
 // Read additional information from the release notes document
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
+//let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
@@ -47,8 +47,9 @@ Target "AssemblyInfo" (fun _ ->
       [ Attribute.Title project
         Attribute.Product project
         Attribute.Description summary
-        Attribute.Version release.AssemblyVersion
-        Attribute.FileVersion release.AssemblyVersion ] 
+        //Attribute.Version release.AssemblyVersion
+        //Attribute.FileVersion release.AssemblyVersion
+      ] 
 )
 
 // --------------------------------------------------------------------------------------
