@@ -9,3 +9,5 @@ Paket.Version
     "Angara.Serialization.Json", ""
     "Suave", ""
   ]
+
+#load @".paket/load/main.group.fsx"
