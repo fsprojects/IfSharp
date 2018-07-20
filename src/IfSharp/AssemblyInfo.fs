@@ -5,13 +5,9 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("IfSharp")>]
 [<assembly: AssemblyProductAttribute("IfSharp")>]
 [<assembly: AssemblyDescriptionAttribute("F# kernel for Jupyter Notebooks.")>]
-[<assembly: AssemblyVersionAttribute("2017-06-15")>]
-[<assembly: AssemblyFileVersionAttribute("2017-06-15")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "IfSharp"
     let [<Literal>] AssemblyProduct = "IfSharp"
     let [<Literal>] AssemblyDescription = "F# kernel for Jupyter Notebooks."
-    let [<Literal>] AssemblyVersion = "2017-06-15"
-    let [<Literal>] AssemblyFileVersion = "2017-06-15"
