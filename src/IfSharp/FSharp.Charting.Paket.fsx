@@ -1,5 +1,3 @@
 #load "Paket.fsx"
 
-Paket.Package ["FSharp.Charting"]
-
-#load @".paket/load/main.group.fsx"
+Paket.Version ["FSharp.Charting", "0.91.1"]

@@ -7,7 +7,5 @@ Paket.Version
     "Angara.Reinstate", "~> 0.2.5"
     "Angara.Serialization", ""
     "Angara.Serialization.Json", ""
-    "Suave", ""
+    "Suave", "~> 1.1.3"
   ]
-
-#load @".paket/load/main.group.fsx"
