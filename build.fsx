@@ -62,6 +62,10 @@ Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp"]
 )
 
+Target "Restore" ( fun _ -> 
+  DotNet.restore id "IfSharp.sln"
+)
+
 Target "CleanDocs" (fun _ ->
     CleanDirs ["docs/output"]
 )
@@ -74,7 +78,7 @@ Target "Build" (fun _ ->
 )
 
 Target "CopyBinaries" (fun _ -> 
-  Fake.IO.Shell.copyDir (__SOURCE_DIRECTORY__ </> "bin") (__SOURCE_DIRECTORY__ </> "src" </> "IfSharp" </> "bin" </> "Release" </> "netcoreapp2.1" </> "osx-x64" </> "publish") (fun _ -> true)
+  Fake.IO.Shell.copyDir (__SOURCE_DIRECTORY__ </> "bin") (__SOURCE_DIRECTORY__ </> "src" </> "IfSharp" </> "bin" </> "Release" </> "netcoreapp2.1" </> "publish") (fun _ -> true)
 )
 
 // --------------------------------------------------------------------------------------
@@ -94,6 +98,7 @@ Target "All" DoNothing
 
 "Clean"
   ==> "AssemblyInfo"
+  ==> "Restore"
   ==> "Build"
   ==> "CopyBinaries"
   ==> "All"
