@@ -8,6 +8,8 @@ open Fake.Git
 open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
 open System
+open Fake.DotNet
+
 
 // --------------------------------------------------------------------------------------
 // START TODO: Provide project-specific details below
@@ -66,24 +68,13 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 Target "Build" (fun _ ->
-    [ "src/IfSharp/IfSharp.fsproj"] 
-      |> MSBuildRelease "bin" "Rebuild"
-      |> ignore
+    DotNet.build (fun o -> { o with OutputPath = Some (__SOURCE_DIRECTORY__ </> "bin") }) "src/IfSharp/IfSharp.fsproj"
 )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
-
 Target "xUnit" (fun _ ->
-    !! "**/bin/**/*.Tests.dll"
-    |> Fake.Testing.XUnit2.xUnit2 (fun p ->
-        {p with
-            TimeOut = TimeSpan.FromMinutes 5.
-            HtmlOutputPath = Some "xunit.html"})
-)
-
-FinalTarget "CloseTestRunner" (fun _ ->  
-    ProcessHelper.killProcess "nunit-agent.exe"
+    DotNet.test (fun o -> { o with Common = { o.Common with WorkingDirectory = "tests/IfSharp.Kernel.Tests"} }) "IfSharp.Kernel.Tests.fsproj"
 )
 
 

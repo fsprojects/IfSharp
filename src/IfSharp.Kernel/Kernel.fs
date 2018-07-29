@@ -95,7 +95,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         logMessage message
 
     /// Decodes byte array into a string using UTF8
-    let decode (bytes) =
+    let decode (bytes : byte []) =
         Encoding.UTF8.GetString(bytes)
 
     /// Encodes a string into a byte array using UTF8
