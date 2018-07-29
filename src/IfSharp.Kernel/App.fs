@@ -189,6 +189,10 @@ module App =
             // write the version file
             File.WriteAllText(versionFile, Config.Version);
 
+            let writeStream filePath (stream: unit -> Stream) = 
+                use f = File.OpenWrite filePath
+                stream().CopyTo f
+
             // write the startup script
             let codeTemplate = IfSharpResources.ipython_config()
             let code = 
@@ -200,30 +204,29 @@ module App =
             printfn "Saving custom config file [%s]" configFile
             File.WriteAllText(configFile, code)
 
-            let codeqt = IfSharpResources.ipython_qt_config()
-            printfn "Saving custom qt config file [%s]" codeqt
-            File.WriteAllText(configqtFile, codeqt)
+            printfn "Saving custom qt config file [%s]" configqtFile
+            writeStream configqtFile IfSharpResources.ipython_qt_config
 
             // write custom logo file
             printfn "Saving custom logo [%s]" logoFile
-            File.WriteAllBytes(logoFile, IfSharpResources.ifsharp_logo())
+            writeStream logoFile IfSharpResources.ifsharp_logo
 
             // write fsharp css file
             let cssFile = Path.Combine(customDir, "fsharp.css")
             printfn "Saving fsharp css [%s]" cssFile
-            File.WriteAllText(cssFile, IfSharpResources.fsharp_css())
-
+            writeStream cssFile IfSharpResources.fsharp_css
+            
             // write kernel js file
             printfn "Saving kernel js [%s]" kjsFile
-            File.WriteAllText(kjsFile, IfSharpResources.kernel_js())
+            writeStream kjsFile IfSharpResources.kernel_js
 
             // write webintellisense js file
             printfn "Saving webintellisense js [%s]" wjsFile
-            File.WriteAllText(wjsFile, IfSharpResources.webintellisense_js())
+            writeStream wjsFile IfSharpResources.webintellisense_js
 
             // write webintellisense-codemirror js file
             printfn "Saving webintellisense-codemirror js [%s]" wcjsFile
-            File.WriteAllText(wcjsFile, IfSharpResources.webintellisense_codemirror_js())
+            writeStream wcjsFile IfSharpResources.webintellisense_codemirror_js
 
             // Make the Kernel info folder 
             let jsonTemplate = IfSharpResources.ifsharp_kernel_json()
@@ -237,10 +240,10 @@ module App =
             File.WriteAllText(kernelFile, code)
             
             printfn "Saving kernel icon [%s]" logo64File
-            File.WriteAllBytes(logo64File, IfSharpResources.ifsharp_64logo())
+            writeStream logo64File IfSharpResources.ifsharp_64logo
             
             printfn "Saving kernel icon [%s]" logo32File
-            File.WriteAllBytes(logo32File, IfSharpResources.ifsharp_32logo())
+            writeStream logo32File IfSharpResources.ifsharp_32logo
 
             printfn "Installing dependencies via Paket"
             let dependencies = Paket.Dependencies.Locate(System.IO.Path.GetDirectoryName(thisExecutable))

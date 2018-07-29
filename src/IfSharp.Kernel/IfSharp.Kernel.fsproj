@@ -22,7 +22,8 @@
     <Compile Include="Evaluation.fs" />
     <Compile Include="Printers.fs" />
     <Compile Include="Kernel.fs" />
-    <EmbeddedResource Include="IfSharpResources.resx" />
+    <EmbeddedResource Include="../../ipython-profile/**" />
+    <EmbeddedResource Include="../../kernel-spec/**" />
     <Compile Include="App.fs" />
     <Compile Include="Globals.fs" />
     <None Include="Scratch.fsx" />

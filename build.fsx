@@ -68,13 +68,15 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 Target "Build" (fun _ ->
-    DotNet.build (fun o -> { o with OutputPath = Some (__SOURCE_DIRECTORY__ </> "bin") }) "src/IfSharp/IfSharp.fsproj"
+    DotNet.build (fun o -> { o with OutputPath = Some (__SOURCE_DIRECTORY__ </> "bin") 
+                                    Configuration = DotNet.BuildConfiguration.Release }) "src/IfSharp/IfSharp.fsproj"
 )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
 Target "xUnit" (fun _ ->
-    DotNet.test (fun o -> { o with Common = { o.Common with WorkingDirectory = "tests/IfSharp.Kernel.Tests"} }) "IfSharp.Kernel.Tests.fsproj"
+    DotNet.test (fun o -> { o with Common = { o.Common with WorkingDirectory = "tests/IfSharp.Kernel.Tests"  }
+                                   Configuration = DotNet.BuildConfiguration.Release }) "IfSharp.Kernel.Tests.fsproj"
 )
 
 
