@@ -9,6 +9,7 @@ open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
 open System
 open Fake.DotNet
+open Fake.IO
 
 
 // --------------------------------------------------------------------------------------
@@ -68,8 +69,12 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 Target "Build" (fun _ ->
-    DotNet.build (fun o -> { o with OutputPath = Some (__SOURCE_DIRECTORY__ </> "bin") 
-                                    Configuration = DotNet.BuildConfiguration.Release }) "src/IfSharp/IfSharp.fsproj"
+    DotNet.publish (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release
+                                      Runtime = Some "osx-x64" }) "src/IfSharp/IfSharp.fsproj"
+)
+
+Target "CopyBinaries" (fun _ -> 
+  Fake.IO.Shell.copyDir (__SOURCE_DIRECTORY__ </> "bin") (__SOURCE_DIRECTORY__ </> "src" </> "IfSharp" </> "bin" </> "Release" </> "netcoreapp2.1" </> "osx-x64" </> "publish") (fun _ -> true)
 )
 
 // --------------------------------------------------------------------------------------
@@ -90,6 +95,7 @@ Target "All" DoNothing
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
+  ==> "CopyBinaries"
   ==> "All"
 
 "All" 
