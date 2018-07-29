@@ -73,8 +73,7 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 Target "Build" (fun _ ->
-    DotNet.publish (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release
-                                      Runtime = Some "osx-x64" }) "src/IfSharp/IfSharp.fsproj"
+    DotNet.publish (fun o -> { o with Configuration = DotNet.BuildConfiguration.Release }) "src/IfSharp/IfSharp.fsproj"
 )
 
 Target "CopyBinaries" (fun _ -> 
