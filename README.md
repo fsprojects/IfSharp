@@ -69,8 +69,8 @@ Jupyter will start and a notebook with F# can be selected. This can be run via "
 # create ifsharp folder under /tmp
 mkdir ifsharp
 cd ifsharp
-wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0-beta3/IfSharp.v3.0.0-beta3.zip
-unzip IfSharp.v3.0.0-beta3.zip
+wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0/IfSharp.v3.0.0.zip
+unzip IfSharp.v3.0.0.zip
 chmod +x ifsharp.exe
 ```
 4. From the [Azure portal](https://portal.azure.com/), open your cluster.  See [List and show clusters](../hdinsight-administer-use-portal-linux.md#list-and-show-clusters) for the instructions. The cluster is opened in a new portal blade.
