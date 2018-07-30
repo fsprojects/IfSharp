@@ -3,3 +3,4 @@ NetMQ
 Trinet.Core.IO.Ntfs
 FSharp.Core
 AsyncIO
+System.Net.Http
