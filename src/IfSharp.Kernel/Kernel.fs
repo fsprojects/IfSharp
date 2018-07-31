@@ -353,20 +353,25 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                 // And then invoking it
                 let noneTaskCreationOptions: TaskCreationOptions option = None
                 let noneCancelationToken: CancellationToken option = None
-                let resultTaskObj = methodInfo2.Invoke(null,[|value; noneTaskCreationOptions; noneCancelationToken|])
 
-                // Extracting Task<argT>.Result property accessor
-                let taskT = typedefof<Task<_>>
-                let taskT2 = taskT.MakeGenericType([|argT|])
-                let resultExtractor = taskT2.GetProperty("Result")
-                // And invoking it
-                let extractedResult = resultExtractor.GetValue(resultTaskObj)
+                try
+                    let resultTaskObj = methodInfo2.Invoke(null,[|value; noneTaskCreationOptions; noneCancelationToken|])
 
-                // updating corresponding cell content by printing resulted argT value
-                let printer = Printers.findDisplayPrinter (argT)
-                let (_, callback) = printer
-                let callbackValue = callback(extractedResult)                
-                sendDisplayData callbackValue.ContentType callbackValue.Data "update_display_data" display_id
+                    // Extracting Task<argT>.Result property accessor
+                    let taskT = typedefof<Task<_>>
+                    let taskT2 = taskT.MakeGenericType([|argT|])
+                    let resultExtractor = taskT2.GetProperty("Result")
+                    // And invoking it
+                    let extractedResult = resultExtractor.GetValue(resultTaskObj)
+
+                    // updating corresponding cell content by printing resulted argT value
+                    let printer = Printers.findDisplayPrinter (argT)
+                    let (_, callback) = printer
+                    let callbackValue = callback(extractedResult)                
+                    sendDisplayData callbackValue.ContentType callbackValue.Data "update_display_data" display_id
+                with
+                    | :? Exception as exc -> 
+                        sendDisplayData "text/plain" (sprintf "EXCEPTION OCCURRED:\r\n%A" exc) "update_display_data" display_id
             }
             Async.StartImmediate deferredOutput
         else
