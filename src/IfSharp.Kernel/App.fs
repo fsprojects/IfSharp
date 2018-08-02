@@ -13,6 +13,7 @@ open NetMQ
 open Microsoft.FSharp.Reflection
 
 module App = 
+    open System.Threading.Tasks
 
     let internal Black        = "\u001B[0;30m"
     let internal Blue         = "\u001B[0;34m"
@@ -47,14 +48,10 @@ module App =
     let Display (value : obj) =
 
         if value <> null then
-            if sbPrint.Length > 0 then
-                Kernel.Value.SendDisplayData("text/plain", sbPrint.ToString())
+            if sbPrint.Length > 0 then                
+                Kernel.Value.SendDisplayData("text/plain", sbPrint.ToString()) |> ignore
                 sbPrint.Clear() |> ignore
-
-            let printer = Printers.findDisplayPrinter (value.GetType())
-            let (_, callback) = printer
-            let callbackValue = callback(value)
-            Kernel.Value.SendDisplayData(callbackValue.ContentType, callbackValue.Data)
+            Kernel.Value.DisplayValue(value)
 
     /// Global help function
     let Help (value : obj) = 
@@ -294,6 +291,6 @@ module App =
             // start the kernel
             Kernel <- Some (IfSharpKernel(connectionInformation))
             Kernel.Value.StartAsync()
-
+            
             // block forever
             Thread.Sleep(Timeout.Infinite)
