@@ -306,7 +306,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     #fsioutput ["on"|"off"];;   Toggle output display on/off
     """
             let fsiHelp = sbOut.ToString()
-            sendExecutionResult (ifsharpHelp + fsiHelp)
+            sendExecutionResult (ifsharpHelp + fsiHelp) [] (Guid.NewGuid().ToString())
             sbOut.Clear() |> ignore
 
         //This is a persistent toggle, just respect the last one
@@ -370,7 +370,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                     let callbackValue = callback(extractedResult)                
                     sendDisplayData callbackValue.ContentType callbackValue.Data "update_display_data" display_id
                 with
-                    | :? Exception as exc -> 
+                    | exc -> 
                         sendDisplayData "text/plain" (sprintf "EXCEPTION OCCURRED:\r\n%A" exc) "update_display_data" display_id
             }
             Async.StartImmediate deferredOutput
