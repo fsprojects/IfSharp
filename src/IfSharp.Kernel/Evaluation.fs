@@ -55,7 +55,7 @@ module Evaluation =
             fsiObj.PrintWidth <- 10
             fsiObj.PrintSize <- 10
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(fsiObj, false)
-        let args = [|"--noninteractive"; "--define:HAS_FSI_ADDHTMLPRINTER" |]
+        let args = [|"--noninteractive"; "--define:HAS_FSI_ADDHTMLPRINTER"; "--define:IFSHARP" |]
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, args, inStream, outStream, errStream)
 
         // Load the `fsi` object from the right location of the `FSharp.Compiler.Interactive.Settings.dll`
