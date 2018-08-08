@@ -39,6 +39,17 @@ type CommCallbacks = {
     onClose: CommCloseCallback
     }
 
+type SendExecutionResultType = string -> (string * obj) list -> string -> unit
+type SendDisplayDataType = string -> obj -> string -> string -> unit
+
+type IAsyncPrinter =
+    interface
+        /// Whether the printer is capable of printing the object
+        abstract member CanPrint: obj -> bool
+        /// Print the project in asynchronous manner (possible doing some async computations)
+        abstract member Print: obj -> OutputType -> SendExecutionResultType -> SendDisplayDataType -> unit
+    end
+        
 
 type IfSharpKernel(connectionInformation : ConnectionInformation) = 
     // heartbeat
@@ -70,6 +81,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let nuGetManager = NuGetManager(FileInfo(".").FullName)
     let mutable executionCount = 0
     let mutable lastMessage : Option<KernelMessage> = None
+    let mutable asyncPrinters: IAsyncPrinter list = []
 
     /// Registered comm definitions (can be activated from Frontend side by comm_open message containing registered comm_target name)
     let mutable registeredComms : Map<CommTargetName,CommCallbacks> = Map.empty;
@@ -244,7 +256,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             }
 
         sendStateBusy msg
-        sendMessage shellSocket msg "kernel_info_reply" content
+        sendMessage shellSocket msg "kernel_info_reply" content    
 
     /// Sends display data information immediately
     let sendDisplayData (contentType) (displayItem) (messageType) (display_id) = 
@@ -324,57 +336,12 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         newCode, nugetErrors
 
     /// Sends the "value" to the frontend presented in a proper  way
-    let produceOutput value outputType =
-        let t = value.GetType()
-        let display_id = Guid.NewGuid().ToString()
-        if t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Async<_>> then                
-            let deferredOutput = async {
-                // This async execution will block the thread when accessing ".Result" of the Task<T> (see below).                                        
-                // I do such blocking here because attaching task continuation via reflection is too complicated, so simply block the dedicated thread                
-                
-                // Before switching to a dedicated thread the display placeholder is produced synchronously
-                // This is done to keep the visual order of "produceOutput" call outputs (in case of several async computations are initiated) in the frontend
-                let deferredMessage = "(Async is being calculated. Results will appear as they are ready)"                
-                match outputType with
-                | ExecuteResultOutputType -> sendExecutionResult deferredMessage [] display_id
-                | DisplayDataOutputType -> sendDisplayData "text/plain" deferredMessage "display_data" display_id
-
-                // the rest is done in dedicated thread
-                do! Async.SwitchToNewThread()
-                
-                // We are dealing with Async<argT>
-                let argT = t.GenericTypeArguments.[0]
-
-                // Extracting Async<argT>.StartAsTask with reflection
-                let asyncT = typedefof<Async>
-                let methodInfo = asyncT.GetMethod("StartAsTask")
-                let methodInfo2 = methodInfo.MakeGenericMethod([|argT|])
-
-                // And then invoking it
-                let noneTaskCreationOptions: TaskCreationOptions option = None
-                let noneCancelationToken: CancellationToken option = None
-
-                try
-                    let resultTaskObj = methodInfo2.Invoke(null,[|value; noneTaskCreationOptions; noneCancelationToken|])
-
-                    // Extracting Task<argT>.Result property accessor
-                    let taskT = typedefof<Task<_>>
-                    let taskT2 = taskT.MakeGenericType([|argT|])
-                    let resultExtractor = taskT2.GetProperty("Result")
-                    // And invoking it
-                    let extractedResult = resultExtractor.GetValue(resultTaskObj)
-
-                    // updating corresponding cell content by printing resulted argT value
-                    let printer = Printers.findDisplayPrinter (argT)
-                    let (_, callback) = printer
-                    let callbackValue = callback(extractedResult)                
-                    sendDisplayData callbackValue.ContentType callbackValue.Data "update_display_data" display_id
-                with
-                    | exc -> 
-                        sendDisplayData "text/plain" (sprintf "EXCEPTION OCCURRED:\r\n%A" exc) "update_display_data" display_id
-            }
-            Async.StartImmediate deferredOutput
-        else
+    let produceOutput value outputType =        
+        match (List.tryFind (fun (printer:IAsyncPrinter) -> printer.CanPrint value) asyncPrinters) with
+        | Some(asyncPrinter) -> asyncPrinter.Print value outputType sendExecutionResult sendDisplayData
+        | None ->
+            // Regular immediate printing of returned object
+            let display_id = Guid.NewGuid().ToString()
             let printer = Printers.findDisplayPrinter (value.GetType())
             let (_, callback) = printer
             let callbackValue = callback(value)
@@ -390,7 +357,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                         // adding originally returned value as optional
                         sendExecutionResult plainText [callbackValue.ContentType,callbackValue.Data] display_id                    
                 | DisplayDataOutputType ->
-                    sendDisplayData callbackValue.ContentType callbackValue.Data "display_data" display_id
+                    sendDisplayData callbackValue.ContentType callbackValue.Data "display_data" display_id                
 
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
@@ -748,7 +715,11 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     member __.UpdateDisplayData (contentType, displayItem,display_id) =        
         sendDisplayData contentType displayItem "update_display_data" display_id
         display_id
-
+    
+    /// Registers the passed printer to be used in Display function result display and cell calculation result display
+    member __.RegisterAsyncPrinter(printer:IAsyncPrinter) =
+        asyncPrinters <- printer::asyncPrinters
+    
     /// Starts the kernel asynchronously
     member __.StartAsync() = 
         

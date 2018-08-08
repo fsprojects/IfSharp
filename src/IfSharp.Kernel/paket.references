@@ -1,3 +1,4 @@
+FSharp.Control.AsyncSeq
 FSharp.Compiler.Service
 NetMQ
 Newtonsoft.Json

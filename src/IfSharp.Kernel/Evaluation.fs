@@ -66,6 +66,11 @@ module Evaluation =
         fsiSession.EvalInteraction(addHtmlPrinter)
         sbOut.Remove(origLength, sbOut.Length-origLength) |> ignore
         
+        //Loading AsyncSeq assembly
+        let assembliesDir = Path.GetDirectoryName(fsiLocation)
+        let asyncSeqAssemblyLocation = Path.Combine(assembliesDir,"FSharp.Control.AsyncSeq.dll")        
+        fsiSession.EvalInteraction("#r @\"" + asyncSeqAssemblyLocation + "\"")
+
         // Get reference to the extra HTML printers registered inside the FSI session
         let extraPrinters = 
           unbox<ResizeArray<System.Type * (obj -> seq<string * string> * string)>>
