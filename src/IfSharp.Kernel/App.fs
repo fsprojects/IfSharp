@@ -14,7 +14,6 @@ open Microsoft.FSharp.Reflection
 
 module App = 
     open System.Threading.Tasks
-    open IfSharp
 
     let internal Black        = "\u001B[0;30m"
     let internal Blue         = "\u001B[0;34m"
@@ -291,7 +290,6 @@ module App =
 
             // start the kernel
             Kernel <- Some (IfSharpKernel(connectionInformation))
-            
             Kernel.Value.StartAsync()
             
             // block forever

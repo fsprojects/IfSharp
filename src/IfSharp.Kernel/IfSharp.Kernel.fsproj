@@ -91,7 +91,6 @@
     <Compile Include="Evaluation.fs" />
     <Compile Include="Printers.fs" />
     <Compile Include="Kernel.fs" />
-    <Compile Include="AsyncDisplay.fs" />
     <EmbeddedResource Include="IfSharpResources.resx" />
     <Compile Include="App.fs" />
     <Compile Include="Globals.fs" />
