@@ -6,7 +6,6 @@ redirects: force
 
 nuget FSharp.Compiler.Service ~> 22.0.3
 nuget FSharp.Compiler.Tools ~> 10.0.2
-nuget FSharp.Control.AsyncSeq
 nuget FSharp.Core = 4.3.4
 nuget AsyncIO 0.1.26
 nuget NetMQ ~> 4.0.0.1

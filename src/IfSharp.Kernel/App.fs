@@ -292,10 +292,6 @@ module App =
             // start the kernel
             Kernel <- Some (IfSharpKernel(connectionInformation))
             
-            // registering some asynchronous result printers
-            Kernel.Value.RegisterAsyncPrinter(AsyncDisplay.AsyncPrinter())
-            Kernel.Value.RegisterAsyncPrinter(AsyncDisplay.AsyncSeqPrinter())
-
             Kernel.Value.StartAsync()
             
             // block forever

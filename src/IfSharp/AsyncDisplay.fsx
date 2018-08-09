@@ -1,4 +1,10 @@
-﻿module IfSharp.AsyncDisplay
+﻿#load "Paket.fsx"
+
+Paket.Package ["FSharp.Control.AsyncSeq"]
+
+#load "Paket.Generated.Refs.fsx"
+#r "IfSharp.Kernel.dll"
+
 
 open System
 open FSharp.Control
@@ -6,7 +12,7 @@ open System.Reflection
 open System.Threading.Tasks
 open System.Threading
 open System.Text
-open IfSharp.Kernel
+open FSharp.Control
 
 /// Returns the AsyncSeq<SpecificT'> if the passed object is AsyncSeq<T'>, None otherwise
 let getAsyncSeqType (t:Type) =
@@ -102,11 +108,11 @@ type AsyncSeqGenEnumerable(asyncSeqObj:obj) =
 
 /// Prints any Async<T'> by computing async in separate thread. Prints resulting 'T using registered (synchronous) printers
 type AsyncPrinter() =
-    interface Kernel.IAsyncPrinter with
+    interface IfSharp.Kernel.IAsyncPrinter with
         member __.CanPrint value =
             let t = value.GetType()
             t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Async<_>>
-        member __.Print value outputType sendExecutionResult sendDisplayData =
+        member __.Print value isExecutionResult sendExecutionResult sendDisplayData =
             let t = value.GetType()
             let display_id = Guid.NewGuid().ToString()
             
@@ -117,9 +123,10 @@ type AsyncPrinter() =
                 // Before switching to a dedicated thread the display placeholder is produced synchronously
                 // This is done to keep the visual order of "produceOutput" call outputs (in case of several async computations are initiated) in the frontend
                 let deferredMessage = "(Async is being calculated. Results will appear as they are ready)"                
-                match outputType with
-                | ExecuteResultOutputType -> sendExecutionResult deferredMessage [] display_id
-                | DisplayDataOutputType -> sendDisplayData "text/plain" deferredMessage "display_data" display_id
+                if isExecutionResult then
+                    sendExecutionResult deferredMessage [] display_id
+                else
+                    sendDisplayData "text/plain" deferredMessage "display_data" display_id
 
                 // the rest is done in dedicated thread
                 do! Async.SwitchToNewThread()
@@ -147,7 +154,7 @@ type AsyncPrinter() =
                     let extractedResult = resultExtractor.GetValue(resultTaskObj)
 
                     // updating corresponding cell content by printing resulted argT value
-                    let printer = Printers.findDisplayPrinter (argT)
+                    let printer = IfSharp.Kernel.Printers.findDisplayPrinter (argT)
                     let (_, callback) = printer
                     let callbackValue = callback(extractedResult)                
                     sendDisplayData callbackValue.ContentType callbackValue.Data "update_display_data" display_id
@@ -159,26 +166,27 @@ type AsyncPrinter() =
                 
 /// Prints any AsyncSeq<T'> by pooling elements from it one by one. Updates the output to reflect the most recently computed element.
 type AsyncSeqPrinter() =
-    interface Kernel.IAsyncPrinter with
+    interface IfSharp.Kernel.IAsyncPrinter with
         member __.CanPrint value =
             let t = value.GetType()
             match getAsyncSeqType t with
             |   Some _ -> true
             |   None -> false
-        member __.Print value outputType sendExecutionResult sendDisplayData =                
+        member __.Print value isExecutionResult sendExecutionResult sendDisplayData =                
             let display_id = Guid.NewGuid().ToString()
             
             let deferredOutput = async {
                 
                 let deferredMessage = "(AsyncSeq is being calculated. Results will appear as they are ready)"                
-                match outputType with
-                | ExecuteResultOutputType -> sendExecutionResult deferredMessage [] display_id
-                | DisplayDataOutputType -> sendDisplayData "text/plain" deferredMessage "display_data" display_id                                
+                if isExecutionResult then
+                    sendExecutionResult deferredMessage [] display_id
+                else
+                    sendDisplayData "text/plain" deferredMessage "display_data" display_id                                
                 
                 let asyncSeqObj = AsyncSeqGenEnumerable value
 
                 let printer obj1 =
-                    let printer = Printers.findDisplayPrinter (obj1.GetType())
+                    let printer = IfSharp.Kernel.Printers.findDisplayPrinter (obj1.GetType())
                     let (_, callback) = printer
                     let callbackValue = callback(obj1)
                     
@@ -190,3 +198,7 @@ type AsyncSeqPrinter() =
                         sendDisplayData "text/plain" (sprintf "EXCEPTION OCCURRED:\r\n%A" exc) "update_display_data" display_id
             }            
             Async.StartImmediate deferredOutput                
+
+
+IfSharp.Kernel.Printers.addAsyncDisplayPrinter(AsyncPrinter())
+IfSharp.Kernel.Printers.addAsyncDisplayPrinter(AsyncSeqPrinter())

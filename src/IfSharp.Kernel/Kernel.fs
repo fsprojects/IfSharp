@@ -25,10 +25,6 @@ type CommCloseCallback = CommTearDown  -> unit
 type CommId = string
 type CommTargetName = string
 
-type OutputType =
-    |   ExecuteResultOutputType
-    |   DisplayDataOutputType
-
 /// The set of callbacks which define comm registration at the kernel side
 type CommCallbacks = {
     /// called upon comm creation
@@ -38,18 +34,6 @@ type CommCallbacks = {
     /// called upon comm close
     onClose: CommCloseCallback
     }
-
-type SendExecutionResultType = string -> (string * obj) list -> string -> unit
-type SendDisplayDataType = string -> obj -> string -> string -> unit
-
-type IAsyncPrinter =
-    interface
-        /// Whether the printer is capable of printing the object
-        abstract member CanPrint: obj -> bool
-        /// Print the project in asynchronous manner (possible doing some async computations)
-        abstract member Print: obj -> OutputType -> SendExecutionResultType -> SendDisplayDataType -> unit
-    end
-        
 
 type IfSharpKernel(connectionInformation : ConnectionInformation) = 
     // heartbeat
@@ -80,8 +64,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let payload = new List<Payload>()
     let nuGetManager = NuGetManager(FileInfo(".").FullName)
     let mutable executionCount = 0
-    let mutable lastMessage : Option<KernelMessage> = None
-    let mutable asyncPrinters: IAsyncPrinter list = []
+    let mutable lastMessage : Option<KernelMessage> = None    
 
     /// Registered comm definitions (can be activated from Frontend side by comm_open message containing registered comm_target name)
     let mutable registeredComms : Map<CommTargetName,CommCallbacks> = Map.empty;
@@ -336,9 +319,9 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         newCode, nugetErrors
 
     /// Sends the "value" to the frontend presented in a proper  way
-    let produceOutput value outputType =        
-        match (List.tryFind (fun (printer:IAsyncPrinter) -> printer.CanPrint value) asyncPrinters) with
-        | Some(asyncPrinter) -> asyncPrinter.Print value outputType sendExecutionResult sendDisplayData
+    let produceOutput value isExecutionResult =
+        match Printers.tryFindAsyncPrinter value with
+        | Some(asyncPrinter) -> asyncPrinter.Print value isExecutionResult sendExecutionResult sendDisplayData
         | None ->
             // Regular immediate printing of returned object
             let display_id = Guid.NewGuid().ToString()
@@ -346,17 +329,16 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             let (_, callback) = printer
             let callbackValue = callback(value)
 
-            match outputType with
-                | ExecuteResultOutputType ->
-                    if callbackValue.ContentType = "text/plain" then                                    
-                        sendExecutionResult callbackValue.Data [] display_id
-                    else
-                        // printer returned non plain text while plain text is required by the protocol
-                        // thus generating compulsory value
-                        let plainText = sprintf "%A" value
-                        // adding originally returned value as optional
-                        sendExecutionResult plainText [callbackValue.ContentType,callbackValue.Data] display_id                    
-                | DisplayDataOutputType ->
+            if isExecutionResult then
+                if callbackValue.ContentType = "text/plain" then                                    
+                    sendExecutionResult callbackValue.Data [] display_id
+                else
+                    // printer returned non plain text while plain text is required by the protocol
+                    // thus generating compulsory value
+                    let plainText = sprintf "%A" value
+                    // adding originally returned value as optional
+                    sendExecutionResult plainText [callbackValue.ContentType,callbackValue.Data] display_id                    
+            else
                     sendDisplayData callbackValue.ContentType callbackValue.Data "display_data" display_id                
 
     /// Handles an 'execute_request' message
@@ -427,7 +409,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
                         match lastExpression with
                         | Some(it) -> 
                             if it.ReflectionType <> typeof<unit> then
-                                produceOutput it.ReflectionValue OutputType.ExecuteResultOutputType
+                                produceOutput it.ReflectionValue true
                         | None -> ()
 
 
@@ -694,7 +676,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     
     /// Shows the value in a frontend
     member __.DisplayValue(value) = 
-        produceOutput value OutputType.DisplayDataOutputType
+        produceOutput value false
 
     /// Sends plain text execution results as well as other optional representations
     /// Return display_id of generated cell
@@ -714,11 +696,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Return display_id of updated cell
     member __.UpdateDisplayData (contentType, displayItem,display_id) =        
         sendDisplayData contentType displayItem "update_display_data" display_id
-        display_id
-    
-    /// Registers the passed printer to be used in Display function result display and cell calculation result display
-    member __.RegisterAsyncPrinter(printer:IAsyncPrinter) =
-        asyncPrinters <- printer::asyncPrinters
+        display_id    
     
     /// Starts the kernel asynchronously
     member __.StartAsync() = 

@@ -115,6 +115,9 @@
     <Content Include="XPlot.Plotly.Paket.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="AsyncDisplay.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="hide\paket.dependencies">
       <Link>paket.dependencies</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -46,10 +46,10 @@ module Evaluation =
         // Mono fails to handle tailcall in Fsi printing code, thus constraining the length of print on Mono
         // https://github.com/mono/mono/issues/8975
         if Type.GetType("Mono.Runtime") <> null then
-            // Default PrintLength value of 100 triggeres the issue when printing the array of size 12x100
+            // Default PrintLength value of 100 triggers the issue when printing the array of size 12x100
             // Value of 50 "postpones" the issue. E.g. Issue is triggered on printing larger arrays of size 50x100
-            // Value of 10 seems to work, arrays 1000x1000 are printed without the error, although trancated with elipsis as expected
-            // After the value is set to 10, effectivly the sequences are truncated to 100 elements during printing . Maybe F# interactive issue
+            // Value of 10 seems to work, arrays 1000x1000 are printed without the error, although truncated with ellipsis as expected
+            // After the value is set to 10, effectively the sequences are truncated to 100 elements during printing . Maybe F# interactive issue
             fsiObj.PrintLength <- 10
             fsiObj.PrintDepth <- 10
             fsiObj.PrintWidth <- 10
@@ -64,12 +64,7 @@ module Evaluation =
         let fsiLocation = typeof<Microsoft.FSharp.Compiler.Interactive.InteractiveSession>.Assembly.Location    
         fsiSession.EvalInteraction("#r @\"" + fsiLocation + "\"")
         fsiSession.EvalInteraction(addHtmlPrinter)
-        sbOut.Remove(origLength, sbOut.Length-origLength) |> ignore
-        
-        //Loading AsyncSeq assembly
-        let assembliesDir = Path.GetDirectoryName(fsiLocation)
-        let asyncSeqAssemblyLocation = Path.Combine(assembliesDir,"FSharp.Control.AsyncSeq.dll")        
-        fsiSession.EvalInteraction("#r @\"" + asyncSeqAssemblyLocation + "\"")
+        sbOut.Remove(origLength, sbOut.Length-origLength) |> ignore        
 
         // Get reference to the extra HTML printers registered inside the FSI session
         let extraPrinters = 
