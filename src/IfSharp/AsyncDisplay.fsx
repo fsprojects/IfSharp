@@ -1,10 +1,5 @@
-﻿#load "Paket.fsx"
-
-Paket.Package ["FSharp.Control.AsyncSeq"]
-
-#load "Paket.Generated.Refs.fsx"
+﻿#r "packages/FSharp.Control.AsyncSeq/lib/net45/FSharp.Control.AsyncSeq.dll"
 #r "IfSharp.Kernel.dll"
-
 
 open System
 open FSharp.Control
