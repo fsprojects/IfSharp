@@ -19,7 +19,7 @@ type IAsyncPrinter =
 module Printers =
 
     let mutable internal displayPrinters : list<Type * (obj -> BinaryOutput)> = []
-    let mutable internal asyncPrinters : list<IAsyncPrinter> = []
+    let mutable internal asyncPrinters : list<IAsyncPrinter*int> = [] //(printer * its priority). Capable printer with higher priority is selected for printing
 
     /// Convenience method for encoding a string within HTML
     let internal htmlEncode(str) = HttpUtility.HtmlEncode(str)
@@ -28,8 +28,16 @@ module Printers =
     let addDisplayPrinter(printer : 'T -> BinaryOutput) =
         displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
     
-    let addAsyncDisplayPrinter(printer:IAsyncPrinter) =
-        asyncPrinters <- printer :: asyncPrinters
+    /// Adds a custom async display printer for extensibility
+    /// Priority affects the cases where several printers are capabale of printing the save value.
+    /// The printer with higher priority is selected
+    let addAsyncDisplayPrinter(printer:IAsyncPrinter, priority: int) =
+        let printers = List.filter (fun entry -> let p,_ = entry in p <> printer) asyncPrinters //unregister if previously registered
+        asyncPrinters <- (printer,priority) :: printers
+        
+    /// Removes all registered async diaplay printers
+    let clearDisplayPrinters() =
+        asyncPrinters <- List.empty
 
     /// Default display printer
     let defaultDisplayPrinter(x) =
@@ -78,7 +86,11 @@ module Printers =
         { ContentType = "text/plain"; Data = sprintf "%A : %s" func funcArguments }
     
     let tryFindAsyncPrinter(objToPrint:obj)=
-        Seq.tryFind (fun (printer:IAsyncPrinter) -> printer.CanPrint objToPrint) asyncPrinters
+        asyncPrinters
+        |> Seq.filter (fun entry -> let (p:IAsyncPrinter),_ = entry in p.CanPrint objToPrint) //only capable
+        |> Seq.sortByDescending (fun entry -> let _,priority = entry in priority) //sorted by priority desc
+        |> Seq.map (fun entry -> let printer,_ = entry in printer) // filtering out priority data
+        |> Seq.tryHead
 
     /// Finds a display printer based off of the type
     let findDisplayPrinter(findType) =

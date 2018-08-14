@@ -57,7 +57,7 @@ let Package list =
 let private addGitHub repo file version options =
     remove_quiet repo
     deps.AddGithub(
-        Some "GitHub",
+        None,
         repo,
         file,
         version,
@@ -100,7 +100,7 @@ let GitHub list =
 let private addGit repo version options =
     printfn "addGit repo=%s version=%s" repo version
     deps.AddGit(
-        Some "Git",
+        None,
         repo,
         version,
         options)

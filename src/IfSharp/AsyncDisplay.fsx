@@ -1,4 +1,4 @@
-﻿#r "packages/FSharp.Control.AsyncSeq/lib/net45/FSharp.Control.AsyncSeq.dll"
+﻿#load ".paket/load/FSharp.Control.AsyncSeq.fsx"
 #r "IfSharp.Kernel.dll"
 
 open System
@@ -102,7 +102,9 @@ type AsyncSeqGenEnumerable(asyncSeqObj:obj) =
                 failwith "asyncSeqObj is supposed to be AsyncSeq<_>"
 
 /// Prints any Async<T'> by computing async in separate thread. Prints resulting 'T using registered (synchronous) printers
-type AsyncPrinter() =
+type AsyncPrinter private () =
+    static let instance = AsyncPrinter()
+    static member Instance : IfSharp.Kernel.IAsyncPrinter = upcast instance
     interface IfSharp.Kernel.IAsyncPrinter with
         member __.CanPrint value =
             let t = value.GetType()
@@ -161,6 +163,8 @@ type AsyncPrinter() =
                 
 /// Prints any AsyncSeq<T'> by pooling elements from it one by one. Updates the output to reflect the most recently computed element.
 type AsyncSeqPrinter() =
+    static let instance = AsyncSeqPrinter()
+    static member Instance : IfSharp.Kernel.IAsyncPrinter = upcast instance    
     interface IfSharp.Kernel.IAsyncPrinter with
         member __.CanPrint value =
             let t = value.GetType()
@@ -195,5 +199,5 @@ type AsyncSeqPrinter() =
             Async.StartImmediate deferredOutput                
 
 
-IfSharp.Kernel.Printers.addAsyncDisplayPrinter(AsyncPrinter())
-IfSharp.Kernel.Printers.addAsyncDisplayPrinter(AsyncSeqPrinter())
+IfSharp.Kernel.Printers.addAsyncDisplayPrinter(AsyncPrinter.Instance, 10)
+IfSharp.Kernel.Printers.addAsyncDisplayPrinter(AsyncSeqPrinter.Instance, 10)
