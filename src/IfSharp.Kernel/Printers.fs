@@ -4,9 +4,22 @@ open System
 open System.Text
 open System.Web
 
+type SendExecutionResultType = string -> (string * obj) list -> string -> unit
+type SendDisplayDataType = string -> obj -> string -> string -> unit
+
+type IAsyncPrinter =
+    interface
+        /// Whether the printer is capable of printing the object
+        abstract member CanPrint: obj -> bool
+        /// Print the project in asynchronous manner (possible doing some async computations)
+        /// what to print -> is the print is execution_result -> send results callback -> send dispaly callback
+        abstract member Print: obj -> bool -> SendExecutionResultType -> SendDisplayDataType -> unit
+    end
+
 module Printers =
 
     let mutable internal displayPrinters : list<Type * (obj -> BinaryOutput)> = []
+    let mutable internal asyncPrinters : list<IAsyncPrinter> = []
 
     /// Convenience method for encoding a string within HTML
     let internal htmlEncode(str) = HttpUtility.HtmlEncode(str)
@@ -14,6 +27,9 @@ module Printers =
     /// Adds a custom display printer for extensibility
     let addDisplayPrinter(printer : 'T -> BinaryOutput) =
         displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
+    
+    let addAsyncDisplayPrinter(printer:IAsyncPrinter) =
+        asyncPrinters <- printer :: asyncPrinters
 
     /// Default display printer
     let defaultDisplayPrinter(x) =
@@ -60,6 +76,9 @@ module Printers =
     let functionPrinter(func:obj) =
         let funcArguments = possiblyAFuncAsString (func.GetType())
         { ContentType = "text/plain"; Data = sprintf "%A : %s" func funcArguments }
+    
+    let tryFindAsyncPrinter(objToPrint:obj)=
+        Seq.tryFind (fun (printer:IAsyncPrinter) -> printer.CanPrint objToPrint) asyncPrinters
 
     /// Finds a display printer based off of the type
     let findDisplayPrinter(findType) =
