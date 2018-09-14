@@ -13,7 +13,7 @@ NUGET
       System.Reflection.Metadata (>= 1.6)
       System.ValueTuple (>= 4.4)
     FSharp.Compiler.Tools (10.2.1)
-    FSharp.Core (4.3.4)
+    FSharp.Core (4.5.2)
     Microsoft.NETCore.Platforms (2.1)
     Mono.Cecil (0.10)
     NetMQ (4.0.0.1)
