@@ -1,3 +1,3 @@
 #load "Paket.fsx"
 
-Paket.Version ["XPlot.GoogleCharts", "~> 1.4.2"]
+Paket.Version ["XPlot.GoogleCharts", "1.5.0"]
