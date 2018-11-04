@@ -114,6 +114,32 @@ type Util =
             ContentType = if contentType.IsSome then contentType.Value else "image/jpeg";
             Data = bytes;
         }
+    
+    /// Load JavaScript from URL and inline it. Hide RequireJS to make it load in global scope.
+    static member LoadGlobalJavaScript(url:string) =
+        //Hope one day to replace this with a sane standardised ES module loader!
+        use wc = new System.Net.WebClient()
+
+        //Here we hide Require
+        let script =
+            wc.DownloadString url
+            |> sprintf
+                """<script type="text/javascript">
+var require_save = require;
+var requirejs_save = requirejs;
+var define_save = define;
+require = requirejs = define = undefined;
+%s
+require = require_save;
+requirejs = requirejs_save;
+define = define_save;
+"""
+                
+        { Html = script }
+
+
+    static member InlineJavaScript(javaScript:string) =
+        { Html = """<script type="text/javascript">""" + javaScript + """</script>""" }
 
     static member Base64 (bytes:seq<byte>, contentType:string) =
         let base64 = Convert.ToBase64String(Array.ofSeq bytes)
