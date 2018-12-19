@@ -1,12 +1,12 @@
 REDIRECTS: FORCE
-RESTRICTION: == net471
+RESTRICTION: == net472
 NUGET
   remote: https://api.nuget.org/v3/index.json
     AsyncIO (0.1.26)
     Chessie (0.6)
       FSharp.Core (>= 4.0.1.7-alpha)
       NETStandard.Library (>= 1.6)
-    FAKE (5.3)
+    FAKE (5.8.4)
     FSharp.Compiler.Service (25.0.1)
       FSharp.Core (>= 4.1.18)
       System.Collections.Immutable (>= 1.5)
@@ -28,22 +28,8 @@ NUGET
       Mono.Cecil (>= 0.10.0-beta6)
       Newtonsoft.Json
     System.Collections.Immutable (1.5)
-    System.IO (4.3)
-    System.Net.Http (4.3.1)
-      System.Security.Cryptography.X509Certificates (>= 4.3)
     System.Reflection.Metadata (1.6)
       System.Collections.Immutable (>= 1.5)
-    System.Runtime (4.3)
-    System.Security.Cryptography.Algorithms (4.3.1)
-      System.IO (>= 4.3)
-      System.Runtime (>= 4.3)
-      System.Security.Cryptography.Encoding (>= 4.3)
-      System.Security.Cryptography.Primitives (>= 4.3)
-    System.Security.Cryptography.Encoding (4.3)
-    System.Security.Cryptography.Primitives (4.3)
-    System.Security.Cryptography.X509Certificates (4.3.2)
-      System.Security.Cryptography.Algorithms (>= 4.3)
-      System.Security.Cryptography.Encoding (>= 4.3)
     System.ValueTuple (4.5)
     Trinet.Core.IO.Ntfs (4.1.1)
     xunit (2.1)

@@ -1,6 +1,6 @@
 version 5.194.0
 
-framework: net471
+framework: net472
 source https://api.nuget.org/v3/index.json
 redirects: force
 
@@ -17,4 +17,4 @@ nuget Paket.Core ~> 5.194.0
 nuget Trinet.Core.IO.Ntfs
 
 #https://github.com/dotnet/corefx/issues/19914
-nuget System.Net.Http 4.3.1
+# nuget System.Net.Http 4.3.1
