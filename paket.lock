@@ -13,7 +13,7 @@ NUGET
       System.Reflection.Metadata (>= 1.6)
       System.ValueTuple (>= 4.4)
     FSharp.Compiler.Tools (10.2.1)
-    FSharp.Core (4.5.2)
+    FSharp.Core (4.5.4)
     Microsoft.NETCore.Platforms (2.1)
     Mono.Cecil (0.10)
     NetMQ (4.0.0.1)
@@ -21,10 +21,10 @@ NUGET
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
     Newtonsoft.Json (10.0.3)
-    Paket.Core (5.176.9)
+    Paket.Core (5.194)
       Chessie (>= 0.6)
       FSharp.Compiler.Tools
-      FSharp.Core
+      FSharp.Core (> 4.3)
       Mono.Cecil (>= 0.10.0-beta6)
       Newtonsoft.Json
     System.Collections.Immutable (1.5)
