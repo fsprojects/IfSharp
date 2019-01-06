@@ -27,7 +27,7 @@ type XPlot.GoogleCharts.GoogleChart with
   member __.GetContentHtml() =
     let html = __.GetInlineHtml()
     html
-      .Replace ("google.setOnLoadCallback(drawChart);", "google.charts.load('current',{ packages: ['corechart', 'annotationchart', 'calendar', 'gauge', 'geochart', 'map', 'sankey', 'table', 'timeline', 'treemap'], callback: drawChart });")
+      .Replace ("google.charts.setOnLoadCallback(drawChart);", "google.charts.load('current',{ packages: ['corechart', 'annotationchart', 'calendar', 'gauge', 'geochart', 'map', 'sankey', 'table', 'timeline', 'treemap'], callback: drawChart });")
 
 type XPlot.GoogleCharts.Chart with
   static member Content (chart : XPlot.GoogleCharts.GoogleChart) =

@@ -4,9 +4,22 @@ open System
 open System.Text
 open System.Web
 
+type SendExecutionResultType = string -> (string * obj) list -> string -> unit
+type SendDisplayDataType = string -> obj -> string -> string -> unit
+
+type IAsyncPrinter =
+    interface
+        /// Whether the printer is capable of printing the object
+        abstract member CanPrint: obj -> bool
+        /// Print the project in asynchronous manner (possible doing some async computations)
+        /// what to print -> is the print is execution_result -> send results callback -> send dispaly callback
+        abstract member Print: obj -> bool -> SendExecutionResultType -> SendDisplayDataType -> unit
+    end
+
 module Printers =
 
     let mutable internal displayPrinters : list<Type * (obj -> BinaryOutput)> = []
+    let mutable internal asyncPrinters : list<IAsyncPrinter*int> = [] //(printer * its priority). Capable printer with higher priority is selected for printing
 
     /// Convenience method for encoding a string within HTML
     let internal htmlEncode(str) = HttpUtility.HtmlEncode(str)
@@ -14,6 +27,17 @@ module Printers =
     /// Adds a custom display printer for extensibility
     let addDisplayPrinter(printer : 'T -> BinaryOutput) =
         displayPrinters <- (typeof<'T>, (fun (x:obj) -> printer (unbox x))) :: displayPrinters
+    
+    /// Adds a custom async display printer for extensibility
+    /// Priority affects the cases where several printers are capabale of printing the save value.
+    /// The printer with higher priority is selected
+    let addAsyncDisplayPrinter(printer:IAsyncPrinter, priority: int) =
+        let printers = List.filter (fun entry -> let p,_ = entry in p <> printer) asyncPrinters //unregister if previously registered
+        asyncPrinters <- (printer,priority) :: printers
+        
+    /// Removes all registered async diaplay printers
+    let clearDisplayPrinters() =
+        asyncPrinters <- List.empty
 
     /// Default display printer
     let defaultDisplayPrinter(x) =
@@ -60,6 +84,13 @@ module Printers =
     let functionPrinter(func:obj) =
         let funcArguments = possiblyAFuncAsString (func.GetType())
         { ContentType = "text/plain"; Data = sprintf "%A : %s" func funcArguments }
+    
+    let tryFindAsyncPrinter(objToPrint:obj)=
+        asyncPrinters
+        |> Seq.filter (fun entry -> let (p:IAsyncPrinter),_ = entry in p.CanPrint objToPrint) //only capable
+        |> Seq.sortByDescending (fun entry -> let _,priority = entry in priority) //sorted by priority desc
+        |> Seq.map (fun entry -> let printer,_ = entry in printer) // filtering out priority data
+        |> Seq.tryHead
 
     /// Finds a display printer based off of the type
     let findDisplayPrinter(findType) =

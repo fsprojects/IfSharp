@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.Net.Compilers\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers\build\Microsoft.Net.Compilers.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -75,7 +74,7 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <PropertyGroup>
         <__paket__NETStandard_Library_targets>netstandard2.0\NETStandard.Library</__paket__NETStandard_Library_targets>
       </PropertyGroup>
@@ -109,7 +108,7 @@
   </ItemGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="AsyncIO">
           <HintPath>..\..\packages\AsyncIO\lib\net40\AsyncIO.dll</HintPath>
@@ -120,7 +119,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Chessie">
           <HintPath>..\..\packages\Chessie\lib\net40\Chessie.dll</HintPath>
@@ -131,15 +130,15 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="ISymWrapper, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="System.IO, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.IO">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.Runtime">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="FSharp.Compiler.Service">
@@ -151,7 +150,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="FSharp.Core">
           <HintPath>..\..\packages\FSharp.Core\lib\net45\FSharp.Core.dll</HintPath>
@@ -162,29 +161,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="Microsoft.DiaSymReader">
-          <HintPath>..\..\packages\Microsoft.DiaSymReader\lib\net20\Microsoft.DiaSymReader.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="Microsoft.DiaSymReader.PortablePdb">
-          <HintPath>..\..\packages\Microsoft.DiaSymReader.PortablePdb\lib\net45\Microsoft.DiaSymReader.PortablePdb.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.ServiceModel">
           <Paket>True</Paket>
@@ -198,7 +175,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.Collections.Immutable">
           <HintPath>..\..\packages\System.Collections.Immutable\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
@@ -209,40 +186,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="System.IO">
-          <HintPath>..\..\packages\System.IO\lib\net462\System.IO.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="System.Linq">
-          <HintPath>..\..\packages\System.Linq\lib\net463\System.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="System.Reflection">
-          <HintPath>..\..\packages\System.Reflection\lib\net462\System.Reflection.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.Reflection.Metadata">
           <HintPath>..\..\packages\System.Reflection.Metadata\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
@@ -253,43 +197,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="System.ComponentModel.Composition">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Runtime">
-          <HintPath>..\..\packages\System.Runtime\lib\net462\System.Runtime.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="System.Runtime.Extensions">
-          <HintPath>..\..\packages\System.Runtime.Extensions\lib\net462\System.Runtime.Extensions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
-      <ItemGroup>
-        <Reference Include="System.Runtime.InteropServices">
-          <HintPath>..\..\packages\System.Runtime.InteropServices\lib\net463\System.Runtime.InteropServices.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\System.ValueTuple\lib\net47\System.ValueTuple.dll</HintPath>
@@ -300,7 +208,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="xunit.abstractions">
           <HintPath>..\..\packages\xunit.abstractions\lib\net35\xunit.abstractions.dll</HintPath>
@@ -311,7 +219,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="xunit.assert">
           <HintPath>..\..\packages\xunit.assert\lib\portable-net45+win8+wp8+wpa81\xunit.assert.dll</HintPath>
@@ -322,7 +230,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="xunit.core">
           <HintPath>..\..\packages\xunit.extensibility.core\lib\portable-net45+win8+wp8+wpa81\xunit.core.dll</HintPath>
@@ -333,7 +241,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.1'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="xunit.execution.desktop">
           <HintPath>..\..\packages\xunit.extensibility.execution\lib\net45\xunit.execution.desktop.dll</HintPath>

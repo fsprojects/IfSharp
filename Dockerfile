@@ -1,11 +1,11 @@
-FROM mono:5.12.0.226
+FROM mono:5.18.0.225
 
 RUN apt update \
     && apt install -y \
         python3-pip \
         git
 
-RUN pip3 install --upgrade setuptools pip && pip3 install jupyter
+RUN python3 -m pip install --upgrade setuptools pip && python3 -m pip install jupyter
 
 WORKDIR /
 RUN git clone https://github.com/fsprojects/IfSharp.git

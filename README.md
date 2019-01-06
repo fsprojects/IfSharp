@@ -13,7 +13,7 @@ If you need IPython 1.x or 2.x support please see the archived https://github.co
 
 # Automatic Installation
 Previous releases for the IPython notebook are here: [release repository](https://github.com/fsprojects/IfSharp/releases).
-Automatic installs for Jupyter may be provided in the future.
+Automatic installs for Jupyter may be provided in the future. Contributions are welcome!
 
 # Running inside a Docker container
 
@@ -37,7 +37,7 @@ Run it with:
 The container exposes a volume called `notebooks` where the files get saved. On Linux, connect to the notebook on `http://localhost:your_port` and, on Windows, use `http://your_docker_machine:your_port`.
 
 # Manual Installation (Windows)
-1. Download [Anaconda](http://continuum.io/downloads) for Python 3.6
+1. Download [Anaconda](https://www.anaconda.com/download/) for Python 3.6
 2. Launch Anaconda3-4.4.0-Windows-x86_64.exe (or later exe should work, file an issue if you have issues)
    Click through the installation wizard, choosing the given install location. At the 'advanced installation options' screen shown below, select "Add Anaconda to my PATH environment variable". The installer warns against this step, as it can clash with previously installed software, however it's currently essential for running IfSharp. Now install.
 
@@ -46,7 +46,7 @@ This should also install Jupyter: you may check this by entering 'jupyter notebo
 ![Installation screenshot](/docs/files/img/anaconda-installation.png)
 ***
 
-3. Download current zip release of IfSharp [v3.0.0](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0/IfSharp.v3.0.0.zip)
+3. Download current zip release of IfSharp [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip)
 4. Run IfSharp.exe (IfSharp application icon).
 
 Jupyter will start and a notebook with F# can be selected. This can be run via "jupyter notebook" in future
@@ -57,7 +57,7 @@ If the launch fails in the console window, check that the Anaconda version used 
 # Manual Installation (Mac)
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 2. Install [Mono](http://www.mono-project.com/download/) (tested Mono 5.10.1.47)
-3. Download current IfSharp zip release [v3.0.0](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0/IfSharp.v3.0.0.zip)
+3. Download current IfSharp zip release [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip)
 4. Unzip the release then run `mono ifsharp.exe`
 
 Jupyter will start and a notebook with F# can be selected. This can be run via "jupyter notebook" in future
@@ -65,21 +65,22 @@ Jupyter will start and a notebook with F# can be selected. This can be run via "
 # Manual Installation (Linux)
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (Untested, suggest mono 5.10) and F# (tested 4.1).
-3. Download the current IfSharp zip release [v3.0.0](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0/IfSharp.v3.0.0.zip)
-4. Unzip the release then run `mono ifsharp.exe` (this sets up the Jupyter kernel files in `~/.local/share/jupyter/kernels/ifsharp/`)
+3. Download the current IfSharp zip release [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip)
+4. Unzip the release then run `mono ifsharp.exe` (this sets up the Jupyter kernel files in `~/.local/share/jupyter/kernels/ifsharp/`) 
 
 Jupyter will start and a notebook with F# can be selected. This can be run via "jupyter notebook" in future
 
 # Manual Installation (Linux - HDInsights)
 1. Follow instructions to [install or update Mono](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-install-mono) on HDInsights.
 2. [SSH into the HDInsights cluster](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-linux-use-ssh-unix).
-3. Download the current Ifsharp zip release [v3.0.0](https://github.com/fsprojects/IfSharp/releases/download/v3.0.0/IfSharp.v3.0.0.zip) with the following commands:
+3. Download the current Ifsharp zip release [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip) with the following commands: 
+
 ```
 # create ifsharp folder under /tmp
 mkdir ifsharp
 cd ifsharp
-wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.0/IfSharp.v3.0.0.zip
-unzip IfSharp.v3.0.0.zip
+wget https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip
+unzip IfSharp.v3.0.1.zip
 chmod +x ifsharp.exe
 ```
 4. From the [Azure portal](https://portal.azure.com/), open your cluster.  See [List and show clusters](../hdinsight-administer-use-portal-linux.md#list-and-show-clusters) for the instructions. The cluster is opened in a new portal blade.

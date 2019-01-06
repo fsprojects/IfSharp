@@ -1,4 +1,4 @@
-framework: net471
+framework: net472
 generate_load_scripts: true
 source https://api.nuget.org/v3/index.json
-nuget FSharp.Core ~> 4.3.4
+nuget FSharp.Core = 4.5.4
