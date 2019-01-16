@@ -445,15 +445,15 @@ type DisplayData =
         // # The data dict contains key/value pairs, where the kids are MIME
         // # types and the values are the raw data of the representation in that
         // # format.
-        data: IDictionary<string,obj>;
+        data: Dictionary<string,obj>;
 
         // # Any metadata that describes the data
-        metadata: IDictionary<string,obj>;
+        metadata: Dictionary<string,obj>;
 
         // # Optional transient data introduced in 5.1. Information not to be
         // # persisted to a notebook or other documents. Intended to live only
         // # during a live kernel session.
-        transient: IDictionary<string,obj>;
+        transient: Dictionary<string,obj>;
     }
 
 type Pyin = 

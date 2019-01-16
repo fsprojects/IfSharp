@@ -3,7 +3,6 @@
 
 // load base dlls
 #r "IfSharp.Kernel.dll"
-#r "IfSharp.Widgets.dll"
 #r "NetMQ.dll"
 
 // open the global functions and methods
