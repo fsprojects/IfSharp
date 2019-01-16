@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kernel-spec", "kernel-spec"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp", "src\IfSharp\IfSharp.fsproj", "{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Widgets", "src\IfSharp.Widgets\IfSharp.Widgets.fsproj", "{264A3F75-98C9-4B30-BA57-C54C16087C87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,14 @@ Global
 		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|x64.ActiveCfg = Release|Any CPU
 		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|x64.Build.0 = Release|Any CPU
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Debug|x64.ActiveCfg = Debug|x64
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Debug|x64.Build.0 = Debug|x64
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Release|x64.ActiveCfg = Release|x64
+		{264A3F75-98C9-4B30-BA57-C54C16087C87}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

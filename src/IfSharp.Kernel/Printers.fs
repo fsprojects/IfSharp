@@ -7,6 +7,27 @@ open System.Web
 type SendExecutionResultType = string -> (string * obj) list -> string -> unit
 type SendDisplayDataType = string -> obj -> string -> string -> unit
 
+type IWidget = 
+    abstract member Key : Guid
+    abstract member GetParents : unit -> IWidget[]
+
+type IWidgetCollection =
+    abstract member GetChildren : unit -> IWidget[]
+
+type WidgetDataDTO =
+    {
+        buffer_paths: string[]
+        state: IWidget
+    }
+
+type WidgetDTO =
+    {
+        comm_id: Guid
+        data: WidgetDataDTO
+        target_module: string
+        target_name: string
+    }
+
 type IAsyncPrinter =
     interface
         /// Whether the printer is capable of printing the object

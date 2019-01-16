@@ -7,13 +7,10 @@ open System.Reflection
 open System.Text
 open System.Security.Cryptography
 
-
 open Newtonsoft.Json
 open NetMQ
 open NetMQ.Sockets
-open System.Threading.Tasks
 open Microsoft.FSharp.Control
-open System.Threading
 
 /// A function that by it's side effect sends the received dict as a comm_message
 type SendCommMessage = Dictionary<string,obj> -> unit
@@ -24,6 +21,18 @@ type CommCloseCallback = CommTearDown  -> unit
 
 type CommId = string
 type CommTargetName = string
+
+type WidgetVersion =
+    {
+        version: string
+    }
+
+type WidgetDisplay = 
+    {
+        version_major: int
+        version_minor: int
+        model_id: Guid
+    }
 
 /// The set of callbacks which define comm registration at the kernel side
 type CommCallbacks = {
@@ -179,7 +188,8 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         }
 
     /// Convenience method for sending a message
-    let sendMessage (socket: NetMQSocket) (envelope) (messageType) (content) =
+    let sendMessageWithMetaData (socket: NetMQSocket) envelope messageType content metaData =
+        
         // lock on socket prevents simultaneous sends to the same socket from different threads
         // e.g. when Async results are ready and they are sent to be displayed
         lock socket (fun () ->
@@ -189,21 +199,24 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             for ident in envelope.Identifiers do
                 msg.Append(ident)
 
-            let header = serialize header
-            let parent_header = serialize envelope.Header
-            let meta = "{}"
-            let content = serialize content
-            let signature = sign [header; parent_header; meta; content]
+            let headerJson = serialize header
+            let parentHeaderJson = serialize envelope.Header
+            let metaDataJson = serialize metaData
+            let contentJson = serialize content
+            let signature = sign [headerJson; parentHeaderJson; metaDataJson; contentJson]
 
             msg.Append(encode "<IDS|MSG>")
             msg.Append(encode signature)
-            msg.Append(encode header)
-            msg.Append(encode parent_header)
-            msg.Append(encode "{}")
-            msg.Append(encode content)
+            msg.Append(encode headerJson)
+            msg.Append(encode parentHeaderJson)
+            msg.Append(encode metaDataJson)
+            msg.Append(encode contentJson)
             socket.SendMultipartMessage(msg))
 
-        
+    /// Convenience method for sending a message
+    let sendMessage (socket: NetMQSocket) envelope messageType content =
+        sendMessageWithMetaData socket envelope messageType content "{}"
+       
     /// Convenience method for sending the state of the kernel
     let sendState (envelope) (state) =
         sendMessage ioSocket envelope "status" { execution_state = state } 
@@ -253,6 +266,19 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 
             let reply:DisplayData = { data = d; metadata = Dictionary<string,obj>(); transient = d2 }
             sendMessage ioSocket lastMessage.Value messageType reply
+    
+    /// Sends display data information immediately
+    let sendMultiDisplayData items messageType displayId = 
+        match lastMessage with
+        | None -> ()
+        | Some lastMessage ->
+
+            let reply =
+                { data = items |> dict
+                  metadata = [||] |> dict
+                  transient = [|"display_id", displayId|] |> dict }
+
+            sendMessage ioSocket lastMessage messageType reply
     
     /// pyout renamed to execute_result in current version of protocol
     let sendExecutionResult message additionalRepresentations display_id = 
@@ -318,8 +344,27 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             
         newCode, nugetErrors
 
+    /// Sends a widget and all their parents
+    let rec sendWidget (w: IWidget) =
+        
+        for p in w.GetParents() do sendWidget p
+        
+        match w |> box with
+        | :? IWidgetCollection as coll -> for p in coll.GetChildren() do sendWidget p
+        | _ -> ()
+        
+        let payload =
+            { comm_id = w.Key
+              data = { buffer_paths = [||]; state = w }
+              target_module = null
+              target_name = "jupyter.widget" }
+
+        let metaData = { version = "2.0.0" }
+
+        sendMessageWithMetaData ioSocket lastMessage.Value "comm_open" payload metaData
+
     /// Sends the "value" to the frontend presented in a proper  way
-    let produceOutput value isExecutionResult =
+    let produceOutput (value: obj) isExecutionResult =
         match Printers.tryFindAsyncPrinter value with
         | Some(asyncPrinter) -> asyncPrinter.Print value isExecutionResult sendExecutionResult sendDisplayData
         | None ->
@@ -330,16 +375,27 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
             let callbackValue = callback(value)
 
             if isExecutionResult then
-                if callbackValue.ContentType = "text/plain" then                                    
-                    sendExecutionResult callbackValue.Data [] display_id
-                else
-                    // printer returned non plain text while plain text is required by the protocol
-                    // thus generating compulsory value
-                    let plainText = sprintf "%A" value
-                    // adding originally returned value as optional
-                    sendExecutionResult plainText [callbackValue.ContentType,callbackValue.Data] display_id                    
+                match value with
+                | :? IWidget as w ->
+                    let displayDatas =
+                        [|
+                            "text/plain", w |> sprintf "%A" |> box
+                            "application/vnd.jupyter.widget-view+json", { version_major = 2; version_minor = 0; model_id = w.Key } |> box
+                        |]
+
+                    sendWidget w
+                    sendMultiDisplayData displayDatas "display_data" w.Key
+                | _ ->
+                    if callbackValue.ContentType = "text/plain" then                                    
+                        sendExecutionResult callbackValue.Data [] display_id
+                    else
+                        // printer returned non plain text while plain text is required by the protocol
+                        // thus generating compulsory value
+                        let plainText = sprintf "%A" value
+                        // adding originally returned value as optional
+                        sendExecutionResult plainText [callbackValue.ContentType,callbackValue.Data] display_id                    
             else
-                    sendDisplayData callbackValue.ContentType callbackValue.Data "display_data" display_id                
+                sendDisplayData callbackValue.ContentType callbackValue.Data "display_data" display_id                
 
     /// Handles an 'execute_request' message
     let executeRequest(msg : KernelMessage) (content : ExecuteRequest) = 
