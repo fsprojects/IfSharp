@@ -19,11 +19,13 @@ do
 var require_save = require;
 var requirejs_save = requirejs;
 var define_save = define;
-require = requirejs = define = undefined;
+var MathJax_save = MathJax;
+MathJax = require = requirejs = define = undefined;
 %s
 require = require_save;
 requirejs = requirejs_save;
 define = define_save;
+MathJax = MathJax_save;
 function ifsharpMakeImage(gd, fmt) {
     return Plotly.toImage(gd, {format: fmt})
         .then(function(url) {
