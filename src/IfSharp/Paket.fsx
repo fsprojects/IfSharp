@@ -134,5 +134,5 @@ let Version list =
 
 let Clear() =
     deps.GetInstalledPackages() |> List.iter (fun (_, package, _) -> remove_quiet package)
-    add "FSharp.Core" "= 4.3.4"
+    add "FSharp.Core" "= 4.5.4"
     ()
