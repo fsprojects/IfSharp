@@ -1,7 +1,8 @@
 #r "IfSharp.Kernel.dll"
 
 #r "System.Windows.Forms.DataVisualization.dll"
-#r "packages/FSharp.Charting/lib/net45/FSharp.Charting.dll"
+//#r "packages/FSharp.Charting/lib/net45/FSharp.Charting.dll"
+#load @".paket/load/main.group.fsx"
 
 open FSharp.Charting
 open System.IO

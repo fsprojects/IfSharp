@@ -1,6 +1,7 @@
 #r "IfSharp.Kernel.dll"
 
-#r "packages/XPlot.Plotly/lib/net45/XPlot.Plotly.dll"
+//#r "packages/XPlot.Plotly/lib/net45/XPlot.Plotly.dll"
+#load @".paket/load/main.group.fsx"
 
 open XPlot.Plotly
 open IfSharp.Kernel
