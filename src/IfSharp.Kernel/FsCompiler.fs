@@ -122,8 +122,9 @@ module FsCompilerInternals =
                 "STRING_TEXT"
                 "RARROW"
             |]
-
-        let tokens = gatherTokens tokenizer 0L |> Seq.toArray
+        
+        
+        let tokens = gatherTokens tokenizer FSharpTokenizerLexState.Initial |> Seq.toArray
         let idx = tokens |> Array.tryFindIndex(fun x -> charIndex >= x.LeftColumn && charIndex <= x.LeftColumn + x.FullMatchedLength)
 
         match idx with
