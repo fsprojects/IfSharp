@@ -12,6 +12,10 @@ open NetMQ
 
 open Microsoft.FSharp.Reflection
 
+type Runtime =
+    | NetFramework
+    | NetCore
+
 module App = 
     open System.Threading.Tasks
 
@@ -144,9 +148,9 @@ module App =
         Kernel.Value.AddPayload(text.ToString())
 
     /// Installs the ifsharp files if they do not exist
-    let Install forceInstall = 
+    let Install forceInstall (runtime : Runtime) = 
 
-        let thisExecutable = Assembly.GetEntryAssembly().Location
+        let thisExecutablePath = Assembly.GetEntryAssembly().Location
         let kernelDir = Config.KernelDir
         let staticDir = Config.StaticDir
         let tempDir = Config.TempDir
@@ -163,10 +167,7 @@ module App =
 
         let allFiles = new System.Collections.Generic.List<string>()
         let addFile fn = allFiles.Add(fn); fn
-        let configFile = Path.Combine(kernelDir, "ipython_config.py") |> addFile
-        let configqtFile = Path.Combine(kernelDir, "ipython_qtconsole_config.py") |> addFile
         let kernelFile = Path.Combine(kernelDir, "kernel.json") |> addFile
-        let logoFile = Path.Combine(customDir, "ifsharp_logo.png") |> addFile
         let kjsFile = Path.Combine(kernelDir, "kernel.js") |> addFile
         let wjsFile = Path.Combine(customDir, "webintellisense.js") |> addFile
         let wcjsFile = Path.Combine(customDir, "webintellisense-codemirror.js") |> addFile
@@ -184,63 +185,58 @@ module App =
         if forceInstall || missingFiles || differentVersion then
             
             // write the version file
-            File.WriteAllText(versionFile, Config.Version);
+            File.WriteAllText(versionFile, Config.Version)
 
-            // write the startup script
-            let codeTemplate = IfSharpResources.ipython_config()
-            let code = 
-              match Environment.OSVersion.Platform with
-                | PlatformID.Win32Windows | PlatformID.Win32NT -> codeTemplate.Replace("\"mono\",", "")
-                | _ -> codeTemplate
-            let code = code.Replace("%kexe", thisExecutable)
-            let code = code.Replace("%kstatic", staticDir)
-            printfn "Saving custom config file [%s]" configFile
-            File.WriteAllText(configFile, code)
-
-            let codeqt = IfSharpResources.ipython_qt_config()
-            printfn "Saving custom qt config file [%s]" codeqt
-            File.WriteAllText(configqtFile, codeqt)
-
-            // write custom logo file
-            printfn "Saving custom logo [%s]" logoFile
-            File.WriteAllBytes(logoFile, IfSharpResources.ifsharp_logo())
+            let writeStream filePath (stream: unit -> Stream) = 
+                use f = File.Create filePath
+                stream().CopyTo f
+                f.Flush(true)
 
             // write fsharp css file
             let cssFile = Path.Combine(customDir, "fsharp.css")
             printfn "Saving fsharp css [%s]" cssFile
-            File.WriteAllText(cssFile, IfSharpResources.fsharp_css())
+            writeStream cssFile IfSharpResources.fsharp_css
 
             // write kernel js file
             printfn "Saving kernel js [%s]" kjsFile
-            File.WriteAllText(kjsFile, IfSharpResources.kernel_js())
+            writeStream kjsFile IfSharpResources.kernel_js
 
             // write webintellisense js file
             printfn "Saving webintellisense js [%s]" wjsFile
-            File.WriteAllText(wjsFile, IfSharpResources.webintellisense_js())
+            writeStream wjsFile IfSharpResources.webintellisense_js
 
             // write webintellisense-codemirror js file
             printfn "Saving webintellisense-codemirror js [%s]" wcjsFile
-            File.WriteAllText(wcjsFile, IfSharpResources.webintellisense_codemirror_js())
+            writeStream wcjsFile IfSharpResources.webintellisense_codemirror_js
+
+            let jsonTemplate = """{
+  "display_name": "F#",
+  "argv": ["mono", "%s", "{connection_file}"],
+  "language": "fsharp"
+}"""
 
             // Make the Kernel info folder 
-            let jsonTemplate = IfSharpResources.ifsharp_kernel_json()
-            let code = 
-              match Environment.OSVersion.Platform with
-                | PlatformID.Win32Windows -> jsonTemplate.Replace("\"mono\",", "")
-                | PlatformID.Win32NT -> jsonTemplate.Replace("\"mono\",", "")
-                | _ -> jsonTemplate
-            let code = code.Replace("%s", thisExecutable.Replace("\\","\/"))
+            let code =
+                match runtime with
+                | NetCore ->
+                      jsonTemplate.Replace("mono", "dotnet")
+                | NetFramework ->
+                    match Environment.OSVersion.Platform with
+                    | PlatformID.Win32Windows -> jsonTemplate.Replace("\"mono\",", "")
+                    | PlatformID.Win32NT -> jsonTemplate.Replace("\"mono\",", "")
+                    | _ -> jsonTemplate
+            let code = code.Replace("%s", thisExecutablePath.Replace("\\","\/"))
             printfn "Saving custom kernel.json file [%s]" kernelFile
             File.WriteAllText(kernelFile, code)
             
             printfn "Saving kernel icon [%s]" logo64File
-            File.WriteAllBytes(logo64File, IfSharpResources.ifsharp_64logo())
+            writeStream logo64File IfSharpResources.ifsharp_64logo
             
             printfn "Saving kernel icon [%s]" logo32File
-            File.WriteAllBytes(logo32File, IfSharpResources.ifsharp_32logo())
+            writeStream logo32File IfSharpResources.ifsharp_32logo
 
             printfn "Installing dependencies via Paket"
-            let dependencies = Paket.Dependencies.Locate(System.IO.Path.GetDirectoryName(thisExecutable))
+            let dependencies = Paket.Dependencies.Locate(System.IO.Path.GetDirectoryName(thisExecutablePath))
             dependencies.Install(false)
 
     /// Starts jupyter in the user's home directory
@@ -261,19 +257,19 @@ module App =
         with _ -> failwith "Unable to start Jupyter, please install Jupyter and ensure it is on the path"
 
     /// First argument must be an Jupyter connection file, blocks forever
-    let Start (args : array<string>) = 
+    let Start (args : array<string>) (runtime : Runtime) = 
 
         match args with
         | [||] ->
-            Install true
+            Install true runtime
             StartJupyter() //Eventually Jupyter will call back in with the connection file
 
         | [|"--install"|] ->
-            Install true
+            Install true runtime
 
         | _ ->
             // Verify kernel installation status
-            Install false
+            Install false runtime
 
             // Clear the temporary folder
             try

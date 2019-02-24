@@ -1,42 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp.Kernel", "src\IfSharp.Kernel\IfSharp.Kernel.fsproj", "{2FE619B3-4756-4285-B31F-232607F62D78}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "IFSharp.Kernel", "src\IFSharp.Kernel\IFSharp.Kernel.fsproj", "{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{3C993D34-1BD4-4002-B149-7DB2ECAD61CF}"
-	ProjectSection(SolutionItems) = preProject
-		build.cmd = build.cmd
-		build.fsx = build.fsx
-	EndProjectSection
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IFSharp", "src\IFSharp\IFSharp.fsproj", "{614109A5-EC07-47DA-BE73-D91CCC08FB4F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-profile", "{F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}"
-	ProjectSection(SolutionItems) = preProject
-		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
-		ipython-profile\ipython_config.py = ipython-profile\ipython_config.py
-		ipython-profile\ipython_qtconsole_config.py = ipython-profile\ipython_qtconsole_config.py
-		ipython-profile\kernel.js = ipython-profile\kernel.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{45519D10-5973-41C3-A8D0-BCBF0008044D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE}"
-	ProjectSection(SolutionItems) = preProject
-		ipython-profile\static\custom\fsharp.css = ipython-profile\static\custom\fsharp.css
-		ipython-profile\static\custom\ifsharp_logo.png = ipython-profile\static\custom\ifsharp_logo.png
-		ipython-profile\static\custom\webintellisense-codemirror.js = ipython-profile\static\custom\webintellisense-codemirror.js
-		ipython-profile\static\custom\webintellisense.js = ipython-profile\static\custom\webintellisense.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kernel-spec", "kernel-spec", "{4D56C9F0-7F98-4587-A320-98C06876AC9B}"
-	ProjectSection(SolutionItems) = preProject
-		kernel-spec\kernel.json = kernel-spec\kernel.json
-		kernel-spec\logo-32x32.png = kernel-spec\logo-32x32.png
-		kernel-spec\logo-64x64.png = kernel-spec\logo-64x64.png
-	EndProjectSection
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp", "src\IfSharp\IfSharp.fsproj", "{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "IFSharpCore", "src\IFSharpCore\IFSharpCore.fsproj", "{6EB8FC56-9D24-45B8-B6D8-55135E72799E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,31 +17,33 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|x64.ActiveCfg = Debug|x64
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Debug|x64.Build.0 = Debug|x64
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|x64.ActiveCfg = Release|x64
-		{2FE619B3-4756-4285-B31F-232607F62D78}.Release|x64.Build.0 = Release|x64
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Debug|x64.Build.0 = Debug|Any CPU
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|x64.ActiveCfg = Release|Any CPU
-		{5FC8E68C-C5F9-4FEF-B000-EC99871D3A4E}.Release|x64.Build.0 = Release|Any CPU
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Debug|x64.ActiveCfg = Debug|x64
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Debug|x64.Build.0 = Debug|x64
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Release|x64.ActiveCfg = Release|x64
+		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Release|x64.Build.0 = Release|x64
+		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Debug|x64.ActiveCfg = Debug|x64
+		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Debug|x64.Build.0 = Debug|x64
+		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Release|Any CPU.ActiveCfg = Release|x64
+		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Release|x64.ActiveCfg = Release|x64
+		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Release|x64.Build.0 = Release|x64
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Debug|x64.Build.0 = Debug|Any CPU
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Release|x64.ActiveCfg = Release|Any CPU
+		{6EB8FC56-9D24-45B8-B6D8-55135E72799E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{45519D10-5973-41C3-A8D0-BCBF0008044D} = {F5A3E866-86FB-44AD-9ED1-DB65D6EB0058}
-		{3AAFA64D-CBB6-488E-B395-6A1E7CB554CE} = {45519D10-5973-41C3-A8D0-BCBF0008044D}
-	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0D40E243-FC1E-43DA-B53D-08D731012F40}
+		SolutionGuid = {6E614E07-33B2-4D12-B1CD-38BBFD484F64}
 	EndGlobalSection
 EndGlobal

@@ -11,12 +11,6 @@ let ClearAlternativeStreamsWindows() =
         for filePath in (FileInfo(path).Directory.GetFileSystemInfos()) do
             filePath.DeleteAlternateDataStream("Zone.Identifier") |> ignore
 
-//Move SystemNet so that the mono one is used instead https://github.com/dotnet/corefx/issues/19914
-let MoveSystemNetHttp() =
-    if File.Exists("System.Net.Http.dll") then
-        printfn("Moving System.Net.Http.dll to Hide.System.Net.Http.dll to workaround https://github.com/dotnet/corefx/issues/19914")
-        File.Move("System.Net.Http.dll", "Hide.System.Net.Http.dll")
-
 [<EntryPoint>]
 let main args =
 
@@ -25,9 +19,7 @@ let main args =
 
     if (Environment.OSVersion.Platform <> PlatformID.Unix && Environment.OSVersion.Platform <> PlatformID.MacOSX) then
         ClearAlternativeStreamsWindows()
-    if Type.GetType ("Mono.Runtime") <> null then
-        MoveSystemNetHttp()
     CultureInfo.DefaultThreadCurrentCulture <- CultureInfo.InvariantCulture
     CultureInfo.DefaultThreadCurrentUICulture <- CultureInfo.InvariantCulture
-    App.Start args NetFramework
+    App.Start args NetCore
     0

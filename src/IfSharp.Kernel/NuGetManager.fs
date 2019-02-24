@@ -10,7 +10,6 @@ open Microsoft.FSharp.Compiler
 /// Assembly information
 type AssemblyInfo = { FileName : string; GuessedVersion : string; }
 
-
 /// Wrapper for ErrorInfo
 type CustomErrorInfo =
     {
@@ -72,7 +71,6 @@ type NuGetManager (executingDirectory : string) =
 
     let syncObject = Object()
     let packagesDir = Path.Combine(executingDirectory, "packages")
-    let packageSource = Config.DefaultNuGetSource
 
     // events from the NuGet.exe
     let errDataReceivedEvent = Event<_>()

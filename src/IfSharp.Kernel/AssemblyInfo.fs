@@ -2,11 +2,12 @@
 namespace System
 open System.Reflection
 
+[<assembly: System.Resources.NeutralResourcesLanguage("")>]
 [<assembly: AssemblyTitleAttribute("IfSharp.Kernel")>]
 [<assembly: AssemblyProductAttribute("IfSharp.Kernel")>]
 [<assembly: AssemblyDescriptionAttribute("A short summary of your project.")>]
-[<assembly: AssemblyVersionAttribute("2017-06-15")>]
-[<assembly: AssemblyFileVersionAttribute("2017-06-15")>]
+//[<assembly: AssemblyVersionAttribute("2017-06-15")>]
+//[<assembly: AssemblyFileVersionAttribute("2017-06-15")>]
 do ()
 
 module internal AssemblyVersionInformation =

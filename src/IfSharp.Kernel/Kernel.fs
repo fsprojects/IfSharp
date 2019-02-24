@@ -72,12 +72,25 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let mutable activeComms : Map<CommId,CommTargetName> = Map.empty;
 
     /// Gets the header code to prepend to all items
-    let headerCode = 
+    let headerCode =
+
+        let includeTemplate = """#r "netstandard"
+// include directory, this will be replaced by the kernel
+#I "{0}"
+
+// load base dlls
+#r "IfSharp.Kernel.dll"
+#r "NetMQ.dll"
+
+// open the global functions and methods
+open IfSharp.Kernel
+open IfSharp.Kernel.Globals"""
+
         let file = FileInfo(Assembly.GetEntryAssembly().Location)
         let dir = file.Directory.FullName
-        let includeFile = Path.Combine(dir, "Include.fsx")
-        let code = File.ReadAllText(includeFile)
-        String.Format(code, dir.Replace("\\", "\\\\"))
+        //let includeFile = Path.Combine(dir, "Include.fsx")
+        //let code = File.ReadAllText(includeFile)
+        String.Format(includeTemplate, dir.Replace("\\", "\\\\"))
 
     /// Splits the message up into lines and writes the lines to shell.log
     let logMessage (msg : string) =
@@ -601,7 +614,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Loops forever receiving messages from the client and processing them
     let doShell() =
 
-        fsiEval.EvalInteraction headerCode
+        let _, errors = fsiEval.EvalInteractionNonThrowing headerCode
 
         logMessage (sbErr.ToString())
         logMessage (sbOut.ToString())
