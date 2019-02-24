@@ -216,9 +216,9 @@ module App =
             // Make the Kernel info folder 
             let code =
                 match runtime with
-                | NetCore ->
+                | Config.NetCore ->
                       jsonTemplate.Replace("mono", "dotnet")
-                | NetFramework ->
+                | Config.NetFramework ->
                     match Environment.OSVersion.Platform with
                     | PlatformID.Win32Windows -> jsonTemplate.Replace("\"mono\",", "")
                     | PlatformID.Win32NT -> jsonTemplate.Replace("\"mono\",", "")
