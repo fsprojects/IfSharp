@@ -3,6 +3,10 @@
 open System
 open System.IO
 
+type Runtime =
+    | NetFramework
+    | NetCore
+
 let ActualPlatform =
     match Environment.OSVersion.Platform with
     | PlatformID.Unix ->
@@ -19,7 +23,7 @@ let ActualPlatform =
 
 //http://jupyter-client.readthedocs.io/en/latest/kernels.html#kernel-specs
 let KernelDir = 
-  let thisExecutable = System.Reflection.Assembly.GetEntryAssembly().Location
+  //let thisExecutable = System.Reflection.Assembly.GetEntryAssembly().Location
   let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
   let appData =  
     match ActualPlatform with

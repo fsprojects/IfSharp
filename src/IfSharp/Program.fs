@@ -21,7 +21,7 @@ let MoveSystemNetHttp() =
 let main args =
 
     //This is really useful if you need debug the start-up process
-    System.Diagnostics.Debugger.Launch() |> ignore
+    //System.Diagnostics.Debugger.Launch() |> ignore
 
     if (Environment.OSVersion.Platform <> PlatformID.Unix && Environment.OSVersion.Platform <> PlatformID.MacOSX) then
         ClearAlternativeStreamsWindows()
@@ -29,5 +29,5 @@ let main args =
         MoveSystemNetHttp()
     CultureInfo.DefaultThreadCurrentCulture <- CultureInfo.InvariantCulture
     CultureInfo.DefaultThreadCurrentUICulture <- CultureInfo.InvariantCulture
-    App.Start args NetFramework
+    App.Start args Config.NetFramework
     0

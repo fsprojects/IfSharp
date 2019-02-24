@@ -12,9 +12,7 @@ open NetMQ
 
 open Microsoft.FSharp.Reflection
 
-type Runtime =
-    | NetFramework
-    | NetCore
+
 
 module App = 
     open System.Threading.Tasks
@@ -148,7 +146,7 @@ module App =
         Kernel.Value.AddPayload(text.ToString())
 
     /// Installs the ifsharp files if they do not exist
-    let Install forceInstall (runtime : Runtime) = 
+    let Install forceInstall (runtime : Config.Runtime) = 
 
         let thisExecutablePath = Assembly.GetEntryAssembly().Location
         let kernelDir = Config.KernelDir
@@ -257,7 +255,7 @@ module App =
         with _ -> failwith "Unable to start Jupyter, please install Jupyter and ensure it is on the path"
 
     /// First argument must be an Jupyter connection file, blocks forever
-    let Start (args : array<string>) (runtime : Runtime) = 
+    let Start (args : array<string>) (runtime : Config.Runtime) = 
 
         match args with
         | [||] ->
@@ -285,7 +283,7 @@ module App =
             let connectionInformation = JsonConvert.DeserializeObject<ConnectionInformation>(json)
 
             // start the kernel
-            Kernel <- Some (IfSharpKernel(connectionInformation))
+            Kernel <- Some (IfSharpKernel(connectionInformation, runtime))
             Kernel.Value.StartAsync()
             
             // block forever

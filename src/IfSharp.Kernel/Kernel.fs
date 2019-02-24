@@ -35,7 +35,7 @@ type CommCallbacks = {
     onClose: CommCloseCallback
     }
 
-type IfSharpKernel(connectionInformation : ConnectionInformation) = 
+type IfSharpKernel(connectionInformation : ConnectionInformation, runtime : Config.Runtime) = 
     // heartbeat
     let hbSocket = new RouterSocket()
     let hbSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port) 
@@ -74,8 +74,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Gets the header code to prepend to all items
     let headerCode =
 
-        let includeTemplate = """#r "netstandard"
-// include directory, this will be replaced by the kernel
+        let includeTemplate2 = """// include directory, this will be replaced by the kernel
 #I "{0}"
 
 // load base dlls
@@ -85,6 +84,17 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
 // open the global functions and methods
 open IfSharp.Kernel
 open IfSharp.Kernel.Globals"""
+
+        let includeTemplate =
+            match runtime with
+            
+            | Config.NetFramework ->
+                """#r "netstandard"
+""" 
+                + includeTemplate2
+            | Config.NetCore ->
+                includeTemplate2
+
 
         let file = FileInfo(Assembly.GetEntryAssembly().Location)
         let dir = file.Directory.FullName

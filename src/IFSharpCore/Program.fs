@@ -13,13 +13,14 @@ let ClearAlternativeStreamsWindows() =
 
 [<EntryPoint>]
 let main args =
+    printfn "IFSharp on .net core is experimental! It has known issues."
 
     //This is really useful if you need debug the start-up process
-    System.Diagnostics.Debugger.Launch() |> ignore
+    //System.Diagnostics.Debugger.Launch() |> ignore
 
     if (Environment.OSVersion.Platform <> PlatformID.Unix && Environment.OSVersion.Platform <> PlatformID.MacOSX) then
         ClearAlternativeStreamsWindows()
     CultureInfo.DefaultThreadCurrentCulture <- CultureInfo.InvariantCulture
     CultureInfo.DefaultThreadCurrentUICulture <- CultureInfo.InvariantCulture
-    App.Start args NetCore
+    App.Start args Config.NetCore
     0
