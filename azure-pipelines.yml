@@ -10,8 +10,9 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 steps:
-- script: build.sh
-  displayName: 'Run the build'
+- task: ShellScript@2
+  inputs:
+    scriptPath: build.sh
 
 #- script: |
 #    echo Add other tasks to build, test, and deploy your project.
