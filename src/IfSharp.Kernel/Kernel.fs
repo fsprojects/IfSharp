@@ -79,7 +79,6 @@ type IfSharpKernel(connectionInformation : ConnectionInformation, runtime : Conf
 
 // load base dlls
 #r "IfSharp.Kernel.dll"
-#r "NetMQ.dll"
 
 // open the global functions and methods
 open IfSharp.Kernel
