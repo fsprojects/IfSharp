@@ -2,6 +2,8 @@ language: csharp
 
 sudo: false  # use the new container-based Travis infrastructure 
 
+dotnet: 2.2.103
+
 script:
   - ./build.sh
 
