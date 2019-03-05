@@ -4,10 +4,14 @@
 
 #r @"packages/FAKE/tools/FakeLib.dll"
 open Fake 
+open Fake.SystemHelper
 open Fake.Git
+open Fake.DotNet
+open Fake.IO
 open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
 open System
+open System.IO
 
 // --------------------------------------------------------------------------------------
 // START TODO: Provide project-specific details below
@@ -42,14 +46,16 @@ Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
-  let fileName = "src/" + project + "/AssemblyInfo.fs"
-  CreateFSharpAssemblyInfo fileName
-      [ Attribute.Title project
-        Attribute.Product project
-        Attribute.Description summary
-        //Attribute.Version release.AssemblyVersion
-        //Attribute.FileVersion release.AssemblyVersion
-      ] 
+    let fileName = "src/" + project + "/AssemblyInfo.fs"
+    CreateFSharpAssemblyInfo
+        fileName
+        [
+            Attribute.Title project
+            Attribute.Product project
+            Attribute.Description summary
+            //Attribute.Version release.AssemblyVersion
+            //Attribute.FileVersion release.AssemblyVersion
+        ]  
 )
 
 // --------------------------------------------------------------------------------------
@@ -66,21 +72,27 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 Target "Build" (fun _ ->
+
+    let workingDir = Path.getFullName "src/IFSharpCore"
+    let result =
+        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "build" ""
+    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s" "build" workingDir
+
     [ "src/IfSharp/IfSharp.fsproj"] 
-      |> MSBuildRelease "bin" "Rebuild"
-      |> ignore
+    |> MSBuildRelease "bin" "Rebuild"
+    |> ignore
 )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
 
-Target "xUnit" (fun _ ->
+(*Target "xUnit" (fun _ ->
     !! "**/bin/**/*.Tests.dll"
     |> Fake.Testing.XUnit2.xUnit2 (fun p ->
         {p with
             TimeOut = TimeSpan.FromMinutes 5.
             HtmlOutputPath = Some "xunit.html"})
-)
+)*)
 
 FinalTarget "CloseTestRunner" (fun _ ->  
     ProcessHelper.killProcess "nunit-agent.exe"
@@ -100,7 +112,7 @@ Target "All" DoNothing
   ==> "All"
 
 "All" 
-  ==> "xUnit"
+//  ==> "xUnit"
   ==> "Release"
 
 
