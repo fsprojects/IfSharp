@@ -1,6 +1,7 @@
 language: csharp
 
 sudo: false  # use the new container-based Travis infrastructure 
+dist: xenial
 
 dotnet: 2.2.104
 
