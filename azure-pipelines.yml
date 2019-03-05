@@ -9,10 +9,14 @@ trigger:
 pool:
   vmImage: 'VS2017-Win2016'
 
+#steps:
+#- task: ShellScript@2
+#  inputs:
+#    scriptPath: build.sh
+
 steps:
-- task: ShellScript@2
-  inputs:
-    scriptPath: build.cmd
+- script build.cmd
+  displayName: build.cmd
 
 #- script: |
 #    echo Add other tasks to build, test, and deploy your project.
