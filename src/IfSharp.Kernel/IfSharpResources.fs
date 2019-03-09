@@ -11,7 +11,7 @@ module IfSharpResources =
     let resources () = 
         executingAssembly.GetManifestResourceNames()
     let streamFor resource = 
-        let resourceName = sprintf "IFSharp.Kernel.%s" resource
+        let resourceName = sprintf "IfSharp.Kernel.%s" resource
         let s = executingAssembly.GetManifestResourceStream(resourceName)
         if isNull s 
         then failwithf "could not find stream for %s. Available names are:\n%s" resourceName (resources() |> String.concat "\n\t")

@@ -13,7 +13,7 @@ let ClearAlternativeStreamsWindows() =
 
 [<EntryPoint>]
 let main args =
-    printfn "IFSharp on .net core is experimental! It has known issues."
+    printfn "IFSharp on .NET Core is experimental! It has known issues."
 
     //This is really useful if you need debug the start-up process
     //System.Diagnostics.Debugger.Launch() |> ignore

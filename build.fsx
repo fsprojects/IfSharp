@@ -77,7 +77,7 @@ Fake.Core.Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 Fake.Core.Target.create "Build" (fun _ ->
 
-    //let workingDir = Path.getFullName "src/IFSharpCore"
+    //let workingDir = Path.getFullName "src/IfFSharpCore"
     let result =
         DotNet.exec (DotNet.Options.withWorkingDirectory __SOURCE_DIRECTORY__) "build" ""
     if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" __SOURCE_DIRECTORY__ result.Messages
