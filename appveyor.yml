@@ -1,4 +1,4 @@
 image: ubuntu
 
 build_script:
-- build.sh
+- ./build.sh
