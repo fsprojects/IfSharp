@@ -1,21 +1,18 @@
 version 5.198.0
 
-framework: netstandard1.3, netstandard2.0, netcoreapp2.1, netcoreapp2.2, net472
+framework: netstandard2.0, netcoreapp2.1, netcoreapp2.2, net472
 source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Compiler.Service ~> 26.0.1
 nuget FSharp.Compiler.Tools ~> 10.2.1
 nuget FSharp.Core = 4.6.2
-nuget AsyncIO 0.1.26
+nuget AsyncIO >= 0.1.69
 nuget Itis.Angara.Base ~> 0.3.3
-nuget NetMQ ~> 4.0.0.1
+nuget NetMQ ~> 4.0.0.207-pre
 nuget Newtonsoft.Json ~> 12.0.1
 nuget FAKE >= 5.8.4
 nuget XPlot.Plotly 1.5.0
-nuget xunit 2.1
-nuget xunit.runner.console 2.1
 nuget Paket.Core ~> 5.198.0
-nuget Mono.Cecil 0.10.3
 nuget Trinet.Core.IO.Ntfs
 
 nuget System.Runtime
