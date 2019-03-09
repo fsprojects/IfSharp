@@ -6,17 +6,22 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'VS2017-Win2016'
-
-#steps:
-#- task: ShellScript@2
-#  inputs:
-#    scriptPath: build.sh
-
-steps:
-- script: build.cmd
-  displayName: 'build.cmd'
+jobs:
+- job: Windows
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - script: build.cmd
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - script: build.sh
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - script: build.sh
 
 #- script: |
 #    echo Add other tasks to build, test, and deploy your project.
