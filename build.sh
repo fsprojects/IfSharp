@@ -28,5 +28,6 @@ else
   fi
   # Note: the bundled MSBuild crashes hard on linux, so we still rely on the system-installed version
   #export MSBuild=packages/build/RoslynTools.MSBuild/tools/msbuild/MSBuild.exe
-  mono packages/build/FAKE/tools/FAKE.exe $@ --fsiargs -d:MONO build.fsx 
+  #mono packages/build/FAKE/tools/FAKE.exe $@ --fsiargs -d:MONO build.fsx 
+  mono packages/FAKE/tools/FAKE.exe $@ --fsiargs -d:MONO build.fsx
 fi
