@@ -1,5 +1,0 @@
-{
-  "display_name": "F#",
-  "argv": ["mono", "%s", "{connection_file}"],
-  "language": "fsharp"
-}
