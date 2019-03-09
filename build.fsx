@@ -75,19 +75,23 @@ Fake.Core.Target.create "CleanDocs" (fun _ ->
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
-Fake.Core.Target.create "Build" (fun _ ->
-
-    //let workingDir = Path.getFullName "src/IfSharpCore"
+Fake.Core.Target.create "BuildNetFramework" (fun _ ->
+    //Need to restore for .NET Standard
     let result =
-        DotNet.exec (DotNet.Options.withWorkingDirectory __SOURCE_DIRECTORY__) "build" ""
-    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" __SOURCE_DIRECTORY__ result.Messages
+        DotNet.exec (DotNet.Options.withWorkingDirectory __SOURCE_DIRECTORY__) "restore" ""
+    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "restore" __SOURCE_DIRECTORY__ result.Messages
 
     [ "src/IfSharp/IfSharp.fsproj"] 
     |> Fake.DotNet.MSBuild.runRelease id "bin" "Rebuild"
     |> ignore
 )
 
-Fake.Core.Target.create "Release" ignore
+Fake.Core.Target.create "BuildNetCore" (fun _ ->
+    let workingDir = Path.getFullName "src/IfSharpNetCore"
+    let result =
+        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "build" ""
+    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" workingDir result.Messages
+)
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
@@ -95,11 +99,16 @@ Fake.Core.Target.create "Release" ignore
 Fake.Core.Target.create "All" ignore
 
 "Clean"
-  ==> "Build"
+  ==> "BuildNetCore"
+
+"Clean"
+  ==> "BuildNetFramework"
+
+"BuildNetCore"
   ==> "All"
 
-"All" 
-  ==> "Release"
+"BuildNetFramework"
+  ==> "All"
 
 
 Fake.Core.Target.runOrDefault "All"
