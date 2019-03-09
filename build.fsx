@@ -10,6 +10,8 @@ open Fake.DotNet
 open Fake.IO
 open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
+open Fake.Core.TargetOperators
+open Fake.IO.Globbing.Operators
 open System
 open System.IO
 
@@ -47,12 +49,14 @@ Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 // Generate assembly info files with the right version & up-to-date information
 Fake.Core.Target.create "AssemblyInfo" (fun _ ->
     let fileName = "src/" + project + "/AssemblyInfo.fs"
-    CreateFSharpAssemblyInfo
+    AssemblyInfoFile.createFSharp
         fileName
         [
-            Attribute.Title project
-            Attribute.Product project
-            Attribute.Description summary
+            //TODO: switch to FAKE5
+
+            //Attribute.Title project
+            //Attribute.Product project
+            //Attribute.Description summary
             //Attribute.Version release.AssemblyVersion
             //Attribute.FileVersion release.AssemblyVersion
         ]  
@@ -62,11 +66,11 @@ Fake.Core.Target.create "AssemblyInfo" (fun _ ->
 // Clean build results & restore NuGet packages
 
 Fake.Core.Target.create "Clean" (fun _ ->
-    CleanDirs ["bin"; "temp"]
+    Fake.IO.Shell.cleanDirs ["bin"; "temp"]
 )
 
 Fake.Core.Target.create "CleanDocs" (fun _ ->
-    CleanDirs ["docs/output"]
+    Fake.IO.Shell.cleanDirs ["docs/output"]
 )
 
 // --------------------------------------------------------------------------------------
@@ -76,10 +80,12 @@ Fake.Core.Target.create "Build" (fun _ ->
     let workingDir = Path.getFullName "src/IFSharpCore"
     let result =
         DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "build" ""
-    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s" "build" workingDir
+    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" workingDir result.Messages
+
+    
 
     [ "src/IfSharp/IfSharp.fsproj"] 
-    |> MSBuildRelease "bin" "Rebuild"
+    |> Fake.DotNet.MSBuild.runRelease id "bin" "Rebuild"
     |> ignore
 )
 
@@ -91,7 +97,6 @@ Fake.Core.Target.create "Release" ignore
 Fake.Core.Target.create "All" ignore
 
 "Clean"
-  ==> "AssemblyInfo"
   ==> "Build"
   ==> "All"
 
@@ -99,4 +104,4 @@ Fake.Core.Target.create "All" ignore
   ==> "Release"
 
 
-RunTargetOrDefault "All"
+Fake.Core.Target.runOrDefault "All"

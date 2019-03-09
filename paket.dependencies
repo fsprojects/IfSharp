@@ -3,7 +3,7 @@ version 5.198.0
 framework: netstandard1.3, netstandard2.0, netcoreapp2.2, net472
 source https://api.nuget.org/v3/index.json
 
-nuget FSharp.Compiler.Service ~> 27.0.1
+nuget FSharp.Compiler.Service ~> 26.0.1
 nuget FSharp.Compiler.Tools ~> 10.2.1
 nuget FSharp.Core = 4.6.2
 nuget AsyncIO 0.1.26
