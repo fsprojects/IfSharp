@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------
 
 #r @"packages/FAKE/tools/FakeLib.dll"
-open Fake 
+open Fake
 open Fake.SystemHelper
 open Fake.Git
 open Fake.DotNet
@@ -45,7 +45,7 @@ Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 //let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
 
 // Generate assembly info files with the right version & up-to-date information
-Target "AssemblyInfo" (fun _ ->
+Fake.Core.Target.create "AssemblyInfo" (fun _ ->
     let fileName = "src/" + project + "/AssemblyInfo.fs"
     CreateFSharpAssemblyInfo
         fileName
@@ -61,17 +61,17 @@ Target "AssemblyInfo" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Clean build results & restore NuGet packages
 
-Target "Clean" (fun _ ->
+Fake.Core.Target.create "Clean" (fun _ ->
     CleanDirs ["bin"; "temp"]
 )
 
-Target "CleanDocs" (fun _ ->
+Fake.Core.Target.create "CleanDocs" (fun _ ->
     CleanDirs ["docs/output"]
 )
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
-Target "Build" (fun _ ->
+Fake.Core.Target.create "Build" (fun _ ->
 
     let workingDir = Path.getFullName "src/IFSharpCore"
     let result =
@@ -83,28 +83,12 @@ Target "Build" (fun _ ->
     |> ignore
 )
 
-// --------------------------------------------------------------------------------------
-// Run the unit tests using test runner & kill test runner when complete
-
-(*Target "xUnit" (fun _ ->
-    !! "**/bin/**/*.Tests.dll"
-    |> Fake.Testing.XUnit2.xUnit2 (fun p ->
-        {p with
-            TimeOut = TimeSpan.FromMinutes 5.
-            HtmlOutputPath = Some "xunit.html"})
-)*)
-
-FinalTarget "CloseTestRunner" (fun _ ->  
-    ProcessHelper.killProcess "nunit-agent.exe"
-)
-
-
-Target "Release" DoNothing
+Fake.Core.Target.create "Release" ignore
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
 
-Target "All" DoNothing
+Fake.Core.Target.create "All" ignore
 
 "Clean"
   ==> "AssemblyInfo"
@@ -112,7 +96,6 @@ Target "All" DoNothing
   ==> "All"
 
 "All" 
-//  ==> "xUnit"
   ==> "Release"
 
 
