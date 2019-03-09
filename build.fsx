@@ -79,10 +79,8 @@ Fake.Core.Target.create "Build" (fun _ ->
 
     let workingDir = Path.getFullName "src/IFSharpCore"
     let result =
-        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "restore" ""
+        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "build" ""
     if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" workingDir result.Messages
-
-    
 
     [ "src/IfSharp/IfSharp.fsproj"] 
     |> Fake.DotNet.MSBuild.runRelease id "bin" "Rebuild"

@@ -3,7 +3,7 @@ language: csharp
 sudo: false  # use the new container-based Travis infrastructure 
 dist: xenial
 
-dotnet: 2.2.104
+dotnet: 2.1.302
 
 script:
   - ./build.sh
@@ -11,4 +11,3 @@ script:
 branches:
  only:
   - master
-

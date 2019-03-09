@@ -12,16 +12,16 @@ jobs:
     vmImage: 'vs2017-win2016'
   steps:
   - script: build.cmd
-- job: macOS
-  pool:
-    vmImage: 'macOS-10.13'
-  steps:
-  - bash: . '$(Build.SourcesDirectory)/build.sh'
-- job: Linux
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  - bash: . '$(Build.SourcesDirectory)/build.sh'
+# - job: macOS
+#   pool:
+#     vmImage: 'macOS-10.13'
+#   steps:
+#   - bash: . '$(Build.SourcesDirectory)/build.sh'
+# - job: Linux
+#   pool:
+#     vmImage: 'ubuntu-16.04'
+#   steps:
+#   - bash: . '$(Build.SourcesDirectory)/build.sh'
 
 #- script: |
 #    echo Add other tasks to build, test, and deploy your project.
