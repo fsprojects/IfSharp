@@ -9,6 +9,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp", "src\IfSharp\IfSh
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharpNetCore", "src\IfSharpNetCore\IfSharpNetCore.fsproj", "{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DebuggingBuildAgent", "src\DebuggingBuildAgent\DebuggingBuildAgent.fsproj", "{A664B61B-B8A3-48AB-B611-46717B2C5773}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,14 @@ Global
 		{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}.Release|x64.ActiveCfg = Release|Any CPU
 		{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}.Release|x64.Build.0 = Release|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Debug|x64.Build.0 = Debug|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Release|x64.ActiveCfg = Release|Any CPU
+		{A664B61B-B8A3-48AB-B611-46717B2C5773}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
