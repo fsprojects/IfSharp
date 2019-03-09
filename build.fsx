@@ -79,7 +79,7 @@ Fake.Core.Target.create "Build" (fun _ ->
 
     let workingDir = Path.getFullName "src/IFSharpCore"
     let result =
-        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "build" ""
+        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "restore" ""
     if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" workingDir result.Messages
 
     
