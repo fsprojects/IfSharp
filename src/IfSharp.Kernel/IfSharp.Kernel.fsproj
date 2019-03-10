@@ -2,9 +2,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
+  <!--<ItemGroup>
+    <EmbeddedResource Remove="IfSharpResources.resx" />
+  </ItemGroup>-->
   <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--<EmbeddedResource Include="..\..\jupyter-kernel\static\custom\webintellisense.js" />
+    <EmbeddedResource Include="..\..\jupyter-kernel\static\custom\webintellisense-codemirror.js" />
+    <EmbeddedResource Include="..\..\jupyter-kernel\static\custom\fsharp.js" />
+    <EmbeddedResource Include="..\..\jupyter-kernel\static\custom\fsharp.css" />
+    <EmbeddedResource Include="..\..\jupyter-kernel\logo-64x64.png" />
+    <EmbeddedResource Include="..\..\jupyter-kernel\logo-32x32.png" />
+    <EmbeddedResource Include="..\..\jupyter-kernel\kernel.js" />-->
+    <EmbeddedResource Include="../../jupyter-kernel/**" />
     <Compile Include="Config.fs" />
     <Compile Include="DirectivePreprocessor.fs" />
     <Compile Include="NuGetManager.fs" />
@@ -18,16 +32,9 @@
     <Compile Include="Printers.fs" />
     <Compile Include="Kernel.fs" />
     <Compile Include="AssemblyInfo.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="App.fs" />
     <Compile Include="Globals.fs" />
-    <EmbeddedResource Include="../../jupyter-kernel/**" />
-    <EmbeddedResource Remove="IfSharpResources.resx" />
     <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

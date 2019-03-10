@@ -1,10 +1,11 @@
-﻿FSharp.Compiler.Service
+﻿group NETCORE
+
+FSharp.Compiler.Service
 NetMQ
 Newtonsoft.Json
 Paket.Core
 FSharp.Core
 
 Trinet.Core.IO.Ntfs
-System.Threading
-
-System.Runtime
+#System.Threading
+#System.Runtime
