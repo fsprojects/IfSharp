@@ -66,7 +66,7 @@ Fake.Core.Target.create "AssemblyInfo" (fun _ ->
 // Clean build results & restore NuGet packages
 
 Fake.Core.Target.create "Clean" (fun _ ->
-    Fake.IO.Shell.cleanDirs ["bin"; "obj"; "temp"]
+    Fake.IO.Shell.cleanDirs ["bin"; "temp"]
 )
 
 Fake.Core.Target.create "CleanDocs" (fun _ ->
