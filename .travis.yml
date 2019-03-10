@@ -6,7 +6,7 @@ dist: xenial
 dotnet: 2.1.302
 
 script:
-  - ./build.sh
+  - ./build.sh BuildNetFramework
 
 branches:
  only:
