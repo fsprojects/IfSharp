@@ -148,7 +148,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <ProjectReference Include="..\IFSharp.Kernel\IFSharp.Kernel.fsproj">
+    <ProjectReference Include="..\IfSharp.Kernel\IfSharp.Kernel.fsproj">
       <Name>IFSharp.Kernel</Name>
       <Project>{25fe52cd-bce3-471d-a629-9dc9f0410b6c}</Project>
       <Private>True</Private>
