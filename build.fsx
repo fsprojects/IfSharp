@@ -66,7 +66,7 @@ Fake.Core.Target.create "AssemblyInfo" (fun _ ->
 // Clean build results & restore NuGet packages
 
 Fake.Core.Target.create "Clean" (fun _ ->
-    Fake.IO.Shell.cleanDirs ["bin"; "temp"]
+    Fake.IO.Shell.cleanDirs ["bin"; "obj"; "temp"]
 )
 
 Fake.Core.Target.create "CleanDocs" (fun _ ->
@@ -82,9 +82,18 @@ Fake.Core.Target.create "BuildNetFramework" (fun _ ->
         DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "restore" ""
     if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "restore" __SOURCE_DIRECTORY__ result.Messages
 
-    [ "IfSharp.sln"] 
-    |> Fake.DotNet.MSBuild.runRelease id "bin" "Rebuild"
-    |> ignore
+    let setParams (defaults:MSBuildParams) =
+        { defaults with
+            Verbosity = Some(Quiet)
+            Targets = ["Build"]
+            Properties =
+                [
+                    "Optimize", "True"
+                    "DebugSymbols", "True"
+                    "Configuration", "Release"
+                ]
+         }
+    Fake.DotNet.MSBuild.build setParams "IfSharp.sln"
 )
 
 Fake.Core.Target.create "BuildNetCore" (fun _ ->
