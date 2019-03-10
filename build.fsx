@@ -77,11 +77,12 @@ Fake.Core.Target.create "CleanDocs" (fun _ ->
 // Build library & test project
 Fake.Core.Target.create "BuildNetFramework" (fun _ ->
     //Need to restore for .NET Standard
+    let workingDir = Path.getFullName "src/IfSharp.Kernel"
     let result =
-        DotNet.exec (DotNet.Options.withWorkingDirectory __SOURCE_DIRECTORY__) "restore" ""
+        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "restore" ""
     if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "restore" __SOURCE_DIRECTORY__ result.Messages
 
-    [ "src/IfSharp/IfSharp.fsproj"] 
+    [ "IfSharp.sln"] 
     |> Fake.DotNet.MSBuild.runRelease id "bin" "Rebuild"
     |> ignore
 )
@@ -89,7 +90,7 @@ Fake.Core.Target.create "BuildNetFramework" (fun _ ->
 Fake.Core.Target.create "BuildNetCore" (fun _ ->
     let workingDir = Path.getFullName "src/IfSharpNetCore"
     let result =
-        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "build" ""
+        DotNet.exec (DotNet.Options.withWorkingDirectory __SOURCE_DIRECTORY__) "build" "IfSharpNetCore.sln"
     if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" workingDir result.Messages
 )
 

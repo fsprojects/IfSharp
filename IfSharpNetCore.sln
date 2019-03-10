@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "IfSharp.Kernel", "src\IfSharp.Kernel\IfSharp.Kernel.fsproj", "{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IfSharp", "src\IfSharp\IfSharp.fsproj", "{614109A5-EC07-47DA-BE73-D91CCC08FB4F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "IfSharpNetCore", "src\IfSharpNetCore\IfSharpNetCore.fsproj", "{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Debug|x64.Build.0 = Debug|Any CPU
 		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Release|x64.ActiveCfg = Release|Any CPU
 		{25FE52CD-BCE3-471D-A629-9DC9F0410B6C}.Release|x64.Build.0 = Release|Any CPU
-		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Debug|x64.ActiveCfg = Debug|x64
-		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Debug|x64.Build.0 = Debug|x64
-		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Release|x64.ActiveCfg = Release|x64
-		{614109A5-EC07-47DA-BE73-D91CCC08FB4F}.Release|x64.Build.0 = Release|x64
+		{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{4D3A95BC-3636-4474-B176-9ECCEC4FB3D8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
