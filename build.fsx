@@ -1,3 +1,5 @@
+open Fake.Runtime.Trace
+open Fake.MSBuildHelper
 // --------------------------------------------------------------------------------------
 // FAKE build script 
 // --------------------------------------------------------------------------------------
@@ -84,7 +86,7 @@ Fake.Core.Target.create "BuildNetFramework" (fun _ ->
 
     let setParams (defaults:MSBuildParams) =
         { defaults with
-            Verbosity = Some(Quiet)
+            Verbosity = Some(MSBuildVerbosity.Detailed)
             Targets = ["Build"]
             Properties =
                 [
