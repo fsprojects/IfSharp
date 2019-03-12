@@ -1,3 +1,5 @@
+group NETCORE
+
 FSharp.Compiler.Service
 NetMQ
 Newtonsoft.Json

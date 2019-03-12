@@ -12,7 +12,7 @@ define(function () {
     var changedSinceTypecheck = true;
     var changedRecently = false;
     var kernelIdledSinceTypeCheck = false;
-    var kernelIdledRecently = false
+    var kernelIdledRecently = false;
 
     var onload = function () {
 
@@ -69,8 +69,8 @@ define(function () {
 
         function intellisenseRequest(item) {
             var cells = getCodeCells();
-            var editor = cells.selectedCell != null ? cells.selectedCell.code_mirror : null
-            var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 }
+            var editor = cells.selectedCell != null ? cells.selectedCell.code_mirror : null;
+            var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 };
             var callbacks = { shell: {}, iopub: {} };
 
             if (editor != null) {
@@ -153,12 +153,12 @@ define(function () {
 
                 // applies intellisense hooks onto cells that are selected
                 $([IPython.events]).on('create.Cell', function (event, data) {
-                    data.cell.cm_config.mode = 'text/x-fsharp'
+                    data.cell.cm_config.mode = 'text/x-fsharp';
                     applyIntellisense(data.cell);
                 });
 
                 $([IPython.events]).on('delete.Cell', function (event, data) {
-                    data.cell.code_mirror.intellisense.setDeclarations([])
+                    data.cell.code_mirror.intellisense.setDeclarations([]);
                 });
 
                 $([IPython.events]).on('kernel_idle.Kernel', function (event, data) {
@@ -182,7 +182,7 @@ define(function () {
                     changedRecently = false;
                     kernelIdledSinceTypeCheck = false;
                     kernelIdledRecently = false;
-                    intellisenseRequest({ keyCode: 0 })
+                    intellisenseRequest({ keyCode: 0 });
                 }, 1000);
 
             });

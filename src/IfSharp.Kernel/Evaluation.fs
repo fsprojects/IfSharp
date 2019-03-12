@@ -25,7 +25,7 @@ module Evaluation =
             let htmlPrinterParams = System.Collections.Generic.Dictionary<string, obj>()
             do htmlPrinterParams.["html-standalone-output"] <- false
 
-        type Microsoft.FSharp.Compiler.Interactive.InteractiveSession with
+        type Microsoft.FSharp.Compiler.Interactive.Shell.FsiEvaluationSession with
             member x.HtmlPrinterParameters = FsInteractiveService.htmlPrinterParams
             member x.AddHtmlPrinter<'T>(f:'T -> seq<string * string> * string) = 
                 FsInteractiveService.htmlPrinters.Add(typeof<'T>, fun (value:obj) ->
@@ -41,7 +41,9 @@ module Evaluation =
         let errStream = new StringWriter(sbErr)
         let printStream = new StringWriter(sbPrint)
     
-        let fsiObj = Microsoft.FSharp.Compiler.Interactive.Settings.fsi
+        
+
+        let fsiObj = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi
         // The following is a workaround for IfSharp github issue #143
         // Mono fails to handle tailcall in Fsi printing code, thus constraining the length of print on Mono
         // https://github.com/mono/mono/issues/8975
@@ -61,15 +63,15 @@ module Evaluation =
         // Load the `fsi` object from the right location of the `FSharp.Compiler.Interactive.Settings.dll`
         // assembly and add the `fsi.AddHtmlPrinter` extension method; then clean it from FSI output
         let origLength = sbOut.Length
-        let fsiLocation = typeof<Microsoft.FSharp.Compiler.Interactive.InteractiveSession>.Assembly.Location    
-        fsiSession.EvalInteraction("#r @\"" + fsiLocation + "\"")
-        fsiSession.EvalInteraction(addHtmlPrinter)
+        let fsiLocation = typeof<Microsoft.FSharp.Compiler.Interactive.Shell.Settings.InteractiveSettings>.Assembly.Location    
+        let _, errors1 = fsiSession.EvalInteractionNonThrowing("#r @\"" + fsiLocation + "\"")
+        let _, errors2 = fsiSession.EvalInteractionNonThrowing(addHtmlPrinter)
         sbOut.Remove(origLength, sbOut.Length-origLength) |> ignore        
 
         // Get reference to the extra HTML printers registered inside the FSI session
         let extraPrinters = 
-          unbox<ResizeArray<System.Type * (obj -> seq<string * string> * string)>>
-            (fsiSession.EvalExpression("FsInteractiveService.htmlPrinters").Value.ReflectionValue)
+            unbox<ResizeArray<System.Type * (obj -> seq<string * string> * string)>>
+                (fsiSession.EvalExpression("FsInteractiveService.htmlPrinters").Value.ReflectionValue)
 
         Console.SetOut(printStream)
         sbErr, sbOut, sbPrint, extraPrinters, fsiSession
