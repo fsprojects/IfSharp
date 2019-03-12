@@ -3,12 +3,12 @@
 open System
 open System.IO
 open System.Text
-open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler.Interactive.Shell
+open FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.Interactive.Shell
 
 [<AutoOpen>]
 module Evaluation = 
-    open Microsoft.FSharp.Compiler
+    open FSharp.Compiler
 
     type SimpleDeclaration =
         {
@@ -43,7 +43,7 @@ module Evaluation =
     
         
 
-        let fsiObj = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi
+        let fsiObj = FSharp.Compiler.Interactive.Shell.Settings.fsi
         // The following is a workaround for IfSharp github issue #143
         // Mono fails to handle tailcall in Fsi printing code, thus constraining the length of print on Mono
         // https://github.com/mono/mono/issues/8975
@@ -63,7 +63,7 @@ module Evaluation =
         // Load the `fsi` object from the right location of the `FSharp.Compiler.Interactive.Settings.dll`
         // assembly and add the `fsi.AddHtmlPrinter` extension method; then clean it from FSI output
         let origLength = sbOut.Length
-        let fsiLocation = typeof<Microsoft.FSharp.Compiler.Interactive.Shell.Settings.InteractiveSettings>.Assembly.Location    
+        let fsiLocation = typeof<FSharp.Compiler.Interactive.Shell.Settings.InteractiveSettings>.Assembly.Location    
         let _, errors1 = fsiSession.EvalInteractionNonThrowing("#r @\"" + fsiLocation + "\"")
         let _, errors2 = fsiSession.EvalInteractionNonThrowing(addHtmlPrinter)
         sbOut.Remove(origLength, sbOut.Length-origLength) |> ignore        

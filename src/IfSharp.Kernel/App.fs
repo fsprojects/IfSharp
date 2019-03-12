@@ -41,7 +41,7 @@ module App =
     let AddDisplayPrinter = Printers.addDisplayPrinter
 
     /// Convenience method for adding an fsi printer
-    let AddFsiPrinter = Microsoft.FSharp.Compiler.Interactive.Shell.Settings.fsi.AddPrinter
+    let AddFsiPrinter = FSharp.Compiler.Interactive.Shell.Settings.fsi.AddPrinter
 
     /// Global clear display function
     let Clear () = Kernel.Value.ClearDisplay()

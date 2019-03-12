@@ -18,7 +18,7 @@ type ConnectionInformation =
 
 type IntellisenseItem = 
     {
-        glyph: Microsoft.FSharp.Compiler.SourceCodeServices.FSharpGlyph
+        glyph: FSharp.Compiler.SourceCodeServices.FSharpGlyph
         name: string
         documentation: string
         value: string

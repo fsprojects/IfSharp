@@ -8,9 +8,9 @@ open System.IO
 open System.Text
 open System.Reflection
 
-open Microsoft.FSharp.Compiler
-open Microsoft.FSharp.Compiler.Ast
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler
+open FSharp.Compiler.Ast
+open FSharp.Compiler.SourceCodeServices
 
 [<AutoOpen>]
 module FsCompilerInternals = 
