@@ -1,4 +1,4 @@
-Build status: [![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri/branch/master?svg=true)](https://ci.appveyor.com/project/cgravill/ifsharp) (master/Windows) [![Build Status](https://travis-ci.org/fsprojects/IfSharp.svg?branch=master)](https://travis-ci.org/fsprojects/IfSharp) (master/Travis)
+Build status: [![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri/branch/master?svg=true)](https://ci.appveyor.com/project/cgravill/ifsharp) (master/Windows) [![Build Status](https://travis-ci.org/fsprojects/IfSharp.svg?branch=master)](https://travis-ci.org/fsprojects/IfSharp) (master/Linux)
 
 ## Table of contents
 
