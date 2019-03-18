@@ -107,8 +107,16 @@ module Evaluation =
         let scriptFileName = Path.Combine(Environment.CurrentDirectory, "script.fsx")
         let options, errors =
             fsiEval.InteractiveChecker.GetProjectOptionsFromScript(
-                scriptFileName, source)
+                scriptFileName, source, assumeDotNetFramework = false)
             |> Async.RunSynchronously
+
+        let corelib = "System.Private.CoreLib.dll"
+        let runtime =
+            options.OtherOptions
+            |> Array.find (fun v -> v.Contains(corelib))
+            |> (fun v -> v.Replace(corelib, "System.Runtime.dll"))
+        let other = options.OtherOptions |> Array.append [|runtime|]
+        let options = { options with OtherOptions = other }
 
         let (parseFileResults, checkFileAnswer) =
             fsiEval.InteractiveChecker.ParseAndCheckFileInProject(scriptFileName, 0, source, options)
@@ -116,7 +124,7 @@ module Evaluation =
 
         let checkFileResults =
             match checkFileAnswer with
-            | FSharpCheckFileAnswer.Aborted -> failwith "unexpected"
+            | FSharpCheckFileAnswer.Aborted -> failwith (sprintf "fsiEval.InteractiveChecker.ParseAndCheckFileInProject returned FSharpCheckFileAnswer.Aborted. %s:%d:%d %A %A" source lineNumber charIndex errors options)
             | FSharpCheckFileAnswer.Succeeded x -> x
 
         try
