@@ -113,8 +113,8 @@ module Evaluation =
 
         let options, errors =
             fsiEval.InteractiveChecker.GetProjectOptionsFromScript(
-                  scriptFileName, source, assumeDotNetFramework = assumeDotNetFramework)
-           |> Async.RunSynchronously
+                scriptFileName, source, assumeDotNetFramework = assumeDotNetFramework)
+            |> Async.RunSynchronously
 
         // dotnet core is does not return System.Runtime.dll when assumeDotNetFramework is set
         // to false, add it here
