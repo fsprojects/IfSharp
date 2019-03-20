@@ -475,7 +475,7 @@ open IfSharp.Kernel.Globals"""
         let realLineNumber = position.line + lineOffset + 1
         let codeString = String.Join("\n", codes)
 
-        let (decls, tcr, filterStartIndex, filterString) = GetDeclarations(codeString, realLineNumber, position.ch)
+        let (decls, tcr, filterStartIndex, filterString) = GetDeclarations runtime (codeString, realLineNumber, position.ch)
         
         let matches = 
             decls
