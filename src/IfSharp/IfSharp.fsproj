@@ -8,12 +8,12 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>614109a5-ec07-47da-be73-d91ccc08fb4f</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>IFSharp</RootNamespace>
+    <RootNamespace>IfSharp</RootNamespace>
     <AssemblyName>ifsharp</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <UseStandardResourceNames>true</UseStandardResourceNames>
-    <Name>IFSharp</Name>
+    <Name>IfSharp</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -149,7 +149,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <ProjectReference Include="..\IfSharp.Kernel\IfSharp.Kernel.fsproj">
-      <Name>IFSharp.Kernel</Name>
+      <Name>IfSharp.Kernel</Name>
       <Project>{25fe52cd-bce3-471d-a629-9dc9f0410b6c}</Project>
       <Private>True</Private>
     </ProjectReference>
