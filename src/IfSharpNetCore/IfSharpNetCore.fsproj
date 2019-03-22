@@ -62,5 +62,8 @@
   <ItemGroup>
     <ProjectReference Include="..\IfSharp.Kernel\IfSharp.Kernel.fsproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.App" Version="2.2.3" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
