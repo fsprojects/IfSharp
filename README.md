@@ -8,7 +8,7 @@ This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feat
 
 ## Docker
 
-To run using a Docker container on Linux/OSX:
+To run using a Docker container on Linux/macOS:
 
     docker run -v $PWD:/notebooks -p 8888:8888 fsprojects/ifsharp
 
@@ -31,7 +31,7 @@ You can use Jupyter F# Notebooks with free server-side execution at [Azure Noteb
 If you select "Show me some samples", then there is an "Introduction to F#" which guides you through the language
 and its use in Jupyter.
 
-## Windows Local Installation and Execution
+## Windows Local Installation and Use
 
 1. Download [Anaconda](https://www.anaconda.com/download/) for Python 3.6
 
@@ -42,7 +42,7 @@ and its use in Jupyter.
 
    ![Installation screenshot](/docs/files/img/anaconda-installation.png)
 
-3. Download current zip release of IfSharp [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip)
+3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/)
 
 4. Run IfSharp.exe (IfSharp application icon).
 
@@ -52,19 +52,19 @@ Jupyter will start and a notebook with F# can be selected. This can be run via "
 
 If the launch fails in the console window, check that the Anaconda version used is currently added to the path. If not, uninstalling Anaconda and reinstalling using instructions 1-
 
-## OSX Local Installation and Execution
+## macOS Local Installation and Use
 
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 
 2. Install [Mono](http://www.mono-project.com/download/) (tested Mono 5.10.1.47)
 
-3. Download current IfSharp zip release [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip)
+3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/)
 
 4. Unzip the release then run `mono ifsharp.exe`
 
 Jupyter will start and a notebook with F# can be selected. This can be run via "jupyter notebook" in future
 
-## Linux Local Installation and Execution
+## Linux Local Installation and Use
 
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 
@@ -82,7 +82,7 @@ Jupyter will start and a notebook with F# can be selected. This can be run via "
 
 2. [SSH into the HDInsights cluster](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-linux-use-ssh-unix).
 
-3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/) with the following commands: 
+3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/)
 
 ```
 # create ifsharp folder under /tmp
