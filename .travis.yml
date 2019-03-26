@@ -11,6 +11,7 @@ dotnet: 2.2.105
 
 script:
   - ./build.sh BuildNetFramework
+  - docker build .
 
 branches:
  only:
@@ -26,5 +27,8 @@ deploy:
     docker push fsprojects/ifsharp:$TRAVIS_TAG &&
     docker push fsprojects/ifsharp:latest
   on:
+    branch: master
     tags: true
+    repo: fsprojects/IfSharp
+    
 
