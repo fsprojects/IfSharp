@@ -1,14 +1,33 @@
 language: csharp
 
-sudo: false  # use the new container-based Travis infrastructure 
+sudo: required  # may be able to use the new container-based Travis infrastructure 
+
+services:
+  - docker
 dist: xenial
 
-#dotnet 2.* currently fail on unpack
-dotnet: 2.1.302
+#dotnet >2.2.* currently fail on unpack
+dotnet: 2.2.105
 
 script:
   - ./build.sh BuildNetFramework
+  - docker build .
 
 branches:
  only:
   - master
+  - /^v\d+\.\d+(\.\d+)?(-\S*)?/
+
+deploy:
+  provider: script
+  script: >-
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin &&
+    docker build --tag fsprojects/ifsharp:$TRAVIS_TAG . &&
+    docker tag fsprojects/ifsharp:$TRAVIS_TAG fsprojects/ifsharp:latest &&
+    docker push fsprojects/ifsharp:$TRAVIS_TAG &&
+    docker push fsprojects/ifsharp:latest
+  on:
+    tags: true
+    repo: fsprojects/IfSharp
+    
+
