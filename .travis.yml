@@ -27,7 +27,6 @@ deploy:
     docker push fsprojects/ifsharp:$TRAVIS_TAG &&
     docker push fsprojects/ifsharp:latest
   on:
-    branch: master
     tags: true
     repo: fsprojects/IfSharp
     
