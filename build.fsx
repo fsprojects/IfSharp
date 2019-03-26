@@ -10,8 +10,8 @@ open Fake.SystemHelper
 open Fake.Git
 open Fake.DotNet
 open Fake.IO
-open Fake.AssemblyInfoFile
-open Fake.ReleaseNotesHelper
+open Fake.DotNet
+open Fake.Core
 open Fake.Core.TargetOperators
 open Fake.IO.Globbing.Operators
 open System
@@ -46,21 +46,19 @@ let gitName = "IfSharp"
 
 // Read additional information from the release notes document
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-//let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
+let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 // Generate assembly info files with the right version & up-to-date information
 Fake.Core.Target.create "AssemblyInfo" (fun _ ->
     let fileName = "src/" + project + "/AssemblyInfo.fs"
-    AssemblyInfoFile.createFSharp
+    Fake.DotNet.AssemblyInfoFile.createFSharp
         fileName
         [
-            //TODO: switch to FAKE5
-
-            //Attribute.Title project
-            //Attribute.Product project
-            //Attribute.Description summary
-            //Attribute.Version release.AssemblyVersion
-            //Attribute.FileVersion release.AssemblyVersion
+            Fake.DotNet.AssemblyInfo.Title project
+            Fake.DotNet.AssemblyInfo.Product project
+            Fake.DotNet.AssemblyInfo.Description summary
+            Fake.DotNet.AssemblyInfo.Version release.AssemblyVersion
+            Fake.DotNet.AssemblyInfo.FileVersion release.AssemblyVersion
         ]  
 )
 
