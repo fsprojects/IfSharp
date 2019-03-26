@@ -1,19 +1,6 @@
 Build status: [![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri/branch/master?svg=true)](https://ci.appveyor.com/project/cgravill/ifsharp) (master/Windows) [![Build Status](https://travis-ci.org/fsprojects/IfSharp.svg?branch=master)](https://travis-ci.org/fsprojects/IfSharp) (master/Linux)
 
-## Table of contents
-
-- [F# and Jupyter](#fsharp-and-jupyter)
-- [Getting Started](#getting-started)
-  - [Docker](#docker)
-  - [Azure Notebooks](#azure-notebooks)
-  - [Windows Manual Installation](#windows-manual-installation)
-  - [Mac Manual Installation](#mac-manual-installation)
-  - [Linux Manual Installation](#linux-manual-installation)
-  - [Running inside a Docker container](#running-inside-a-docker-container)
-- [Screenshots](#screenshots)
-- [Compatibility](#compatibility)
-  
-# FSharp and Jupyter
+# F# and Jupyter
 
 This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](FSharp_Jupyter_Notebooks.ipynb) for some of the features that are included.
 
@@ -23,21 +10,28 @@ This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feat
 
 To run using a Docker container on Linux/OSX:
 
-    docker run -d -v $PWD:/notebooks fsprojects/ifsharp
+    docker run -v $PWD:/notebooks fsprojects/ifsharp
 
+The container exposes your current directory as a volume called `notebooks` where the files get saved.
 Open with 
 
     http://localhost:8888
 
-The container exposes your current directory as a volume called `notebooks` where the files get saved.
+and enter the token printed by the docker container startup, or set up a password.
 
-Add `-p <your_port>:8888` if a port mapping is required, e.g. on OSX.
+Notes:
+
+* Add `-p <your_port>:8888` if a port mapping is required.
+
+* If using Windows you must enable file sharing for docker on that drive.
 
 ## Azure Notebooks
 
-You can use Jupyter F# Notebooks with free server-side execution at [Azure Notebooks](https://notebooks.azure.com/) and no local install. If you select "Show me some samples", then there is an "Introduction to F#" which guides you through the language and its use in Jupyter.
+You can use Jupyter F# Notebooks with free server-side execution at [Azure Notebooks](https://notebooks.azure.com/).
+If you select "Show me some samples", then there is an "Introduction to F#" which guides you through the language
+and its use in Jupyter.
 
-## Windows Manual Installation
+## Windows Local Installation and Execution
 
 1. Download [Anaconda](https://www.anaconda.com/download/) for Python 3.6
 
@@ -58,7 +52,7 @@ Jupyter will start and a notebook with F# can be selected. This can be run via "
 
 If the launch fails in the console window, check that the Anaconda version used is currently added to the path. If not, uninstalling Anaconda and reinstalling using instructions 1-
 
-## Mac Manual Installation
+## OSX Local Installation and Execution
 
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 
@@ -70,26 +64,25 @@ If the launch fails in the console window, check that the Anaconda version used 
 
 Jupyter will start and a notebook with F# can be selected. This can be run via "jupyter notebook" in future
 
-## Linux Manual Installation
+## Linux Local Installation and Execution
 
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 
 2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (Untested, suggest mono 5.10) and F# (tested 4.1).
 
-3. Download the current IfSharp zip release [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip)
+3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/)
 
 4. Unzip the release then run `mono ifsharp.exe` (this sets up the Jupyter kernel files in `~/.local/share/jupyter/kernels/ifsharp/`) 
 
 Jupyter will start and a notebook with F# can be selected. This can be run via "jupyter notebook" in future
 
-
-## Linux Manual Installation (HDInsights)
+## Linux Local Installation (HDInsights)
 
 1. Follow instructions to [install or update Mono](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-install-mono) on HDInsights.
 
 2. [SSH into the HDInsights cluster](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-linux-use-ssh-unix).
 
-3. Download the current Ifsharp zip release [v3.0.1](https://github.com/fsprojects/IfSharp/releases/download/v3.0.1/IfSharp.v3.0.1.zip) with the following commands: 
+3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/) with the following commands: 
 
 ```
 # create ifsharp folder under /tmp
@@ -138,9 +131,10 @@ mono ifsharp.exe
 
 Build the container with: 
 
-`docker build -t fsprojects/ifsharp:local .`
+    docker build -t fsprojects/ifsharp:local .
 
 # Compatibility
+
 IfSharp supports Jupyter 4.0-5.2 and works with both Python 2.X and Python 3.X
 
 If you need IPython 1.x or 2.x support please see the archived https://github.com/fsprojects/IfSharp/tree/ipython-archive
