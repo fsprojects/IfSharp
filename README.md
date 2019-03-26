@@ -10,7 +10,7 @@ This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feat
 
 To run using a Docker container on Linux/OSX:
 
-    docker run -v $PWD:/notebooks fsprojects/ifsharp
+    docker run -v $PWD:/notebooks -p 8888:8888 fsprojects/ifsharp
 
 The container exposes your current directory as a volume called `notebooks` where the files get saved.
 Open with 
@@ -21,7 +21,7 @@ and enter the token printed by the docker container startup, or set up a passwor
 
 Notes:
 
-* Add `-p <your_port>:8888` if a port mapping is required.
+* Add `-p <your_port>:8888` if a different port mapping is required.
 
 * If using Windows you must enable file sharing for docker on that drive.
 
