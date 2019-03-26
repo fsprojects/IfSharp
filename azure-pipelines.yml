@@ -1,0 +1,29 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+jobs:
+- job: Windows
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - script: build.cmd
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - bash: . '$(Build.SourcesDirectory)/build.sh' BuildNetCore
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - bash: . '$(Build.SourcesDirectory)/build.sh' BuildNetCore
+
+#- script: |
+#    echo Add other tasks to build, test, and deploy your project.
+#    echo See https://aka.ms/yaml
+#  displayName: 'Run a multi-line script'

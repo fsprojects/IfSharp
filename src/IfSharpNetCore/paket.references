@@ -1,4 +1,6 @@
-﻿FSharp.Compiler.Service
+﻿group NETCORE
+
+FSharp.Compiler.Service
 NetMQ
 Newtonsoft.Json
 Paket.Core

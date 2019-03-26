@@ -72,8 +72,9 @@ let private getPartOrDefault delimiter s =
         splitedByDelimiter.[0], ""
  
 let private GitHubString gitHubRepoString =
+    //This RegEx may be overly restrictive a prevent characters, is there are more sustainable way? Does Paket itself have a checker?
     let GitHubRepoStringCheck =
-        System.Text.RegularExpressions.Regex("^[a-zA-Z\d]+(-[a-zA-Z\d]+)*/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(:[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)?( [a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*(/[a-zA-Z\d\.]+(-[a-zA-Z\d\.]+)*)*)*$")
+        System.Text.RegularExpressions.Regex("^[_a-zA-Z\d]+(-[_a-zA-Z\d]+)*/[_a-zA-Z\d\.]+(-[_a-zA-Z\d\.]+)*(:[_a-zA-Z\d\.]+(-[_a-zA-Z\d\.]+)*)?( [_a-zA-Z\d\.]+(-[_a-zA-Z\d\.]+)*(/[_a-zA-Z\d\.]+(-[_a-zA-Z\d\.]+)*)*)*$")
     let GitHubRepoStringCheckIsValid (s:string) = GitHubRepoStringCheck.IsMatch s
 
     if not(GitHubRepoStringCheckIsValid gitHubRepoString)
@@ -133,6 +134,7 @@ let Version list =
     ()
 
 let Clear() =
+    //TODO: this currently doesn't remove GitHub packages. Can't find a corresponding Paket api
     deps.GetInstalledPackages() |> List.iter (fun (_, package, _) -> remove_quiet package)
-    add "FSharp.Core" "= 4.3.4"
+    add "FSharp.Core" "= 4.6.2"
     ()

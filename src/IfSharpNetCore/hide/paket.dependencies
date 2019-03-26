@@ -1,4 +1,4 @@
-framework: net472
+framework: netcoreapp2.2
 generate_load_scripts: true
 source https://api.nuget.org/v3/index.json
 #When changing the default FSharp.Core version make sure to change everywhere e.g. Clear()

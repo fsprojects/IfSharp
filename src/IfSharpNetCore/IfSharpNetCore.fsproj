@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+    <Content Include="..\IfSharp\Angara.Charting.Dynamic.fsx" Link="Angara.Charting.Dynamic.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\Angara.Charting.fsx" Link="Angara.Charting.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\Angara.Charting.Paket.fsx" Link="Angara.Charting.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\AsyncDisplay.fsx" Link="AsyncDisplay.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\AsyncDisplay.Paket.fsx" Link="AsyncDisplay.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\FSharp.Charting.fsx" Link="FSharp.Charting.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\FSharp.Charting.Gtk.fsx" Link="FSharp.Charting.Gtk.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\FSharp.Charting.Gtk.Paket.fsx" Link="FSharp.Charting.Gtk.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\FSharp.Charting.Paket.fsx" Link="FSharp.Charting.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\FsLab.fsx" Link="FsLab.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\Paket.fsx" Link="Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\Paket.Generated.Refs.fsx" Link="Paket.Generated.Refs.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\XPlot.GoogleCharts.fsx" Link="XPlot.GoogleCharts.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\XPlot.GoogleCharts.Paket.fsx" Link="XPlot.GoogleCharts.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\XPlot.Plotly.fsx" Link="XPlot.Plotly.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IfSharp\XPlot.Plotly.Paket.fsx" Link="XPlot.Plotly.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="paket.references" />
+    <None Include="hide\paket.dependencies" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IfSharp.Kernel\IfSharp.Kernel.fsproj" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
