@@ -2,7 +2,7 @@ Build status: [![Build status](https://ci.appveyor.com/api/projects/status/7da6f
 
 # F# and Jupyter
 
-This is the F# implementation for [Jupyter](http://jupyter.org/). View the [Feature Notebook](FSharp_Jupyter_Notebooks.ipynb) for some of the features that are included.
+This implements F# for [Jupyter](http://jupyter.org/) notebooks. View the [Feature Notebook](FSharp_Jupyter_Notebooks.ipynb) for some of the features that are included.
 
 # Getting Started
 
