@@ -135,7 +135,7 @@ Build the container with:
 
 # Compatibility
 
-IfSharp supports Jupyter 4.0-5.2 and works with both Python 2.X and Python 3.X
+IfSharp supports Jupyter 5.7.7 and works with both Python 2.X and Python 3.X
 
 If you need IPython 1.x or 2.x support please see the archived https://github.com/fsprojects/IfSharp/tree/ipython-archive
 
