@@ -173,7 +173,7 @@ open IfSharp.Kernel.Globals"""
         
         let header           = JsonConvert.DeserializeObject<Header>(headerJson)
         let parentHeader     = JsonConvert.DeserializeObject<Header>(parentHeaderJson)
-        let metaDataDict     = deserializeDict (metadata)
+        //let metaDataDict     = deserializeDict (metadata) //We don't currently need metadata and it's changing between notebooks and labs
         let content          = ShellMessages.Deserialize (header.msg_type) (contentJson)
 
         let calculated_signature = sign [headerJson; parentHeaderJson; metadata; contentJson]
