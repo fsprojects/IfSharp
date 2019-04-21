@@ -1,16 +1,11 @@
 ﻿module Config
 
 open System
-open System.Configuration
 open System.IO
 
-/// Convenience method for getting a setting with a default value
-let defaultConfig (name : string, defaultValue) =
-    let value = ConfigurationManager.AppSettings.[name]
-    if value = null then defaultValue else value
-
-// the configuration properties
-let DefaultNuGetSource = defaultConfig("DefaultNuGetSource", "")
+type Runtime =
+    | NetFramework
+    | NetCore
 
 let ActualPlatform =
     match Environment.OSVersion.Platform with
@@ -28,7 +23,7 @@ let ActualPlatform =
 
 //http://jupyter-client.readthedocs.io/en/latest/kernels.html#kernel-specs
 let KernelDir = 
-  let thisExecutable = System.Reflection.Assembly.GetEntryAssembly().Location
+  //let thisExecutable = System.Reflection.Assembly.GetEntryAssembly().Location
   let userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
   let appData =  
     match ActualPlatform with

@@ -1,13 +1,21 @@
+open Fake.Runtime.Trace
+open Fake.MSBuildHelper
 // --------------------------------------------------------------------------------------
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
 #r @"packages/FAKE/tools/FakeLib.dll"
-open Fake 
+open Fake
+open Fake.SystemHelper
 open Fake.Git
-open Fake.AssemblyInfoFile
-open Fake.ReleaseNotesHelper
+open Fake.DotNet
+open Fake.IO
+open Fake.DotNet
+open Fake.Core
+open Fake.Core.TargetOperators
+open Fake.IO.Globbing.Operators
 open System
+open System.IO
 
 // --------------------------------------------------------------------------------------
 // START TODO: Provide project-specific details below
@@ -38,70 +46,79 @@ let gitName = "IfSharp"
 
 // Read additional information from the release notes document
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-//let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
+let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 // Generate assembly info files with the right version & up-to-date information
-Target "AssemblyInfo" (fun _ ->
-  let fileName = "src/" + project + "/AssemblyInfo.fs"
-  CreateFSharpAssemblyInfo fileName
-      [ Attribute.Title project
-        Attribute.Product project
-        Attribute.Description summary
-        //Attribute.Version release.AssemblyVersion
-        //Attribute.FileVersion release.AssemblyVersion
-      ] 
+Fake.Core.Target.create "AssemblyInfo" (fun _ ->
+    let fileName = "src/" + project + "/AssemblyInfo.fs"
+    Fake.DotNet.AssemblyInfoFile.createFSharp
+        fileName
+        [
+            Fake.DotNet.AssemblyInfo.Title project
+            Fake.DotNet.AssemblyInfo.Product project
+            Fake.DotNet.AssemblyInfo.Description summary
+            Fake.DotNet.AssemblyInfo.Version release.AssemblyVersion
+            Fake.DotNet.AssemblyInfo.FileVersion release.AssemblyVersion
+        ]  
 )
 
 // --------------------------------------------------------------------------------------
 // Clean build results & restore NuGet packages
 
-Target "Clean" (fun _ ->
-    CleanDirs ["bin"; "temp"]
+Fake.Core.Target.create "Clean" (fun _ ->
+    Fake.IO.Shell.cleanDirs ["bin"; "temp"]
 )
 
-Target "CleanDocs" (fun _ ->
-    CleanDirs ["docs/output"]
+Fake.Core.Target.create "CleanDocs" (fun _ ->
+    Fake.IO.Shell.cleanDirs ["docs/output"]
 )
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
-Target "Build" (fun _ ->
-    [ "src/IfSharp/IfSharp.fsproj"] 
-      |> MSBuildRelease "bin" "Rebuild"
-      |> ignore
+Fake.Core.Target.create "BuildNetFramework" (fun _ ->
+    //Need to restore for .NET Standard
+    let workingDir = Path.getFullName "src/IfSharp.Kernel"
+    let result =
+        DotNet.exec (DotNet.Options.withWorkingDirectory workingDir) "restore" ""
+    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "restore" __SOURCE_DIRECTORY__ result.Messages
+
+    let setParams (defaults:MSBuildParams) =
+        { defaults with
+            Verbosity = Some(MSBuildVerbosity.Detailed)
+            Targets = ["Build"]
+            Properties =
+                [
+                    "Optimize", "True"
+                    "DebugSymbols", "True"
+                    "Configuration", "Release"
+                ]
+         }
+    Fake.DotNet.MSBuild.build setParams "IfSharp.sln"
 )
 
-// --------------------------------------------------------------------------------------
-// Run the unit tests using test runner & kill test runner when complete
-
-Target "xUnit" (fun _ ->
-    !! "**/bin/**/*.Tests.dll"
-    |> Fake.Testing.XUnit2.xUnit2 (fun p ->
-        {p with
-            TimeOut = TimeSpan.FromMinutes 5.
-            HtmlOutputPath = Some "xunit.html"})
+Fake.Core.Target.create "BuildNetCore" (fun _ ->
+    let workingDir = Path.getFullName "src/IfSharpNetCore"
+    let result =
+        DotNet.exec (DotNet.Options.withWorkingDirectory __SOURCE_DIRECTORY__) "build" "IfSharpNetCore.sln"
+    if result.ExitCode <> 0 then failwithf "'dotnet %s' failed in %s messages: %A" "build" workingDir result.Messages
 )
-
-FinalTarget "CloseTestRunner" (fun _ ->  
-    ProcessHelper.killProcess "nunit-agent.exe"
-)
-
-
-Target "Release" DoNothing
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
 
-Target "All" DoNothing
+Fake.Core.Target.create "All" ignore
 
 "Clean"
-  ==> "AssemblyInfo"
-  ==> "Build"
+  ==> "BuildNetCore"
+
+"Clean"
+  ==> "BuildNetFramework"
+
+"BuildNetCore"
   ==> "All"
 
-"All" 
-  ==> "xUnit"
-  ==> "Release"
+"BuildNetFramework"
+  ==> "All"
 
 
-RunTargetOrDefault "All"
+Fake.Core.Target.runOrDefault "All"

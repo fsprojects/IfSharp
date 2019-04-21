@@ -5,11 +5,10 @@ open System.Collections.Generic
 open System.IO
 open System.Text
 open System.Reflection
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler
 
 /// Assembly information
 type AssemblyInfo = { FileName : string; GuessedVersion : string; }
-
 
 /// Wrapper for ErrorInfo
 type CustomErrorInfo =
@@ -36,8 +35,8 @@ type CustomErrorInfo =
             Subcategory = subcategory
             CellNumber = 0
         }
-    static member From(e : Microsoft.FSharp.Compiler.SourceCodeServices.FSharpErrorInfo) =
-        let severityString = match e.Severity with Microsoft.FSharp.Compiler.SourceCodeServices.FSharpErrorSeverity.Error -> "Error" | _ -> "Warning"
+    static member From(e : FSharp.Compiler.SourceCodeServices.FSharpErrorInfo) =
+        let severityString = match e.Severity with FSharp.Compiler.SourceCodeServices.FSharpErrorSeverity.Error -> "Error" | _ -> "Warning"
         {
             FileName = e.FileName
             StartLine = e.StartLineAlternate
@@ -72,7 +71,6 @@ type NuGetManager (executingDirectory : string) =
 
     let syncObject = Object()
     let packagesDir = Path.Combine(executingDirectory, "packages")
-    let packageSource = Config.DefaultNuGetSource
 
     // events from the NuGet.exe
     let errDataReceivedEvent = Event<_>()

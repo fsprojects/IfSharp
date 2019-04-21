@@ -11,23 +11,16 @@ let ClearAlternativeStreamsWindows() =
         for filePath in (FileInfo(path).Directory.GetFileSystemInfos()) do
             filePath.DeleteAlternateDataStream("Zone.Identifier") |> ignore
 
-//Move SystemNet so that the mono one is used instead https://github.com/dotnet/corefx/issues/19914
-let MoveSystemNetHttp() =
-    if File.Exists("System.Net.Http.dll") then
-        printfn("Moving System.Net.Http.dll to Hide.System.Net.Http.dll to workaround https://github.com/dotnet/corefx/issues/19914")
-        File.Move("System.Net.Http.dll", "Hide.System.Net.Http.dll")
-
 [<EntryPoint>]
 let main args =
+    printfn "IFSharp on .NET Core is experimental! It has known issues."
 
     //This is really useful if you need debug the start-up process
     //System.Diagnostics.Debugger.Launch() |> ignore
 
     if (Environment.OSVersion.Platform <> PlatformID.Unix && Environment.OSVersion.Platform <> PlatformID.MacOSX) then
         ClearAlternativeStreamsWindows()
-    if Type.GetType ("Mono.Runtime") <> null then
-        MoveSystemNetHttp()
     CultureInfo.DefaultThreadCurrentCulture <- CultureInfo.InvariantCulture
     CultureInfo.DefaultThreadCurrentUICulture <- CultureInfo.InvariantCulture
-    App.Start args Config.NetFramework
+    App.Start args Config.NetCore
     0

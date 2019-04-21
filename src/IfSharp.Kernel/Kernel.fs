@@ -35,7 +35,7 @@ type CommCallbacks = {
     onClose: CommCloseCallback
     }
 
-type IfSharpKernel(connectionInformation : ConnectionInformation) = 
+type IfSharpKernel(connectionInformation : ConnectionInformation, runtime : Config.Runtime) = 
     // heartbeat
     let hbSocket = new RouterSocket()
     let hbSocketURL = String.Format("{0}://{1}:{2}", connectionInformation.transport, connectionInformation.ip, connectionInformation.hb_port) 
@@ -72,12 +72,34 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     let mutable activeComms : Map<CommId,CommTargetName> = Map.empty;
 
     /// Gets the header code to prepend to all items
-    let headerCode = 
+    let headerCode =
+
+        let includeTemplate2 = """// include directory, this will be replaced by the kernel
+#I "{0}"
+
+// load base dlls
+#r "IfSharp.Kernel.dll"
+
+// open the global functions and methods
+open IfSharp.Kernel
+open IfSharp.Kernel.Globals"""
+
+        let includeTemplate =
+            match runtime with
+            
+            | Config.NetFramework ->
+                """#r "netstandard"
+""" 
+                + includeTemplate2
+            | Config.NetCore ->
+                includeTemplate2
+
+
         let file = FileInfo(Assembly.GetEntryAssembly().Location)
         let dir = file.Directory.FullName
-        let includeFile = Path.Combine(dir, "Include.fsx")
-        let code = File.ReadAllText(includeFile)
-        String.Format(code, dir.Replace("\\", "\\\\"))
+        //let includeFile = Path.Combine(dir, "Include.fsx")
+        //let code = File.ReadAllText(includeFile)
+        String.Format(includeTemplate, dir.Replace("\\", "\\\\"))
 
     /// Splits the message up into lines and writes the lines to shell.log
     let logMessage (msg : string) =
@@ -151,7 +173,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         
         let header           = JsonConvert.DeserializeObject<Header>(headerJson)
         let parentHeader     = JsonConvert.DeserializeObject<Header>(parentHeaderJson)
-        let metaDataDict     = deserializeDict (metadata)
+        //let metaDataDict     = deserializeDict (metadata) //We don't currently need metadata and it's changing between notebooks and labs
         let content          = ShellMessages.Deserialize (header.msg_type) (contentJson)
 
         let calculated_signature = sign [headerJson; parentHeaderJson; metadata; contentJson]
@@ -453,7 +475,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
         let realLineNumber = position.line + lineOffset + 1
         let codeString = String.Join("\n", codes)
 
-        let (decls, tcr, filterStartIndex, filterString) = GetDeclarations(codeString, realLineNumber, position.ch)
+        let (decls, tcr, filterStartIndex, filterString) = GetDeclarations runtime (codeString, realLineNumber, position.ch)
         
         let matches = 
             decls
@@ -601,7 +623,7 @@ type IfSharpKernel(connectionInformation : ConnectionInformation) =
     /// Loops forever receiving messages from the client and processing them
     let doShell() =
 
-        fsiEval.EvalInteraction headerCode
+        let _, errors = fsiEval.EvalInteractionNonThrowing headerCode
 
         logMessage (sbErr.ToString())
         logMessage (sbOut.ToString())
