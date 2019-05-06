@@ -5,8 +5,12 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="plotly-latest.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="Program.fs" />
     <Content Include="..\IfSharp\Angara.Charting.Dynamic.fsx" Link="Angara.Charting.Dynamic.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -50,15 +54,18 @@
     <Content Include="..\IfSharp\XPlot.GoogleCharts.Paket.fsx" Link="XPlot.GoogleCharts.Paket.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\IfSharp\XPlot.Plotly.fsx" Link="XPlot.Plotly.fsx">
+    <None Include="XPlot.Plotly.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\IfSharp\XPlot.Plotly.Paket.fsx" Link="XPlot.Plotly.Paket.fsx">
+    </None>
+    <None Include="XPlot.Plotly.Paket.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <None Include="paket.references" />
     <None Include="hide\paket.dependencies" />
   </ItemGroup>
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="hide\paket.dependencies" DestinationFolder="$(OutDir)" />
+  </Target>
   <ItemGroup>
     <ProjectReference Include="..\IfSharp.Kernel\IfSharp.Kernel.fsproj" />
   </ItemGroup>
