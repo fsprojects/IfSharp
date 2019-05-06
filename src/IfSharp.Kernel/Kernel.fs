@@ -92,7 +92,10 @@ open IfSharp.Kernel.Globals"""
 """ 
                 + includeTemplate2
             | Config.NetCore ->
-                includeTemplate2
+                //Should we be speculatively referencing netstandard? It's convenient but maybe people don't want it?
+                """#r "netstandard"
+                """ 
+                + includeTemplate2
 
 
         let file = FileInfo(Assembly.GetEntryAssembly().Location)
