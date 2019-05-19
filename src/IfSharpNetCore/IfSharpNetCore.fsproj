@@ -48,16 +48,16 @@
     <Content Include="..\IfSharp\Paket.Generated.Refs.fsx" Link="Paket.Generated.Refs.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\IfSharp\XPlot.GoogleCharts.fsx" Link="XPlot.GoogleCharts.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\IfSharp\XPlot.GoogleCharts.Paket.fsx" Link="XPlot.GoogleCharts.Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="XPlot.Plotly.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="XPlot.Plotly.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="XPlot.GoogleCharts.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="XPlot.GoogleCharts.Paket.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="paket.references" />
