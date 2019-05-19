@@ -1,13 +1,16 @@
 #r "IfSharp.Kernel.dll"
 
-#load @".paket/load/main.group.fsx"
+#load @".paket/load/netcoreapp2.2/main.group.fsx"
+
+#r "System.Net"
+#r "System.Net.WebClient.dll"
 
 open IfSharp.Kernel
 open IfSharp.Kernel.App
 open IfSharp.Kernel.Globals
 
 do
-    System.Net.ServicePointManager.SecurityProtocol <- System.Net.SecurityProtocolType.Tls12
+    //System.Net.ServicePointManager.SecurityProtocol <- System.Net.SecurityProtocolType.Tls12
     use wc = new System.Net.WebClient()
     sprintf
         """
