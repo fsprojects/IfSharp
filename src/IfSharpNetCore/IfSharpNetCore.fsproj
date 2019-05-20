@@ -45,9 +45,6 @@
     <Content Include="..\IfSharp\Paket.fsx" Link="Paket.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\IfSharp\Paket.Generated.Refs.fsx" Link="Paket.Generated.Refs.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="XPlot.Plotly.fsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
