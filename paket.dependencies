@@ -13,6 +13,7 @@ nuget Newtonsoft.Json ~> 12.0.1
 nuget FAKE >= 5.8.4
 nuget Paket.Core ~> 5.207.0
 nuget Trinet.Core.IO.Ntfs
+nuget system.memory 4.5.3
 #nuget XPlot.Plotly 1.5.0
 
 #nuget System.Runtime
@@ -36,6 +37,7 @@ nuget FAKE >= 5.8.4
 #nuget XPlot.Plotly 1.5.0
 nuget Paket.Core ~> 5.207.0
 nuget Trinet.Core.IO.Ntfs
+nuget system.memory 4.5.3
 
 #nuget System.Runtime
 

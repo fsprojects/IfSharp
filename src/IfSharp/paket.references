@@ -5,5 +5,6 @@ Paket.Core
 FSharp.Core
 
 Trinet.Core.IO.Ntfs
+System.Memory
 #System.Threading
 #System.Runtime
