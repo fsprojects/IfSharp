@@ -5,3 +5,4 @@ NetMQ
 Newtonsoft.Json
 Paket.Core
 FSharp.Core
+System.Memory
