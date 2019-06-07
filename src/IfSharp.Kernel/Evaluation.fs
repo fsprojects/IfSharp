@@ -136,12 +136,13 @@ module Evaluation =
 
         let checkFileResults =
             match checkFileAnswer with
-            | FSharpCheckFileAnswer.Aborted -> failwith (sprintf "fsiEval.InteractiveChecker.ParseAndCheckFileInProject returned FSharpCheckFileAnswer.Aborted. %s:%d:%d" source lineNumber charIndex)
+            | FSharpCheckFileAnswer.Aborted -> failwith (sprintf "fsiEval.InteractiveChecker.ParseAndCheckFileInProject returned FSharpCheckFileAnswer.Aborted. %O:%d:%d" source lineNumber charIndex)
             | FSharpCheckFileAnswer.Succeeded x -> x
 
         try
-            let lines = source.Split([| '\n' |])
-            let line = lines.[lineNumber - 1]
+            //let lines = source.Split([| '\n' |])
+            //let line = lines.[lineNumber - 1]
+            let line = source.GetLineString(lineNumber - 1) //Check -1
             let preprocess = getPreprocessorIntellisense "." charIndex line
             match preprocess with
             | None ->

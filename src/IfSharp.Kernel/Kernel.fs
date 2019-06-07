@@ -14,6 +14,7 @@ open NetMQ.Sockets
 open System.Threading.Tasks
 open Microsoft.FSharp.Control
 open System.Threading
+open FSharp.Compiler.Text
 
 /// A function that by it's side effect sends the received dict as a comm_message
 type SendCommMessage = Dictionary<string,obj> -> unit
@@ -476,7 +477,7 @@ open IfSharp.Kernel.Globals"""
             |> Seq.sum
 
         let realLineNumber = position.line + lineOffset + 1
-        let codeString = String.Join("\n", codes)
+        let codeString = String.Join("\n", codes) |> SourceText.ofString
 
         let (decls, tcr, filterStartIndex, filterString) = GetDeclarations runtime (codeString, realLineNumber, position.ch)
         
