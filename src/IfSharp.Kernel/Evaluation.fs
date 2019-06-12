@@ -18,6 +18,11 @@ module Evaluation =
             Value: string
         }
 
+    type EvaluationResult =
+        | ActualValue of FsiValue
+        | BackupString of string
+        | Empty
+
     /// Extend the `fsi` object with `fsi.AddHtmlPrinter`
     let addHtmlPrinter = """
         module FsInteractiveService =
@@ -91,15 +96,15 @@ module Evaluation =
         if index.IsSome then
             //We could display more of these errors but the errors may be confusing. Consider.
             try
-                let result, errors = fsiEval.EvalExpressionNonThrowing("it")
+                let result, _ = fsiEval.EvalExpressionNonThrowing("it")
                 match result with
-                | Choice1Of2 (Some value) -> Some value
-                | Choice1Of2 None -> None
-                | Choice2Of2 (exn:exn) -> None
+                | Choice1Of2 (Some value) -> ActualValue value
+                | Choice1Of2 None -> Empty
+                | Choice2Of2 (_:exn) -> BackupString lines.[index.Value] //backup to just the string for things that can't be evaluated: https://github.com/fsprojects/IfSharp/issues/153
 
-            with _ -> None
+            with _ -> Empty
         else
-            None
+            Empty
 
     /// New way of getting the declarations
     let GetDeclarations (runtime : Config.Runtime) (source, lineNumber, charIndex) =
