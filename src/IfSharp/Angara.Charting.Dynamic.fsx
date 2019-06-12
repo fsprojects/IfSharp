@@ -31,9 +31,9 @@ type DynamicChartPrinter private () =
             <script type='text/javascript'>
             require.config({                        
             paths: {
-                'idd': 'https://cdn.rawgit.com/predictionmachines/InteractiveDataDisplay/v1.5.13/dist/idd',
-                'idd.umd': 'https://cdn.rawgit.com/predictionmachines/InteractiveDataDisplay/v1.5.13/dist/idd.umd',
-                'idd-css': 'https://cdn.rawgit.com/predictionmachines/InteractiveDataDisplay/v1.5.13/dist/idd.umd',
+                'idd': 'https://cdn.jsdelivr.net/gh/predictionmachines/InteractiveDataDisplay@v1.5.13/dist/idd',
+                'idd.umd': 'https://cdn.jsdelivr.net/gh/predictionmachines/InteractiveDataDisplay@v1.5.13/dist/idd.umd',
+                'idd-css': 'https://cdn.jsdelivr.net/gh/predictionmachines/InteractiveDataDisplay@v1.5.13/dist/idd.umd',
                 'jquery': 'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min',
                 'jquery-ui': 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui',
                 'css': 'https://cdnjs.cloudflare.com/ajax/libs/require-css/0.1.8/css.min',
@@ -41,7 +41,7 @@ type DynamicChartPrinter private () =
                 'svg': 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.4.0/svg.min',
                 'filesaver': 'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min',
                 'jquery-mousewheel': 'https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min',
-                'angara-serialization': 'https://cdn.rawgit.com/predictionmachines/Angara.Serialization/v0.3.0/dist/Angara.Serialization.umd'
+                'angara-serialization': 'https://cdn.jsdelivr.net/gh/predictionmachines/InteractiveDataDisplay@v1.5.13/dist//Angara.Serialization.umd'
             }
         });
         require(['angara-serialization','idd.umd'], function (Serialization,Charting) {
