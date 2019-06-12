@@ -432,10 +432,13 @@ open IfSharp.Kernel.Globals"""
                     if not content.silent then
                         let lastExpression = GetLastExpression()
                         match lastExpression with
-                        | Some(it) -> 
-                            if it.ReflectionType <> typeof<unit> then
-                                produceOutput it.ReflectionValue true
-                        | None -> ()
+                        | ActualValue(fsiValue) -> 
+                            if fsiValue.ReflectionType <> typeof<unit> then
+                                produceOutput fsiValue.ReflectionValue true
+                        | BackupString str ->
+                            let display_id = Guid.NewGuid()
+                            sendDisplayData "text/plain" str "display_data" (display_id.ToString())
+                        | Empty -> ()
 
 
                 | Choice2Of2 exn ->
