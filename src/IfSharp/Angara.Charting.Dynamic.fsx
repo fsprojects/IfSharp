@@ -41,7 +41,7 @@ type DynamicChartPrinter private () =
                 'svg': 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.4.0/svg.min',
                 'filesaver': 'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min',
                 'jquery-mousewheel': 'https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min',
-                'angara-serialization': 'https://cdn.jsdelivr.net/gh/predictionmachines/InteractiveDataDisplay@v1.5.13/dist//Angara.Serialization.umd'
+                'angara-serialization': 'https://cdn.jsdelivr.net/gh/predictionmachines/Angara.Serialization@v0.3.0/dist/Angara.Serialization.umd'
             }
         });
         require(['angara-serialization','idd.umd'], function (Serialization,Charting) {
