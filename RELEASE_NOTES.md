@@ -1,3 +1,9 @@
+## 3.0.3 (Released 2019-09-19)
+* Bug fixes for JupyterLabs (preliminary support)
+* Helper scripts and dependencies update
+* Experimental version of .NET Core support (build from source)
+* More Docker improvements
+
 ## 3.0.2 (Released 2019-03-26)
 * Docker files being pushed
 * Assembly info generated correctly
