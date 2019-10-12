@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-#Test workaround for macOS...
-export DOTNET_ROOT="/opt/dotnet"
-
 set -eu
 set -o pipefail
+
+#Test workaround for macOS...
+export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
 
 # liberated from https://stackoverflow.com/a/18443300/433393
 realpath() {
