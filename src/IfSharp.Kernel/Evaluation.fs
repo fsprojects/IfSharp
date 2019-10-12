@@ -30,7 +30,7 @@ module Evaluation =
             let htmlPrinterParams = System.Collections.Generic.Dictionary<string, obj>()
             do htmlPrinterParams.["html-standalone-output"] <- false
 
-        type Microsoft.FSharp.Compiler.Interactive.Shell.FsiEvaluationSession with
+        type FSharp.Compiler.Interactive.Shell.FsiEvaluationSession with
             member x.HtmlPrinterParameters = FsInteractiveService.htmlPrinterParams
             member x.AddHtmlPrinter<'T>(f:'T -> seq<string * string> * string) =
                 FsInteractiveService.htmlPrinters.Add(typeof<'T>, fun (value:obj) ->
@@ -107,7 +107,7 @@ module Evaluation =
             Empty
 
     /// New way of getting the declarations
-    let GetDeclarations (runtime : Config.Runtime) (source, lineNumber, charIndex) =
+    let GetDeclarations (runtime : Config.Runtime) (source:Text.ISourceText, lineNumber, charIndex) =
 
         let scriptFileName = Path.Combine(Environment.CurrentDirectory, "script.fsx")
 
@@ -141,12 +141,13 @@ module Evaluation =
 
         let checkFileResults =
             match checkFileAnswer with
-            | FSharpCheckFileAnswer.Aborted -> failwith (sprintf "fsiEval.InteractiveChecker.ParseAndCheckFileInProject returned FSharpCheckFileAnswer.Aborted. %s:%d:%d" source lineNumber charIndex)
+            | FSharpCheckFileAnswer.Aborted -> failwith (sprintf "fsiEval.InteractiveChecker.ParseAndCheckFileInProject returned FSharpCheckFileAnswer.Aborted. %s:%d:%d" (source.ToString()) lineNumber charIndex)
             | FSharpCheckFileAnswer.Succeeded x -> x
 
         try
-            let lines = source.Split([| '\n' |])
-            let line = lines.[lineNumber - 1]
+            //let lines = source.Split([| '\n' |])
+            //let line = lines.[lineNumber - 1]
+            let line = source.GetLineString(lineNumber - 1)
             let preprocess = getPreprocessorIntellisense "." charIndex line
             match preprocess with
             | None ->
