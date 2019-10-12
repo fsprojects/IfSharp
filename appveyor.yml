@@ -1,4 +1,4 @@
-image: ubuntu
+image: Visual Studio 2019
 
 build_script:
-- ./build.sh BuildNetCore
+- ./build.cmd BuildNetFramework
