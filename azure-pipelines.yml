@@ -16,12 +16,12 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
-  - bash: . '$(Build.SourcesDirectory)/build.sh'
+  - bash: . '$(Build.SourcesDirectory)/build.sh' --target BuildNetCore
 - job: Linux
   pool:
     vmImage: 'ubuntu-18.04'
   steps:
-  - bash: . '$(Build.SourcesDirectory)/build.sh'
+  - bash: . '$(Build.SourcesDirectory)/build.sh' --target BuildNetCore
 
 #- script: |
 #    echo Add other tasks to build, test, and deploy your project.
