@@ -65,4 +65,4 @@ Target.create "All" ignore
   ==> "All"
 
 
-Fake.Core.Target.runOrDefault "All"
+Target.runOrDefault "All"

@@ -10,7 +10,7 @@ dist: xenial
 dotnet: 2.2.105
 
 script:
-  - ./build.sh BuildNetFramework
+  - ./build.sh --target BuildNetFramework
   - docker build .
 
 branches:

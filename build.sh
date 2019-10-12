@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-source fake.sh build
+source fake.sh build "$@"
