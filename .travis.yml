@@ -7,11 +7,11 @@ services:
 dist: xenial
 
 #dotnet >2.2.* currently fail on unpack
-dotnet: 2.2.105
+dotnet: 2.2.402
 
 script:
-  - ./build.sh BuildNetFramework
-  - docker build .
+  - ./build.sh --target BuildNetFramework
+ # - docker build .
 
 branches:
  only:

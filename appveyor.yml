@@ -1,4 +1,0 @@
-image: Visual Studio 2019
-
-build_script:
-- ./build.cmd BuildNetFramework
