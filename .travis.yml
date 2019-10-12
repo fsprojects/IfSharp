@@ -11,7 +11,7 @@ dotnet: 2.2.105
 
 script:
   - ./build.sh --target BuildNetFramework
-  - docker build .
+ # - docker build .
 
 branches:
  only:
