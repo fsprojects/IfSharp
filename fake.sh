@@ -3,7 +3,7 @@
 set -eu
 set -o pipefail
 
-#Test workaround for macOS...
+# workaround macOS build agent issue from https://github.com/dotnet/cli/issues/9114#issuecomment-494226139
 export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
 
 # liberated from https://stackoverflow.com/a/18443300/433393
