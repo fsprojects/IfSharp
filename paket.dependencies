@@ -14,12 +14,6 @@ nuget FAKE >= 5.16.0
 nuget Paket.Core ~> 5.224.0
 nuget Trinet.Core.IO.Ntfs
 nuget system.memory 4.5.3
-#nuget XPlot.Plotly 1.5.0
-
-#nuget System.Runtime
-
-#https://github.com/dotnet/corefx/issues/19914
-# nuget System.Net.Http 4.3.1
 
 group NETCORE
 
@@ -39,7 +33,9 @@ nuget Paket.Core ~> 5.224.0
 nuget Trinet.Core.IO.Ntfs
 nuget system.memory 4.5.3
 
-#nuget System.Runtime
-
-#https://github.com/dotnet/corefx/issues/19914
-# nuget System.Net.Http 4.3.1
+group Build
+    storage none
+    source https://api.nuget.org/v3/index.json
+    nuget Fake.DotNet.Cli
+    nuget Fake.IO.FileSystem
+    nuget Fake.Core.Target
