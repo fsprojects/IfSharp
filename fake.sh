@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#Test workaround for macOS...
+export DOTNET_ROOT="/opt/dotnet"
+
 set -eu
 set -o pipefail
 
