@@ -1,4 +1,4 @@
-version 5.211.0
+version 5.224.0
 
 framework: net472
 source https://api.nuget.org/v3/index.json
@@ -10,8 +10,8 @@ nuget AsyncIO >= 0.1.69
 #nuget Itis.Angara.Base ~> 0.3.3
 nuget NetMQ ~> 4.0.0.207-pre
 nuget Newtonsoft.Json ~> 12.0.1
-nuget FAKE >= 5.8.4
-nuget Paket.Core ~> 5.211.0
+nuget FAKE >= 5.16.0
+nuget Paket.Core ~> 5.224.0
 nuget Trinet.Core.IO.Ntfs
 nuget system.memory 4.5.3
 #nuget XPlot.Plotly 1.5.0
@@ -33,9 +33,9 @@ nuget AsyncIO >= 0.1.69
 #nuget Itis.Angara.Base ~> 0.3.3
 nuget NetMQ ~> 4.0.0.207-pre
 nuget Newtonsoft.Json ~> 12.0.1
-nuget FAKE >= 5.8.4
+nuget FAKE >= 5.16.0
 #nuget XPlot.Plotly 1.5.0
-nuget Paket.Core ~> 5.211.0
+nuget Paket.Core ~> 5.224.0
 nuget Trinet.Core.IO.Ntfs
 nuget system.memory 4.5.3
 
