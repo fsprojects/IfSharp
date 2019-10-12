@@ -1,6 +1,6 @@
 | Build status  | Linux | macOS | Windows |
 | --- | --- | ----------- | --- |
-| .NET Framework / Mono | [![Build Status](https://travis-ci.org/fsprojects/IfSharp.svg?branch=master)](https://travis-ci.org/fsprojects/IfSharp) |     | [![Build status](https://ci.appveyor.com/api/projects/status/7da6fkdqqm1g3cri/branch/master?svg=true)](https://ci.appveyor.com/project/cgravill/ifsharp) |
+| .NET Framework / Mono | [![Build Status](https://travis-ci.org/fsprojects/IfSharp.svg?branch=master)](https://travis-ci.org/fsprojects/IfSharp) |     | [![Build Status](https://dev.azure.com/IFSharp/IFSharp/_apis/build/status/fsprojects.IfSharp?branchName=master&jobName=Windows)](https://dev.azure.com/IFSharp/IFSharp/_build/latest?definitionId=1&branchName=master) |
 | .NET Core (experimental) | [![Build Status](https://dev.azure.com/IFSharp/IFSharp/_apis/build/status/fsprojects.IfSharp?branchName=master&jobName=Linux)](https://dev.azure.com/IFSharp/IFSharp/_build/latest?definitionId=1&branchName=master) | [![Build Status](https://dev.azure.com/IFSharp/IFSharp/_apis/build/status/fsprojects.IfSharp?branchName=master&jobName=macOS)](https://dev.azure.com/IFSharp/IFSharp/_build/latest?definitionId=1&branchName=master) | [![Build Status](https://dev.azure.com/IFSharp/IFSharp/_apis/build/status/fsprojects.IfSharp?branchName=master&jobName=Windows)](https://dev.azure.com/IFSharp/IFSharp/_build/latest?definitionId=1&branchName=master) |
 
 # F# and Jupyter
