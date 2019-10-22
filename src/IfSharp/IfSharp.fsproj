@@ -234,7 +234,7 @@
           <Paket>True</Paket>
         </Reference>
         <Reference Include="NetMQ">
-          <HintPath>..\..\packages\NetMQ\lib\net40\NetMQ.dll</HintPath>
+          <HintPath>..\..\packages\NetMQ\lib\net47\NetMQ.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
