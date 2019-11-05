@@ -136,5 +136,5 @@ let Version list =
 let Clear() =
     //TODO: this currently doesn't remove GitHub packages. Can't find a corresponding Paket api
     deps.GetInstalledPackages() |> List.iter (fun (_, package, _) -> remove_quiet package)
-    add "FSharp.Core" "= 4.6.2"
+    add "FSharp.Core" "= 4.7.0"
     ()
