@@ -14,7 +14,7 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: 3.1.100
-  - script:
+  - script: |
     dotnet tool restore
     dotnet fake build --target All
 - job: macOS
@@ -24,7 +24,7 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: 3.1.100
-  - bash:
+  - bash: |
     dotnet tool restore
     dotnet fake build --target BuildNetCore
 - job: Linux
@@ -34,6 +34,6 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: 3.1.100
-  - bash:
+  - bash: |
     dotnet tool restore
     dotnet fake build --target BuildNetCore
