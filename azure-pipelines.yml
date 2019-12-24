@@ -14,7 +14,7 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: 3.1.100
-  - script: fake.cmd build --target All
+  - script: dotnet fake build --target All
 - job: macOS
   pool:
     vmImage: 'macOS-10.14'
@@ -22,7 +22,7 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: 3.1.100
-  - bash: . '$(Build.SourcesDirectory)/fake.sh' build --target BuildNetCore
+  - bash: dotnet fake build --target BuildNetCore
 - job: Linux
   pool:
     vmImage: 'ubuntu-18.04'
@@ -30,4 +30,4 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: 3.1.100
-  - bash: . '$(Build.SourcesDirectory)/fake.sh' build --target BuildNetCore
+  - bash: dotnet fake build --target BuildNetCore
