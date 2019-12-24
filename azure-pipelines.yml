@@ -15,8 +15,8 @@ jobs:
     inputs:
       version: 3.1.100
   - script: |
-   dotnet tool restore
-   dotnet fake build --target All
+     dotnet tool restore
+     dotnet fake build --target All
 - job: macOS
   pool:
     vmImage: 'macOS-10.14'
@@ -25,8 +25,8 @@ jobs:
     inputs:
       version: 3.1.100
   - bash: |
-   dotnet tool restore
-   dotnet fake build --target BuildNetCore
+     dotnet tool restore
+     dotnet fake build --target BuildNetCore
 - job: Linux
   pool:
     vmImage: 'ubuntu-18.04'
@@ -35,5 +35,5 @@ jobs:
     inputs:
       version: 3.1.100
   - bash: |
-   dotnet tool restore
-   dotnet fake build --target BuildNetCore
+     dotnet tool restore
+     dotnet fake build --target BuildNetCore
