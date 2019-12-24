@@ -11,19 +11,29 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  - script: fake.cmd build --target All
+  - task: UseDotNet@2
+    inputs:
+      version: 3.1.100
+  - script: |
+     dotnet tool restore
+     dotnet fake build --target All
 - job: macOS
   pool:
     vmImage: 'macOS-10.14'
   steps:
-  - bash: . '$(Build.SourcesDirectory)/fake.sh' build --target BuildNetCore
+  - task: UseDotNet@2
+    inputs:
+      version: 3.1.100
+  - bash: |
+     dotnet tool restore
+     dotnet fake build --target BuildNetCore
 - job: Linux
   pool:
     vmImage: 'ubuntu-18.04'
   steps:
-  - bash: . '$(Build.SourcesDirectory)/fake.sh' build --target BuildNetCore
-
-#- script: |
-#    echo Add other tasks to build, test, and deploy your project.
-#    echo See https://aka.ms/yaml
-#  displayName: 'Run a multi-line script'
+  - task: UseDotNet@2
+    inputs:
+      version: 3.1.100
+  - bash: |
+     dotnet tool restore
+     dotnet fake build --target BuildNetCore

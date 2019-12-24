@@ -1,32 +1,32 @@
-version 5.231.2
+version 5.241.5
 
 framework: net472
 source https://api.nuget.org/v3/index.json
 
-nuget FSharp.Compiler.Service ~> 33.0.0
+nuget FSharp.Compiler.Service ~> 33.0.1
 nuget FSharp.Compiler.Tools ~> 10.2.3
 nuget FSharp.Core = 4.7.0
 nuget AsyncIO >= 0.1.69
 nuget NetMQ ~> 4.0.0.239-pre
 nuget Newtonsoft.Json ~> 12.0.3
 nuget FAKE >= 5.16.0
-nuget Paket.Core ~> 5.231.2
+nuget Paket.Core ~> 5.241.5
 nuget Trinet.Core.IO.Ntfs
 nuget system.memory 4.5.3
 
 group NETCORE
 
-framework: netstandard2.0, netcoreapp2.2
+framework: netstandard2.0, netcoreapp3.1
 source https://api.nuget.org/v3/index.json
 
-nuget FSharp.Compiler.Service ~> 33.0.0
+nuget FSharp.Compiler.Service ~> 33.0.1
 nuget FSharp.Compiler.Tools ~> 10.2.3
 nuget FSharp.Core = 4.7.0
 nuget AsyncIO >= 0.1.69
 nuget NetMQ ~> 4.0.0.239-pre
 nuget Newtonsoft.Json ~> 12.0.3
 nuget FAKE >= 5.16.0
-nuget Paket.Core ~> 5.231.2
+nuget Paket.Core ~> 5.241.5
 nuget Trinet.Core.IO.Ntfs
 nuget system.memory 4.5.3
 
