@@ -14,6 +14,10 @@ This implements F# for [Jupyter](http://jupyter.org/) notebooks. View the [Featu
 To run using a Docker container on Linux/macOS:
 
     docker run -v $PWD:/notebooks -p 8888:8888 fsprojects/ifsharp
+    
+or with PowerShell on Windows:
+
+    docker run -v ${PWD}:/notebooks -p 8888:8888 fsprojects/ifsharp
 
 The container exposes your current directory as a volume called `notebooks` where the files get saved.
 Open with 
