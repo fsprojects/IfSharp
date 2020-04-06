@@ -63,7 +63,7 @@ If the launch fails in the console window, check that the Anaconda version used 
 
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 
-2. Install [Mono](http://www.mono-project.com/download/) (tested Mono 5.10.1.47)
+2. Install [Mono](http://www.mono-project.com/download/) (tested Mono 6.6.0)
 
 3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/)
 
@@ -75,7 +75,7 @@ Jupyter will start and a notebook with F# can be selected. This can be run via "
 
 1. Install [Jupyter](http://jupyter.readthedocs.org/en/latest/install.html) via pip or Anaconda etc.
 
-2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (Untested, suggest mono 5.10) and F# (tested 4.1).
+2. Install [Mono](http://www.mono-project.com/docs/getting-started/install/linux/) (tested Mono 5.18, "mono-complete" recommended).
 
 3. Download [the latest IfSharp zip release](https://github.com/fsprojects/IfSharp/releases/)
 
