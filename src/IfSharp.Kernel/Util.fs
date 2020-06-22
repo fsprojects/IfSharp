@@ -84,16 +84,21 @@ type Util =
 
     /// Creates a TableOutput out of a sequence of items and a list of property names.
     static member Table (items:seq<'A>, ?propertyNames:seq<string>) =
+        let allProperties = typeof<'A>.GetProperties()
 
         // get the properties
         let properties =
-            if propertyNames.IsSome then
-                typeof<'A>.GetProperties()
-                |> Seq.filter (fun x -> (propertyNames.Value |> Seq.exists (fun y -> x.Name = y)))
-                |> Seq.toArray
-            else
-                typeof<'A>.GetProperties()
-
+            match propertyNames with
+            | None -> allProperties
+            | Some names ->
+                // Take the propertyNames as leading so the order the properties are defined is preserved
+                names
+                |> Seq. collect (fun name -> let propertyWithName = allProperties |> Array.tryFind (fun p -> p.Name = name)
+                                             match propertyWithName with
+                                             | Some prop -> [prop]
+                                             | None -> []
+                                )
+                |> Array.ofSeq
         {
             Columns = properties |> Array.map (fun x -> x.Name);
             Rows = items |> Seq.map (Util.Row properties) |> Seq.toArray;
