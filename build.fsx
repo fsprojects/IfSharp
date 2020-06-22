@@ -28,6 +28,7 @@ Target.create "BuildNetFramework" (fun _ ->
 
     let setParams (defaults:MSBuildParams) =
         { defaults with
+            DisableInternalBinLog = true
             Verbosity = Some(MSBuildVerbosity.Detailed)
             Targets = ["Build"]
             Properties =
