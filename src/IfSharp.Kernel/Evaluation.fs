@@ -173,7 +173,16 @@ module Evaluation =
                     let items =
                         decls.Items
                         |> Array.filter (fun x -> x.Name.StartsWith(filterString, StringComparison.OrdinalIgnoreCase))
-                        |> Array.map (fun x -> { Documentation = formatTip(x.DescriptionText, None); Glyph = x.Glyph; Name = x.Name; Value = getValue x.Name })
+                        |> Array.map
+                            (fun x ->
+                                async {
+                                    let! descriptionText = formatTip(x.DescriptionTextAsync, None)
+                                    return { Documentation = descriptionText; Glyph = x.Glyph; Name = x.Name; Value = getValue x.Name }
+                                }
+                                
+                            )
+                        |> Async.Parallel
+                        |> Async.RunSynchronously
 
                     (items, checkFileResults, startIdx, filterString)
                 | None ->
