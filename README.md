@@ -7,6 +7,10 @@
 
 This implements F# for [Jupyter](http://jupyter.org/) notebooks. View the [Feature Notebook](FSharp_Jupyter_Notebooks.ipynb) for some of the features that are included.
 
+# .NET Interactive (alternative)
+
+There's related project of [.NET Interactive](https://github.com/dotnet/interactive) which was inspired by this one but a completly rethought approach with integrated package management, VS Code support, and variable sharing between languages. If you're moving to .NET Core support it's definitely worth checking out. There's a great video from [cartermp](https://github.com/cartermp) demoing some of the features: https://youtu.be/_QnbV6CAWXc?t=1298
+
 # Getting Started
 
 ## Docker
