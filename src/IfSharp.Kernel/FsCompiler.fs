@@ -9,7 +9,6 @@ open System.Text
 open System.Reflection
 
 open FSharp.Compiler
-open FSharp.Compiler.Ast
 open FSharp.Compiler.SourceCodeServices
 
 [<AutoOpen>]
@@ -92,13 +91,16 @@ module FsCompilerInternals =
             sb.Append("Composition error: " + err) |> ignore
 
     /// Formats a DataTipText into a string
-    let formatTip (tip, xmlCommentRetriever) =
-        let commentRetriever = defaultArg xmlCommentRetriever (fun _ -> "")
-        let sb = new StringBuilder()
-        match tip with
-        | FSharpToolTipText.FSharpToolTipText([single]) -> buildFormatElement true single sb commentRetriever
-        | FSharpToolTipText.FSharpToolTipText(its) -> for item in its do buildFormatElement false item sb commentRetriever
-        sb.ToString().Trim('\n', '\r')
+    let formatTip (tipAsync, xmlCommentRetriever) =
+        async{
+            let commentRetriever = defaultArg xmlCommentRetriever (fun _ -> "")
+            let sb = new StringBuilder()
+            let! tip = tipAsync
+            match tip with
+            | FSharpToolTipText.FSharpToolTipText([single]) -> buildFormatElement true single sb commentRetriever
+            | FSharpToolTipText.FSharpToolTipText(its) -> for item in its do buildFormatElement false item sb commentRetriever
+            return sb.ToString().Trim('\n', '\r')
+        }
 
     /// Tries to figure out the names to pass to GetDeclarations or GetMethods.
     let extractNames (line, charIndex) =
