@@ -2,4 +2,4 @@ framework: net472
 generate_load_scripts: true
 source https://api.nuget.org/v3/index.json
 #When changing the default FSharp.Core version make sure to change everywhere e.g. Clear()
-nuget FSharp.Core = 4.7.0
+nuget FSharp.Core = 5.0.2
