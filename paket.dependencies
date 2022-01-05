@@ -8,7 +8,7 @@ nuget FSharp.Compiler.Tools ~> 10.2.3
 nuget FSharp.Core = 5.0.2
 nuget AsyncIO >= 0.1.69
 nuget NetMQ 4.0.0.272-pre
-nuget Newtonsoft.Json ~> 12.0.3
+nuget Newtonsoft.Json ~> 13.0.1
 nuget FAKE >= 5.16.0
 nuget Paket.Core ~> 5.249.2
 nuget Trinet.Core.IO.Ntfs
@@ -24,7 +24,7 @@ nuget FSharp.Compiler.Tools ~> 10.2.3
 nuget FSharp.Core = 5.0.2
 nuget AsyncIO >= 0.1.69
 nuget NetMQ 4.0.0.272-pre
-nuget Newtonsoft.Json ~> 12.0.3
+nuget Newtonsoft.Json ~> 13.0.1
 nuget FAKE >= 5.16.0
 nuget Paket.Core ~> 5.249.2
 nuget Trinet.Core.IO.Ntfs

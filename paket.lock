@@ -1,4 +1,4 @@
-RESTRICTION: == net472
+RESTRICTION: == net48
 NUGET
   remote: https://api.nuget.org/v3/index.json
     AsyncIO (0.1.69)
@@ -37,7 +37,7 @@ NUGET
       AsyncIO (>= 0.1.69)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
-    Newtonsoft.Json (12.0.3)
+    Newtonsoft.Json (13.0.1)
     Paket.Core (5.249.2)
       Chessie (>= 0.6)
       FSharp.Compiler.Tools
@@ -225,7 +225,7 @@ NUGET
       Microsoft.Build.Utilities.Core (>= 15.8.166) - restriction: && (< net46) (>= netstandard2.0)
     NETStandard.Library (2.0.3) - restriction: || (&& (< net40) (>= net462) (>= netstandard1.6)) (&& (< net40) (>= netstandard2.0))
       Microsoft.NETCore.Platforms (>= 1.1) - restriction: || (&& (>= net45) (< netstandard1.3)) (&& (< net45) (>= netstandard1.1) (< netstandard1.2) (< win8)) (&& (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.3) (< netstandard1.4) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (< net45) (>= netstandard2.0)) (&& (>= net46) (< netstandard1.4)) (>= net461) (>= netcoreapp2.0) (&& (>= netstandard1.0) (< portable-net45+win8+wpa81)) (&& (< netstandard1.0) (>= portable-net45+win8) (< win8)) (&& (< netstandard1.0) (< portable-net45+win8) (>= portable-net45+win8+wpa81)) (&& (< netstandard1.0) (>= portable-net45+win8+wp8+wpa81) (< portable-net45+win8+wpa81)) (&& (< netstandard1.0) (>= win8)) (&& (< netstandard1.3) (< win8) (>= wpa81)) (&& (< netstandard1.5) (>= uap10.0)) (>= uap10.1) (>= wp8)
-    Newtonsoft.Json (12.0.2) - restriction: || (>= net462) (>= netstandard2.0)
+    Newtonsoft.Json (13.0.1) - restriction: || (>= net462) (>= netstandard2.0)
     NuGet.Common (5.3) - restriction: >= netstandard2.0
       NuGet.Frameworks (>= 5.3) - restriction: >= netstandard2.0
       System.Diagnostics.Process (>= 4.3) - restriction: && (< net472) (>= netstandard2.0)
@@ -887,7 +887,7 @@ NUGET
       System.ValueTuple (>= 4.4)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
-    Newtonsoft.Json (12.0.3)
+    Newtonsoft.Json (13.0.1)
     Paket.Core (5.249.2)
       Chessie (>= 0.6)
       Mono.Cecil (>= 0.10.0-beta6)
