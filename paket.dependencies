@@ -1,6 +1,6 @@
 version 5.249.2
 
-framework: net472
+framework: net48
 source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Compiler.Service ~> 37.0.0
