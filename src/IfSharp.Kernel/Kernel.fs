@@ -254,7 +254,7 @@ open IfSharp.Kernel.Globals"""
                 language_info =
                 {
                     name = "fsharp";
-                    version = "4.3.1.0";
+                    version = "5.0.2.0";
                     mimetype = "text/x-fsharp";
                     file_extension = ".fs";
                     pygments_lexer = "";
