@@ -3,6 +3,8 @@ NetMQ
 Newtonsoft.Json
 Paket.Core
 FSharp.Core
+Plotly.NET
+Plotly.NET.ImageExport
 
 Trinet.Core.IO.Ntfs
 System.Memory

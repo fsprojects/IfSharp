@@ -182,6 +182,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
       <ItemGroup>
+        <Reference Include="DynamicObj">
+          <HintPath>..\..\packages\DynamicObj\lib\netstandard2.0\DynamicObj.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
         <Reference Include="FSharp.Compiler.Service">
           <HintPath>..\..\packages\FSharp.Compiler.Service\lib\net461\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
@@ -195,6 +206,28 @@
       <ItemGroup>
         <Reference Include="FSharp.Core">
           <HintPath>..\..\packages\FSharp.Core\lib\netstandard2.0\FSharp.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.AspNetCore.WebUtilities">
+          <HintPath>..\..\packages\Microsoft.AspNetCore.WebUtilities\lib\netstandard2.0\Microsoft.AspNetCore.WebUtilities.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Bcl.AsyncInterfaces">
+          <HintPath>..\..\packages\Microsoft.Bcl.AsyncInterfaces\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -258,6 +291,161 @@
         </Reference>
         <Reference Include="Microsoft.Build.Utilities.Core">
           <HintPath>..\..\packages\Microsoft.Build.Utilities.Core\lib\net472\Microsoft.Build.Utilities.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Extensions.DependencyInjection">
+          <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+          <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Extensions.Logging">
+          <HintPath>..\..\packages\Microsoft.Extensions.Logging\lib\net461\Microsoft.Extensions.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+          <HintPath>..\..\packages\Microsoft.Extensions.Logging.Abstractions\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="..\..\packages\Microsoft.Extensions.Logging.Abstractions\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\..\packages\Microsoft.Extensions.Logging.Abstractions\build\Microsoft.Extensions.Logging.Abstractions.targets')" Label="Paket" />
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\de\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\es\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\fr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\it\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ja\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ko\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\pl\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ru\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\tr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\zh-Hans\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\zh-Hant\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\de\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\es\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\fr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\it\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ja\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ko\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\pl\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ru\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\tr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\zh-Hans\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\zh-Hant\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="System.ComponentModel.DataAnnotations">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Options">
+          <HintPath>..\..\packages\Microsoft.Extensions.Options\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Extensions.Primitives">
+          <HintPath>..\..\packages\Microsoft.Extensions.Primitives\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Net.Http.Headers">
+          <HintPath>..\..\packages\Microsoft.Net.Http.Headers\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -340,6 +528,50 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
       <ItemGroup>
+        <Reference Include="Plotly.NET">
+          <HintPath>..\..\packages\Plotly.NET\lib\netstandard2.0\Plotly.NET.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="Plotly.NET.ImageExport">
+          <HintPath>..\..\packages\Plotly.NET.ImageExport\lib\netstandard2.0\Plotly.NET.ImageExport.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="PuppeteerSharp">
+          <HintPath>..\..\packages\PuppeteerSharp\lib\netstandard2.0\PuppeteerSharp.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="ICSharpCode.SharpZipLib">
+          <HintPath>..\..\packages\SharpZipLib\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
         <Reference Include="System.Buffers">
           <HintPath>..\..\packages\System.Buffers\lib\net461\System.Buffers.dll</HintPath>
           <Private>True</Private>
@@ -353,6 +585,17 @@
       <ItemGroup>
         <Reference Include="System.Collections.Immutable">
           <HintPath>..\..\packages\System.Collections.Immutable\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="System.Diagnostics.DiagnosticSource">
+          <HintPath>..\..\packages\System.Diagnostics.DiagnosticSource\lib\net461\System.Diagnostics.DiagnosticSource.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -417,8 +660,30 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
       <ItemGroup>
+        <Reference Include="System.Text.Encodings.Web">
+          <HintPath>..\..\packages\System.Text.Encodings.Web\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
         <Reference Include="System.Threading.Tasks.Dataflow">
           <HintPath>..\..\packages\System.Threading.Tasks.Dataflow\lib\net461\System.Threading.Tasks.Dataflow.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
+      <ItemGroup>
+        <Reference Include="System.Threading.Tasks.Extensions">
+          <HintPath>..\..\packages\System.Threading.Tasks.Extensions\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
