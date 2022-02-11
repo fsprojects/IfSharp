@@ -82,6 +82,81 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <None Include="paket.references" />
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Program.fs" />
+    <Content Include="Angara.Charting.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Angara.Charting.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AsyncDisplay.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AsyncDisplay.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FSharp.Charting.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FSharp.Charting.Gtk.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FSharp.Charting.Gtk.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FSharp.Charting.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FsLab.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Paket.Generated.Refs.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plotly-latest.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XPlot.GoogleCharts.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XPlot.GoogleCharts.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XPlot.Plotly.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XPlot.Plotly.Paket.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plotly.NET.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Angara.Charting.Dynamic.fsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="App.config" />
+    <Content Include="hide\paket.dependencies">
+      <Link>paket.dependencies</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <ProjectReference Include="..\IfSharp.Kernel\IfSharp.Kernel.fsproj">
+      <Name>IfSharp.Kernel</Name>
+      <Project>{25fe52cd-bce3-471d-a629-9dc9f0410b6c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
       <ItemGroup>
@@ -270,6 +345,80 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\Microsoft.Extensions.Logging.Abstractions\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\..\packages\Microsoft.Extensions.Logging.Abstractions\build\Microsoft.Extensions.Logging.Abstractions.targets')" Label="Paket" />
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\de\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\es\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\fr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\it\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ja\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ko\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\pl\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ru\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\tr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\zh-Hans\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\zh-Hant\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\de\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\es\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\fr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\it\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ja\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ko\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\pl\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ru\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\tr\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\zh-Hans\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\zh-Hant\Microsoft.Extensions.Logging.Generators.resources.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.8'">
       <ItemGroup>
@@ -567,175 +716,4 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\NETStandard.Library\build\$(__paket__NETStandard_Library_targets).targets" Condition="Exists('..\..\packages\NETStandard.Library\build\$(__paket__NETStandard_Library_targets).targets')" Label="Paket" />
-  <ItemGroup>
-    <None Include="paket.references" />
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Program.fs" />
-    <Content Include="Angara.Charting.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Angara.Charting.Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AsyncDisplay.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AsyncDisplay.Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="FSharp.Charting.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="FSharp.Charting.Gtk.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="FSharp.Charting.Gtk.Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="FSharp.Charting.Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="FsLab.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Paket.Generated.Refs.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="plotly-latest.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="XPlot.GoogleCharts.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="XPlot.GoogleCharts.Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="XPlot.Plotly.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="XPlot.Plotly.Paket.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Plotly.NET.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Angara.Charting.Dynamic.fsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="App.config" />
-    <Content Include="hide\paket.dependencies">
-      <Link>paket.dependencies</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\de\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\es\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\fr\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\it\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ja\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ko\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\pl\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\ru\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\tr\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\zh-Hans\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn3.11\cs\zh-Hant\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\de\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\es\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\fr\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\it\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ja\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ko\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\pl\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\ru\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\tr\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\zh-Hans\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\Microsoft.Extensions.Logging.Abstractions\analyzers\dotnet\roslyn4.0\cs\zh-Hant\Microsoft.Extensions.Logging.Generators.resources.dll">
-      <Paket>True</Paket>
-      <Link>Microsoft.Extensions.Logging.Generators.resources.dll</Link>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <ProjectReference Include="..\IfSharp.Kernel\IfSharp.Kernel.fsproj">
-      <Name>IfSharp.Kernel</Name>
-      <Project>{25fe52cd-bce3-471d-a629-9dc9f0410b6c}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
 </Project>
