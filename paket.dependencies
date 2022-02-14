@@ -12,7 +12,10 @@ nuget Newtonsoft.Json ~> 13.0.1
 nuget FAKE >= 5.16.0
 nuget Paket.Core ~> 5.249.2
 nuget Trinet.Core.IO.Ntfs
-nuget system.memory 4.5.4
+nuget Plotly.NET 2.0.0-preview.17
+nuget Plotly.NET.ImageExport 2.0.0-preview.17
+nuget System.Memory 4.5.4
+nuget Microsoft.Extensions.Logging 6.0.0
 
 group NETCORE
 
@@ -28,7 +31,10 @@ nuget Newtonsoft.Json ~> 13.0.1
 nuget FAKE >= 5.16.0
 nuget Paket.Core ~> 5.249.2
 nuget Trinet.Core.IO.Ntfs
-nuget system.memory 4.5.4
+nuget Plotly.NET 2.0.0-preview.17
+nuget Plotly.NET.ImageExport 2.0.0-preview.17
+nuget System.Memory 4.5.4
+nuget Microsoft.Extensions.Logging 6.0.0
 
 group Build
     storage none
