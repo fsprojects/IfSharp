@@ -9,7 +9,7 @@ trigger:
 jobs:
 - job: Windows
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   steps:
   - task: UseDotNet@2
     inputs:
@@ -19,7 +19,7 @@ jobs:
      dotnet fake build --target All
 - job: macOS
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-11'
   steps:
   - task: UseDotNet@2
     inputs:
@@ -29,7 +29,7 @@ jobs:
      dotnet fake build --target BuildNetCore
 - job: Linux
   pool:
-    vmImage: 'ubuntu-18.04'
+    vmImage: 'ubuntu-20.04'
   steps:
   - task: UseDotNet@2
     inputs:
